@@ -180,12 +180,7 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
                 </p>
               </div>
 
-              {/* Furigana Reading */}
-              <div className="text-center mb-6">
-                <p className="text-4xl font-semibold text-gray-900">
-                  {flashcard.furigana}
-                </p>
-              </div>
+
 
               {/* Korean Translation */}
               <div className="text-center mb-6">
