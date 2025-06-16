@@ -87,6 +87,14 @@ export default function FlashcardPage() {
     }
   };
 
+  const handleTitleClick = () => {
+    // Toggle sort direction
+    const newDirection = sortDirection === "ascending" ? "descending" : "ascending";
+    setSortDirection(newDirection);
+    // Reset to first card
+    setCurrentIndex(0);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -147,7 +155,13 @@ export default function FlashcardPage() {
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-md mx-auto px-6 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900 pl-2">J-Flash</h1>
+          <h1 
+            className="text-2xl font-bold text-gray-900 pl-2 cursor-pointer hover:text-blue-600 transition-colors duration-200"
+            onClick={handleTitleClick}
+            title="순서 바꾸기"
+          >
+            J-Flash
+          </h1>
           <div className="text-lg font-semibold text-black pr-2">
             {totalCards - knownCount}
           </div>
