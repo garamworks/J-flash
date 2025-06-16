@@ -5,16 +5,8 @@ import { useSpeech } from "@/hooks/use-speech";
 
 // Function to add furigana to Japanese text
 const addFurigana = (sentence: string, japanese: string, furigana: string) => {
-  // Start with the main word's reading - this takes priority
-  const kanjiMap: { [key: string]: string } = {};
-  
-  // First, add the main flashcard word with its exact furigana
-  if (japanese && furigana) {
-    kanjiMap[japanese] = furigana;
-  }
-  
-  // Then add other common kanji readings
-  const commonReadings: { [key: string]: string } = {
+  // Single consistent reading for each kanji character
+  const kanjiReadings: { [key: string]: string } = {
     '母': 'はは',
     '茶': 'ちゃ', 
     '道': 'どう',
@@ -22,24 +14,37 @@ const addFurigana = (sentence: string, japanese: string, furigana: string) => {
     '桜': 'さくら',
     '春': 'はる',
     '咲': 'さ',
-    '寿司': 'すし',
-    '今日': 'きょう',
+    '寿': 'す',
+    '司': 'し',
+    '今': 'きょう', // Special case for 今日
+    '日': '', // Handled with 今日
     '食': 'た'
   };
-  
-  // Add common readings only if they don't conflict with main word
-  Object.entries(commonReadings).forEach(([kanji, reading]) => {
-    if (!kanjiMap[kanji]) {
-      kanjiMap[kanji] = reading;
-    }
-  });
 
-  // Replace kanji with ruby tags, prioritizing longer matches first
+  // Override with readings from the main word if applicable
+  if (japanese && furigana) {
+    // For compound words, map individual characters to their readings
+    if (japanese === '茶道' && furigana === 'さどう') {
+      kanjiReadings['茶'] = 'さ';
+      kanjiReadings['道'] = 'どう';
+    } else if (japanese === '寿司' && furigana === 'すし') {
+      kanjiReadings['寿'] = 'す';
+      kanjiReadings['司'] = 'し';
+    }
+    // Add more compound word mappings as needed
+  }
+
+  // Replace individual kanji with ruby tags
   let result = sentence;
-  const sortedEntries = Object.entries(kanjiMap).sort((a, b) => b[0].length - a[0].length);
   
-  sortedEntries.forEach(([kanji, reading]) => {
-    if (result.includes(kanji)) {
+  // Handle special cases first (like 今日)
+  if (result.includes('今日')) {
+    result = result.replace(/今日/g, '<ruby>今日<rt>きょう</rt></ruby>');
+  }
+
+  // Then handle individual kanji
+  Object.entries(kanjiReadings).forEach(([kanji, reading]) => {
+    if (reading && result.includes(kanji) && !result.includes(`<ruby>${kanji}`)) {
       result = result.replace(new RegExp(kanji, 'g'), `<ruby>${kanji}<rt>${reading}</rt></ruby>`);
     }
   });
