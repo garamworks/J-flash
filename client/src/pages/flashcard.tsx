@@ -154,6 +154,7 @@ export default function FlashcardPage() {
 
       <main className="max-w-md mx-auto px-4 py-6">
         <FlashcardComponent 
+          key={currentIndex}
           flashcard={currentCard}
           onMarkAsKnown={handleMarkAsKnown}
           onMarkAsUnknown={handleMarkAsUnknown}
