@@ -70,7 +70,19 @@ export default function FlashcardComponent({ flashcard }: FlashcardProps) {
 
   const handleSpeakerClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    speak(flashcard.sentence, 'ja-JP');
+    
+    // If there's an audio URL from Notion, play that instead of TTS
+    if (flashcard.audioUrl) {
+      const audio = new Audio(flashcard.audioUrl);
+      audio.play().catch(error => {
+        console.error('Error playing audio:', error);
+        // Fallback to TTS if audio file fails
+        speak(flashcard.sentence, 'ja-JP');
+      });
+    } else {
+      // Fallback to TTS
+      speak(flashcard.sentence, 'ja-JP');
+    }
   };
 
   return (
@@ -81,11 +93,17 @@ export default function FlashcardComponent({ flashcard }: FlashcardProps) {
           <div className="bg-white rounded-2xl shadow-lg p-6 relative cursor-pointer">
             {/* Square Image with Speaker Icon */}
             <div className="relative mb-6">
-              <img
-                src={flashcard.imageUrl}
-                alt={flashcard.japanese}
-                className="w-full aspect-square object-cover rounded-xl"
-              />
+              {flashcard.imageUrl ? (
+                <img
+                  src={flashcard.imageUrl}
+                  alt={flashcard.japanese}
+                  className="w-full aspect-square object-cover rounded-xl"
+                />
+              ) : (
+                <div className="w-full aspect-square bg-gray-100 rounded-xl flex items-center justify-center">
+                  <span className="text-gray-400 text-lg">이미지 없음</span>
+                </div>
+              )}
               
               {/* Speaker Icon */}
               <button

@@ -10,6 +10,7 @@ export const flashcards = pgTable("flashcards", {
   sentence: text("sentence").notNull(),
   sentenceKorean: text("sentence_korean").notNull(),
   imageUrl: text("image_url").notNull(),
+  audioUrl: text("audio_url"),
 });
 
 export const userProgress = pgTable("user_progress", {

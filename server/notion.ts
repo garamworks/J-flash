@@ -121,6 +121,28 @@ export async function getFlashcardsFromNotion(flashcardsDatabaseId: string) {
         return response.results.map((page: any) => {
             const properties = page.properties;
 
+            // Extract image URL from files field
+            let imageUrl = "";
+            if (properties['image']?.files && properties['image'].files.length > 0) {
+                const imageFile = properties['image'].files[0];
+                if (imageFile.type === 'external') {
+                    imageUrl = imageFile.external.url;
+                } else if (imageFile.type === 'file') {
+                    imageUrl = imageFile.file.url;
+                }
+            }
+
+            // Extract audio URL from 오디오(예문) field
+            let audioUrl = "";
+            if (properties['오디오(예문)']?.files && properties['오디오(예문)'].files.length > 0) {
+                const audioFile = properties['오디오(예문)'].files[0];
+                if (audioFile.type === 'external') {
+                    audioUrl = audioFile.external.url;
+                } else if (audioFile.type === 'file') {
+                    audioUrl = audioFile.file.url;
+                }
+            }
+
             return {
                 id: parseInt(page.id.replace(/-/g, '').slice(-8), 16), // Convert to number for compatibility
                 japanese: properties['단어']?.title?.[0]?.plain_text || "",
@@ -128,7 +150,8 @@ export async function getFlashcardsFromNotion(flashcardsDatabaseId: string) {
                 korean: properties['뜻']?.rich_text?.[0]?.plain_text || "",
                 sentence: properties['예문']?.rich_text?.[0]?.plain_text || "",
                 sentenceKorean: properties['예문 해석']?.rich_text?.[0]?.plain_text || "",
-                imageUrl: "", // Will be empty for now
+                imageUrl: imageUrl || "",
+                audioUrl: audioUrl || null, // Add audio URL for use in frontend
             };
         });
     } catch (error) {
