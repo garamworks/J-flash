@@ -5,8 +5,16 @@ import { useSpeech } from "@/hooks/use-speech";
 
 // Function to add furigana to Japanese text
 const addFurigana = (sentence: string, japanese: string, furigana: string) => {
-  // Refined mapping with single most appropriate reading for each kanji
-  const kanjiMap: { [key: string]: string } = {
+  // Start with the main word's reading - this takes priority
+  const kanjiMap: { [key: string]: string } = {};
+  
+  // First, add the main flashcard word with its exact furigana
+  if (japanese && furigana) {
+    kanjiMap[japanese] = furigana;
+  }
+  
+  // Then add other common kanji readings
+  const commonReadings: { [key: string]: string } = {
     '母': 'はは',
     '茶': 'ちゃ', 
     '道': 'どう',
@@ -18,10 +26,19 @@ const addFurigana = (sentence: string, japanese: string, furigana: string) => {
     '今日': 'きょう',
     '食': 'た'
   };
+  
+  // Add common readings only if they don't conflict with main word
+  Object.entries(commonReadings).forEach(([kanji, reading]) => {
+    if (!kanjiMap[kanji]) {
+      kanjiMap[kanji] = reading;
+    }
+  });
 
-  // Replace individual kanji with ruby tags
+  // Replace kanji with ruby tags, prioritizing longer matches first
   let result = sentence;
-  Object.entries(kanjiMap).forEach(([kanji, reading]) => {
+  const sortedEntries = Object.entries(kanjiMap).sort((a, b) => b[0].length - a[0].length);
+  
+  sortedEntries.forEach(([kanji, reading]) => {
     if (result.includes(kanji)) {
       result = result.replace(new RegExp(kanji, 'g'), `<ruby>${kanji}<rt>${reading}</rt></ruby>`);
     }
