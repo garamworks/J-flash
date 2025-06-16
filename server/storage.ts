@@ -198,14 +198,26 @@ export class NotionStorage implements IStorage {
     
     console.log('Recording progress for flashcard:', insertProgress.flashcardId, 'Known:', insertProgress.known);
     
-    // Find the Notion page for this flashcard
-    const response = await notion.databases.query({
-      database_id: this.flashcardsDatabaseId,
-    });
+    // Find the Notion page for this flashcard - need to query ALL pages, not just unchecked ones
+    const allResults: any[] = [];
+    let hasMore = true;
+    let startCursor: string | undefined = undefined;
 
-    const targetPage = response.results.find((page: any) => {
+    // Fetch all pages without filter to find the target page
+    while (hasMore) {
+      const response = await notion.databases.query({
+        database_id: this.flashcardsDatabaseId,
+        start_cursor: startCursor,
+        page_size: 100
+      });
+
+      allResults.push(...response.results);
+      hasMore = response.has_more;
+      startCursor = response.next_cursor || undefined;
+    }
+
+    const targetPage = allResults.find((page: any) => {
       const pageId = parseInt(page.id.replace(/-/g, '').slice(-8), 16);
-      console.log('Checking page ID:', pageId, 'against flashcard ID:', insertProgress.flashcardId);
       return pageId === insertProgress.flashcardId;
     });
 
@@ -215,6 +227,7 @@ export class NotionStorage implements IStorage {
       console.log('Notion update completed');
     } else {
       console.error('Target page not found for flashcard ID:', insertProgress.flashcardId);
+      console.log('Available page IDs:', allResults.map(p => parseInt(p.id.replace(/-/g, '').slice(-8), 16)));
     }
     
     return {
