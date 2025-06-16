@@ -11,8 +11,20 @@ export default function FlashcardPage() {
   const [unknownCount, setUnknownCount] = useState(0);
   const queryClient = useQueryClient();
 
-  const { data: flashcards, isLoading, error } = useQuery<Flashcard[]>({
+  const { data: allFlashcards, isLoading, error } = useQuery<Flashcard[]>({
     queryKey: ["/api/flashcards"],
+  });
+
+  const { data: progressData } = useQuery<Array<{id: number, flashcardId: number, known: boolean}>>({
+    queryKey: ["/api/progress"],
+  });
+
+  // Filter out flashcards that are marked as known (암기 = true)
+  const flashcards = allFlashcards?.filter(card => {
+    if (!progressData || !Array.isArray(progressData)) return true; // Show all cards if progress data not loaded yet
+    
+    const cardProgress = progressData.find(p => p.flashcardId === card.id);
+    return !cardProgress?.known; // Only show cards that are not known
   });
 
   const recordProgressMutation = useMutation({
@@ -38,6 +50,7 @@ export default function FlashcardPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/progress"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/flashcards"] });
     },
     onError: (error) => {
       console.error('Mutation error:', error);

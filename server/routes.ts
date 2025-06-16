@@ -39,6 +39,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get all user progress
+  app.get("/api/progress", async (req, res) => {
+    try {
+      const progress = await storage.getUserProgress();
+      res.json(progress);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch progress" });
+    }
+  });
+
   // Get progress statistics
   app.get("/api/progress/stats", async (req, res) => {
     try {
