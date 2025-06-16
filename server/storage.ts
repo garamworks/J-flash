@@ -98,7 +98,11 @@ export class MemStorage implements IStorage {
 
   async createFlashcard(insertFlashcard: InsertFlashcard): Promise<Flashcard> {
     const id = this.currentFlashcardId++;
-    const flashcard: Flashcard = { ...insertFlashcard, id };
+    const flashcard: Flashcard = { 
+      ...insertFlashcard, 
+      id,
+      audioUrl: insertFlashcard.audioUrl ?? null 
+    };
     this.flashcards.set(id, flashcard);
     return flashcard;
   }
