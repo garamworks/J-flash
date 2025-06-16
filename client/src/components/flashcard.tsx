@@ -180,7 +180,12 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
                 </p>
               </div>
 
-
+              {/* Furigana Reading (Hiragana) */}
+              <div className="text-center mb-6">
+                <p className="text-3xl font-semibold text-gray-600">
+                  {flashcard.furigana}
+                </p>
+              </div>
 
               {/* Korean Translation */}
               <div className="text-center mb-6">
@@ -189,15 +194,11 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
                 </p>
               </div>
 
-              {/* Japanese Example Sentence */}
+              {/* Japanese Example Sentence (without furigana) */}
               <div className="text-center mb-4">
-                <p 
-                  className="text-2xl text-gray-700 leading-relaxed" 
-                  style={{ fontSize: '1.5em' }}
-                  dangerouslySetInnerHTML={{ 
-                    __html: addFurigana(flashcard.sentence, flashcard.japanese, flashcard.furigana) 
-                  }}
-                />
+                <p className="text-2xl text-gray-700 leading-relaxed" style={{ fontSize: '1.5em' }}>
+                  {flashcard.sentence}
+                </p>
               </div>
 
               {/* Korean Sentence Translation */}
