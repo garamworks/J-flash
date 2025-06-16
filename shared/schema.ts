@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, bigint } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -15,7 +15,7 @@ export const flashcards = pgTable("flashcards", {
 
 export const userProgress = pgTable("user_progress", {
   id: serial("id").primaryKey(),
-  flashcardId: integer("flashcard_id").notNull(),
+  flashcardId: bigint("flashcard_id", { mode: "number" }).notNull(),
   known: boolean("known").notNull(),
 });
 
