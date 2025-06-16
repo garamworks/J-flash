@@ -32,10 +32,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Record user progress
   app.post("/api/progress", async (req, res) => {
     try {
+      console.log('Received progress data:', req.body);
       const validatedData = insertUserProgressSchema.parse(req.body);
+      console.log('Validated data:', validatedData);
       const progress = await storage.recordProgress(validatedData);
       res.json(progress);
     } catch (error) {
+      console.error('Progress validation error:', error);
+      console.error('Request body:', req.body);
       res.status(400).json({ message: "Invalid progress data" });
     }
   });
