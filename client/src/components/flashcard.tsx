@@ -174,14 +174,14 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
               </button>
 
               {/* Japanese Word (Kanji) */}
-              <div className="text-center mb-4">
+              <div className="text-center" style={{ marginBottom: '1.1rem' }}>
                 <p className="text-4xl font-bold text-gray-900" style={{ lineHeight: '0.7' }}>
                   {flashcard.japanese}
                 </p>
               </div>
 
               {/* Furigana Reading (Hiragana) */}
-              <div className="text-center mb-4">
+              <div className="text-center" style={{ marginBottom: '1.1rem' }}>
                 <p className="text-3xl font-semibold text-gray-600" style={{ lineHeight: '0.7' }}>
                   {flashcard.furigana}
                 </p>
@@ -195,15 +195,15 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
               </div>
 
               {/* Japanese Example Sentence (without furigana) */}
-              <div className="text-center mb-4">
-                <p className="text-2xl text-gray-700 leading-relaxed" style={{ fontSize: '1.5em' }}>
+              <div className="text-center" style={{ marginBottom: '1.1rem' }}>
+                <p className="text-2xl text-gray-700 leading-relaxed" style={{ fontSize: '1.65em' }}>
                   {flashcard.sentence}
                 </p>
               </div>
 
               {/* Korean Sentence Translation */}
               <div className="text-center">
-                <p className="text-2xl text-gray-700 leading-relaxed" style={{ fontSize: '1.62rem' }}>
+                <p className="text-2xl text-gray-700 leading-relaxed" style={{ fontSize: '1.46rem' }}>
                   {flashcard.sentenceKorean}
                 </p>
               </div>
