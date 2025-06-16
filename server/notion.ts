@@ -122,6 +122,12 @@ export async function getFlashcardsFromNotion(flashcardsDatabaseId: string, sort
         while (hasMore) {
             const response = await notion.databases.query({
                 database_id: flashcardsDatabaseId,
+                filter: {
+                    property: "암기",
+                    checkbox: {
+                        equals: false
+                    }
+                },
                 sorts: [
                     {
                         property: "Random",

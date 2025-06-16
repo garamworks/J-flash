@@ -21,13 +21,8 @@ export default function FlashcardPage() {
     queryKey: ["/api/progress"],
   });
 
-  // Filter out flashcards that are marked as known (암기 = true)
-  const flashcards = allFlashcards?.filter(card => {
-    if (!progressData || !Array.isArray(progressData)) return true; // Show all cards if progress data not loaded yet
-    
-    const cardProgress = progressData.find(p => p.flashcardId === card.id);
-    return !cardProgress?.known; // Only show cards that are not known
-  });
+  // Now using server-side filtering for unchecked '암기' cards only
+  const flashcards = allFlashcards || [];
 
   const recordProgressMutation = useMutation({
     mutationFn: async ({ flashcardId, known }: { flashcardId: number; known: boolean }) => {
