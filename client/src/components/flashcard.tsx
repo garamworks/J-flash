@@ -5,11 +5,10 @@ import { useSpeech } from "@/hooks/use-speech";
 
 // Function to add furigana to Japanese text
 const addFurigana = (sentence: string, japanese: string, furigana: string) => {
-  // Simple mapping for common kanji - this would need to be expanded for a full app
+  // Refined mapping with single most appropriate reading for each kanji
   const kanjiMap: { [key: string]: string } = {
-    '茶道': 'さどう',
-    '母': 'はは', 
-    '茶': 'ちゃ',
+    '母': 'はは',
+    '茶': 'ちゃ', 
     '道': 'どう',
     '習': 'なら',
     '桜': 'さくら',
@@ -20,7 +19,7 @@ const addFurigana = (sentence: string, japanese: string, furigana: string) => {
     '食': 'た'
   };
 
-  // Replace kanji with ruby tags
+  // Replace individual kanji with ruby tags
   let result = sentence;
   Object.entries(kanjiMap).forEach(([kanji, reading]) => {
     if (result.includes(kanji)) {
@@ -119,7 +118,7 @@ export default function FlashcardComponent({ flashcard }: FlashcardProps) {
             <div className="text-center mb-4">
               <p 
                 className="text-2xl text-gray-700 leading-relaxed" 
-                style={{ fontSize: '1.2em' }}
+                style={{ fontSize: '1.5em' }}
                 dangerouslySetInnerHTML={{ 
                   __html: addFurigana(flashcard.sentence, flashcard.japanese, flashcard.furigana) 
                 }}
