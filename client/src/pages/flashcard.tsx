@@ -17,14 +17,30 @@ export default function FlashcardPage() {
 
   const recordProgressMutation = useMutation({
     mutationFn: async ({ flashcardId, known }: { flashcardId: number; known: boolean }) => {
-      return apiRequest(`/api/progress`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ flashcardId, known })
-      });
+      try {
+        const response = await fetch(`/api/progress`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ flashcardId, known })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('Progress recorded:', result);
+        return result;
+      } catch (error) {
+        console.error('Error recording progress:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/progress"] });
+    },
+    onError: (error) => {
+      console.error('Mutation error:', error);
     }
   });
 
