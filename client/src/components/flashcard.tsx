@@ -65,24 +65,24 @@ export default function FlashcardComponent({ flashcard }: FlashcardProps) {
 
         {/* Card Back */}
         <div className="flashcard-face flashcard-back">
-          <div className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer">
+          <div className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer min-h-full flex flex-col justify-center">
             {/* Furigana Reading */}
-            <div className="text-center mb-6">
-              <p className="text-3xl font-semibold text-gray-900">
+            <div className="text-center mb-8">
+              <p className="text-4xl font-semibold text-gray-900">
                 {flashcard.furigana}
               </p>
             </div>
 
             {/* Korean Translation */}
-            <div className="text-center mb-6">
-              <p className="text-2xl font-semibold text-gray-900">
+            <div className="text-center mb-8">
+              <p className="text-3xl font-semibold text-gray-900">
                 {flashcard.korean}
               </p>
             </div>
 
             {/* Korean Sentence Translation */}
             <div className="text-center">
-              <p className="text-xl text-gray-700 leading-relaxed">
+              <p className="text-2xl text-gray-700 leading-relaxed">
                 {flashcard.sentenceKorean}
               </p>
             </div>
