@@ -1,5 +1,5 @@
 import { flashcards, userProgress, type Flashcard, type InsertFlashcard, type UserProgress, type InsertUserProgress, users, type User, type InsertUser } from "@shared/schema";
-import { findDatabaseByTitle, getFlashcardsFromNotion, getProgressFromNotion, recordProgressInNotion } from "./notion";
+import { getFlashcardsFromNotion, updateProgressInNotion, notion } from "./notion";
 
 export interface IStorage {
   // User methods
@@ -122,4 +122,109 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Notion-based storage implementation
+export class NotionStorage implements IStorage {
+  private flashcardsDatabaseId: string = process.env.NOTION_PAGE_URL?.match(/([a-f0-9]{32})(?:[?#]|$)/i)?.[1] || "";
+
+  private async initializeDatabases() {
+    // Database ID is already set from the URL
+  }
+
+  // User methods - using default user for now
+  async getUser(id: number): Promise<User | undefined> {
+    return { id: 1, username: "user", password: "default" };
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    return { id: 1, username: "user", password: "default" };
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    return { id: 1, username: insertUser.username, password: "default" };
+  }
+
+  // Flashcard methods
+  async getAllFlashcards(): Promise<Flashcard[]> {
+    await this.initializeDatabases();
+    
+    if (!this.flashcardsDatabaseId) {
+      throw new Error("J-Flash Flashcards database not found. Please run setup first.");
+    }
+
+    return await getFlashcardsFromNotion(this.flashcardsDatabaseId);
+  }
+
+  async getFlashcard(id: number): Promise<Flashcard | undefined> {
+    const flashcards = await this.getAllFlashcards();
+    return flashcards.find(f => f.id === id);
+  }
+
+  async createFlashcard(insertFlashcard: InsertFlashcard): Promise<Flashcard> {
+    // This would require creating a new page in Notion
+    throw new Error("Creating flashcards through the app is not implemented yet. Please add them directly to Notion.");
+  }
+
+  // Progress methods
+  async getUserProgress(): Promise<UserProgress[]> {
+    await this.initializeDatabases();
+    
+    if (!this.progressDatabaseId) {
+      return []; // Return empty if progress database doesn't exist yet
+    }
+
+    return await getProgressFromNotion(this.progressDatabaseId);
+  }
+
+  async recordProgress(insertProgress: InsertUserProgress): Promise<UserProgress> {
+    await this.initializeDatabases();
+    
+    if (!this.progressDatabaseId) {
+      throw new Error("J-Flash Progress database not found. Please run setup first.");
+    }
+
+    await recordProgressInNotion(this.progressDatabaseId, insertProgress.flashcardId, insertProgress.isKnown);
+    
+    // Return the progress record
+    const progress: UserProgress = {
+      id: Date.now(), // Simple ID generation
+      ...insertProgress,
+      timestamp: new Date()
+    };
+    
+    return progress;
+  }
+
+  async getProgressStats(): Promise<{ known: number; unknown: number }> {
+    const progress = await this.getUserProgress();
+    
+    // Get the latest progress for each flashcard
+    const latestProgress = new Map<number, boolean>();
+    
+    // Sort by timestamp descending to get latest first
+    progress.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+    
+    for (const p of progress) {
+      if (!latestProgress.has(p.flashcardId)) {
+        latestProgress.set(p.flashcardId, p.isKnown);
+      }
+    }
+    
+    let known = 0;
+    let unknown = 0;
+    
+    for (const isKnown of latestProgress.values()) {
+      if (isKnown) {
+        known++;
+      } else {
+        unknown++;
+      }
+    }
+    
+    return { known, unknown };
+  }
+}
+
+// Use Notion storage if secrets are available, otherwise fallback to memory storage
+export const storage = process.env.NOTION_INTEGRATION_SECRET && process.env.NOTION_PAGE_URL 
+  ? new NotionStorage() 
+  : new MemStorage();

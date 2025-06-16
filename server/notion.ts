@@ -111,7 +111,7 @@ export async function createDatabaseIfNotExists(title: string, properties: any) 
     });
 }
 
-// Get all flashcards from the Notion database
+// Get all flashcards from the existing Notion database
 export async function getFlashcardsFromNotion(flashcardsDatabaseId: string) {
     try {
         const response = await notion.databases.query({
@@ -123,12 +123,12 @@ export async function getFlashcardsFromNotion(flashcardsDatabaseId: string) {
 
             return {
                 id: parseInt(page.id.replace(/-/g, '').slice(-8), 16), // Convert to number for compatibility
-                notionId: page.id,
-                japanese: properties.Japanese?.title?.[0]?.plain_text || "",
-                furigana: properties.Furigana?.rich_text?.[0]?.plain_text || "",
-                korean: properties.Korean?.rich_text?.[0]?.plain_text || "",
-                exampleJapanese: properties.ExampleJapanese?.rich_text?.[0]?.plain_text || "",
-                exampleKorean: properties.ExampleKorean?.rich_text?.[0]?.plain_text || "",
+                japanese: properties['단어']?.title?.[0]?.plain_text || "",
+                furigana: properties['독음']?.rich_text?.[0]?.plain_text || "",
+                korean: properties['뜻']?.rich_text?.[0]?.plain_text || "",
+                sentence: properties['예문']?.rich_text?.[0]?.plain_text || "",
+                sentenceKorean: properties['예문 해석']?.rich_text?.[0]?.plain_text || "",
+                imageUrl: "", // Will be empty for now
             };
         });
     } catch (error) {
@@ -137,55 +137,19 @@ export async function getFlashcardsFromNotion(flashcardsDatabaseId: string) {
     }
 }
 
-// Get user progress from the Notion database
-export async function getProgressFromNotion(progressDatabaseId: string) {
+// Update progress in existing Notion database using the "암기" checkbox field
+export async function updateProgressInNotion(databaseId: string, pageId: string, isKnown: boolean) {
     try {
-        const response = await notion.databases.query({
-            database_id: progressDatabaseId,
-        });
-
-        return response.results.map((page: any) => {
-            const properties = page.properties;
-
-            return {
-                id: parseInt(page.id.replace(/-/g, '').slice(-8), 16),
-                notionId: page.id,
-                flashcardId: properties.FlashcardId?.number || 0,
-                isKnown: properties.IsKnown?.checkbox || false,
-                timestamp: properties.Timestamp?.date?.start 
-                    ? new Date(properties.Timestamp.date.start)
-                    : new Date(),
-            };
-        });
-    } catch (error) {
-        console.error("Error fetching progress from Notion:", error);
-        throw new Error("Failed to fetch progress from Notion");
-    }
-}
-
-// Record progress in Notion
-export async function recordProgressInNotion(progressDatabaseId: string, flashcardId: number, isKnown: boolean) {
-    try {
-        await notion.pages.create({
-            parent: {
-                database_id: progressDatabaseId
-            },
+        await notion.pages.update({
+            page_id: pageId,
             properties: {
-                FlashcardId: {
-                    number: flashcardId
-                },
-                IsKnown: {
+                '암기': {
                     checkbox: isKnown
-                },
-                Timestamp: {
-                    date: {
-                        start: new Date().toISOString()
-                    }
                 }
             }
         });
     } catch (error) {
-        console.error("Error recording progress in Notion:", error);
-        throw new Error("Failed to record progress in Notion");
+        console.error("Error updating progress in Notion:", error);
+        throw new Error("Failed to update progress in Notion");
     }
 }
