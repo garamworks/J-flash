@@ -164,56 +164,63 @@ export class NotionStorage implements IStorage {
     throw new Error("Creating flashcards through the app is not implemented yet. Please add them directly to Notion.");
   }
 
-  // Progress methods
+  // Progress methods - using the existing "암기" field in Notion
   async getUserProgress(): Promise<UserProgress[]> {
     await this.initializeDatabases();
     
-    if (!this.progressDatabaseId) {
-      return []; // Return empty if progress database doesn't exist yet
-    }
+    const progressData: UserProgress[] = [];
+    
+    // Get progress from Notion database directly
+    const response = await notion.databases.query({
+      database_id: this.flashcardsDatabaseId,
+    });
 
-    return await getProgressFromNotion(this.progressDatabaseId);
+    response.results.forEach((page: any, index: number) => {
+      const properties = page.properties;
+      const isKnown = properties['암기']?.checkbox || false;
+      
+      progressData.push({
+        id: index + 1,
+        flashcardId: parseInt(page.id.replace(/-/g, '').slice(-8), 16),
+        known: isKnown
+      });
+    });
+
+    return progressData;
   }
 
   async recordProgress(insertProgress: InsertUserProgress): Promise<UserProgress> {
     await this.initializeDatabases();
     
-    if (!this.progressDatabaseId) {
-      throw new Error("J-Flash Progress database not found. Please run setup first.");
-    }
+    // Find the Notion page for this flashcard
+    const response = await notion.databases.query({
+      database_id: this.flashcardsDatabaseId,
+    });
 
-    await recordProgressInNotion(this.progressDatabaseId, insertProgress.flashcardId, insertProgress.isKnown);
+    const targetPage = response.results.find((page: any) => {
+      const pageId = parseInt(page.id.replace(/-/g, '').slice(-8), 16);
+      return pageId === insertProgress.flashcardId;
+    });
+
+    if (targetPage) {
+      await updateProgressInNotion(this.flashcardsDatabaseId, targetPage.id, insertProgress.known);
+    }
     
-    // Return the progress record
-    const progress: UserProgress = {
-      id: Date.now(), // Simple ID generation
-      ...insertProgress,
-      timestamp: new Date()
+    return {
+      id: Date.now(),
+      flashcardId: insertProgress.flashcardId,
+      known: insertProgress.known
     };
-    
-    return progress;
   }
 
   async getProgressStats(): Promise<{ known: number; unknown: number }> {
     const progress = await this.getUserProgress();
     
-    // Get the latest progress for each flashcard
-    const latestProgress = new Map<number, boolean>();
-    
-    // Sort by timestamp descending to get latest first
-    progress.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
-    
-    for (const p of progress) {
-      if (!latestProgress.has(p.flashcardId)) {
-        latestProgress.set(p.flashcardId, p.isKnown);
-      }
-    }
-    
     let known = 0;
     let unknown = 0;
     
-    for (const isKnown of latestProgress.values()) {
-      if (isKnown) {
+    for (const p of progress) {
+      if (p.known) {
         known++;
       } else {
         unknown++;
