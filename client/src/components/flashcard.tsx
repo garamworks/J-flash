@@ -66,6 +66,13 @@ export default function FlashcardComponent({ flashcard }: FlashcardProps) {
         {/* Card Back */}
         <div className="flashcard-face flashcard-back">
           <div className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer h-full flex flex-col justify-center">
+            {/* Japanese Word (Kanji) */}
+            <div className="text-center mb-6">
+              <p className="text-4xl font-bold text-gray-900">
+                {flashcard.japanese}
+              </p>
+            </div>
+
             {/* Furigana Reading */}
             <div className="text-center mb-6">
               <p className="text-4xl font-semibold text-gray-900">

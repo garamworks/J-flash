@@ -100,13 +100,6 @@ export default function FlashcardPage() {
           onMarkAsUnknown={handleMarkAsUnknown}
         />
 
-        {/* Counter */}
-        <div className="text-center mb-6">
-          <span className="text-lg font-semibold text-gray-600">
-            {currentIndex + 1} / {totalCards}
-          </span>
-        </div>
-
         {/* Action Buttons */}
         <div className="flex gap-3 mb-8">
           <button
@@ -122,12 +115,6 @@ export default function FlashcardPage() {
             모름
           </button>
         </div>
-
-        <ProgressStats 
-          knownCount={knownCount}
-          unknownCount={unknownCount}
-          progressPercentage={progressPercentage}
-        />
       </main>
     </div>
   );
