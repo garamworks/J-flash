@@ -1,24 +1,51 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { type Flashcard } from "@shared/schema";
 import FlashcardComponent from "@/components/flashcard";
 import ProgressStats from "@/components/progress-stats";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function FlashcardPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [knownCount, setKnownCount] = useState(0);
   const [unknownCount, setUnknownCount] = useState(0);
+  const queryClient = useQueryClient();
 
   const { data: flashcards, isLoading, error } = useQuery<Flashcard[]>({
     queryKey: ["/api/flashcards"],
   });
 
+  const recordProgressMutation = useMutation({
+    mutationFn: async ({ flashcardId, known }: { flashcardId: number; known: boolean }) => {
+      return apiRequest(`/api/progress`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ flashcardId, known })
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/progress"] });
+    }
+  });
+
   const handleMarkAsKnown = () => {
+    if (flashcards && flashcards[currentIndex]) {
+      recordProgressMutation.mutate({
+        flashcardId: flashcards[currentIndex].id,
+        known: true
+      });
+    }
     setKnownCount(prev => prev + 1);
     nextCard();
   };
 
   const handleMarkAsUnknown = () => {
+    if (flashcards && flashcards[currentIndex]) {
+      recordProgressMutation.mutate({
+        flashcardId: flashcards[currentIndex].id,
+        known: false
+      });
+    }
     setUnknownCount(prev => prev + 1);
     nextCard();
   };
