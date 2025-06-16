@@ -147,7 +147,7 @@ export default function FlashcardPage() {
         <div className="max-w-md mx-auto px-6 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-900 pl-2">J-Flash</h1>
           <div className="text-lg font-semibold text-black pr-2">
-            {totalCards - knownCount}/{knownCount}
+            {totalCards - knownCount}
           </div>
         </div>
       </header>
