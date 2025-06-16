@@ -104,16 +104,16 @@ export default function FlashcardPage() {
         />
 
         {/* Action Buttons */}
-        <div className="flex gap-6 mb-8 justify-center">
+        <div className="flex gap-6 mb-8">
           <button
             onClick={handleMarkAsKnown}
-            className="action-btn w-32 bg-green-500 hover:bg-green-600 text-white font-semibold py-4 px-6 rounded-3xl text-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
+            className="action-btn flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-4 px-6 rounded-3xl text-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
           >
             외움
           </button>
           <button
             onClick={handleMarkAsUnknown}
-            className="action-btn w-32 bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-6 rounded-3xl text-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
+            className="action-btn flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-6 rounded-3xl text-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
           >
             모름
           </button>
