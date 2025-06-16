@@ -112,14 +112,14 @@ export async function createDatabaseIfNotExists(title: string, properties: any) 
 }
 
 // Get all flashcards from the existing Notion database
-export async function getFlashcardsFromNotion(flashcardsDatabaseId: string) {
+export async function getFlashcardsFromNotion(flashcardsDatabaseId: string, sortDirection: "ascending" | "descending" = "ascending") {
     try {
         const response = await notion.databases.query({
             database_id: flashcardsDatabaseId,
             sorts: [
                 {
                     property: "Random",
-                    direction: "ascending"
+                    direction: sortDirection
                 }
             ]
         });

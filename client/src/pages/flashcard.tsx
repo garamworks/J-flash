@@ -9,10 +9,12 @@ export default function FlashcardPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [knownCount, setKnownCount] = useState(0);
   const [unknownCount, setUnknownCount] = useState(0);
+  const [sortDirection, setSortDirection] = useState<"ascending" | "descending">("ascending");
   const queryClient = useQueryClient();
 
   const { data: allFlashcards, isLoading, error } = useQuery<Flashcard[]>({
-    queryKey: ["/api/flashcards"],
+    queryKey: ["/api/flashcards", sortDirection],
+    queryFn: () => fetch(`/api/flashcards?sort=${sortDirection}`).then(res => res.json()),
   });
 
   const { data: progressData } = useQuery<Array<{id: number, flashcardId: number, known: boolean}>>({

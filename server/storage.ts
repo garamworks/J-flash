@@ -8,7 +8,7 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   
   // Flashcard methods
-  getAllFlashcards(): Promise<Flashcard[]>;
+  getAllFlashcards(sortDirection?: "ascending" | "descending"): Promise<Flashcard[]>;
   getFlashcard(id: number): Promise<Flashcard | undefined>;
   createFlashcard(flashcard: InsertFlashcard): Promise<Flashcard>;
   
@@ -88,7 +88,7 @@ export class MemStorage implements IStorage {
     return user;
   }
 
-  async getAllFlashcards(): Promise<Flashcard[]> {
+  async getAllFlashcards(sortDirection?: "ascending" | "descending"): Promise<Flashcard[]> {
     return Array.from(this.flashcards.values());
   }
 
@@ -148,14 +148,14 @@ export class NotionStorage implements IStorage {
   }
 
   // Flashcard methods
-  async getAllFlashcards(): Promise<Flashcard[]> {
+  async getAllFlashcards(sortDirection: "ascending" | "descending" = "ascending"): Promise<Flashcard[]> {
     await this.initializeDatabases();
     
     if (!this.flashcardsDatabaseId) {
       throw new Error("J-Flash Flashcards database not found. Please run setup first.");
     }
 
-    return await getFlashcardsFromNotion(this.flashcardsDatabaseId);
+    return await getFlashcardsFromNotion(this.flashcardsDatabaseId, sortDirection);
   }
 
   async getFlashcard(id: number): Promise<Flashcard | undefined> {
