@@ -47,7 +47,7 @@ export default function FlashcardPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/progress"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/flashcards"] });
+      // Don't invalidate flashcards to prevent automatic card switching
     },
     onError: (error) => {
       console.error('Mutation error:', error);
