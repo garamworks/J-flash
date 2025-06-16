@@ -116,6 +116,12 @@ export async function getFlashcardsFromNotion(flashcardsDatabaseId: string) {
     try {
         const response = await notion.databases.query({
             database_id: flashcardsDatabaseId,
+            sorts: [
+                {
+                    property: "Random",
+                    direction: "ascending"
+                }
+            ]
         });
 
         return response.results.map((page: any) => {
