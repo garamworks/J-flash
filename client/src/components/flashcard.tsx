@@ -117,10 +117,10 @@ export default function FlashcardComponent({ flashcard }: FlashcardProps) {
           <div className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer h-full flex flex-col justify-center relative">
             {/* Speaker Icon */}
             <button
-              className="speaker-btn absolute top-3 right-3 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
+              className="speaker-btn absolute top-6 right-6 bg-sky-600 hover:bg-sky-700 rounded-full p-3 shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
               onClick={handleSpeakerClick}
             >
-              <Volume2 className="text-primary text-xl" size={24} />
+              <Volume2 className="text-white" size={24} />
             </button>
 
             {/* Japanese Word (Kanji) */}
