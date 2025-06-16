@@ -87,6 +87,13 @@ export default function FlashcardComponent({ flashcard }: FlashcardProps) {
               </p>
             </div>
 
+            {/* Japanese Example Sentence */}
+            <div className="text-center mb-4">
+              <p className="text-2xl text-gray-700 leading-relaxed">
+                {flashcard.sentence}
+              </p>
+            </div>
+
             {/* Korean Sentence Translation */}
             <div className="text-center">
               <p className="text-2xl text-gray-700 leading-relaxed">
