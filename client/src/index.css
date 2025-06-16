@@ -61,6 +61,8 @@
 /* Flashcard flip animations */
 .flashcard-container {
   perspective: 1000px;
+  position: relative;
+  z-index: 1;
 }
 
 .flashcard-inner {
@@ -75,15 +77,20 @@
 }
 
 .flashcard-face {
-  position: absolute;
   width: 100%;
   backface-visibility: hidden;
-  top: 0;
-  left: 0;
+}
+
+.flashcard-front {
+  position: relative;
 }
 
 .flashcard-back {
+  position: absolute;
+  top: 0;
+  left: 0;
   transform: rotateY(180deg);
+  height: 100%;
 }
 
 /* Custom button hover effects */
