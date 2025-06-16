@@ -3,6 +3,34 @@ import { Volume2 } from "lucide-react";
 import { type Flashcard } from "@shared/schema";
 import { useSpeech } from "@/hooks/use-speech";
 
+// Function to add furigana to Japanese text
+const addFurigana = (sentence: string, japanese: string, furigana: string) => {
+  // Simple mapping for common kanji - this would need to be expanded for a full app
+  const kanjiMap: { [key: string]: string } = {
+    '茶道': 'さどう',
+    '母': 'はは', 
+    '茶': 'ちゃ',
+    '道': 'どう',
+    '習': 'なら',
+    '桜': 'さくら',
+    '春': 'はる',
+    '咲': 'さ',
+    '寿司': 'すし',
+    '今日': 'きょう',
+    '食': 'た'
+  };
+
+  // Replace kanji with ruby tags
+  let result = sentence;
+  Object.entries(kanjiMap).forEach(([kanji, reading]) => {
+    if (result.includes(kanji)) {
+      result = result.replace(new RegExp(kanji, 'g'), `<ruby>${kanji}<rt>${reading}</rt></ruby>`);
+    }
+  });
+  
+  return result;
+};
+
 interface FlashcardProps {
   flashcard: Flashcard;
   onMarkAsKnown: () => void;
@@ -89,9 +117,13 @@ export default function FlashcardComponent({ flashcard }: FlashcardProps) {
 
             {/* Japanese Example Sentence */}
             <div className="text-center mb-4">
-              <p className="text-2xl text-gray-700 leading-relaxed">
-                {flashcard.sentence}
-              </p>
+              <p 
+                className="text-2xl text-gray-700 leading-relaxed" 
+                style={{ fontSize: '1.2em' }}
+                dangerouslySetInnerHTML={{ 
+                  __html: addFurigana(flashcard.sentence, flashcard.japanese, flashcard.furigana) 
+                }}
+              />
             </div>
 
             {/* Korean Sentence Translation */}
