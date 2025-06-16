@@ -169,7 +169,9 @@ export async function getFlashcardsFromNotion(flashcardsDatabaseId: string) {
 // Update progress in existing Notion database using the "암기" checkbox field
 export async function updateProgressInNotion(databaseId: string, pageId: string, isKnown: boolean) {
     try {
-        await notion.pages.update({
+        console.log('Attempting to update Notion page:', pageId, 'with checkbox value:', isKnown);
+        
+        const updateResult = await notion.pages.update({
             page_id: pageId,
             properties: {
                 '암기': {
@@ -177,8 +179,12 @@ export async function updateProgressInNotion(databaseId: string, pageId: string,
                 }
             }
         });
+        
+        console.log('Notion update successful:', updateResult.id);
     } catch (error) {
         console.error("Error updating progress in Notion:", error);
+        console.error("Page ID:", pageId);
+        console.error("Checkbox value:", isKnown);
         throw new Error("Failed to update progress in Notion");
     }
 }

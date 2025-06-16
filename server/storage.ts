@@ -196,6 +196,8 @@ export class NotionStorage implements IStorage {
   async recordProgress(insertProgress: InsertUserProgress): Promise<UserProgress> {
     await this.initializeDatabases();
     
+    console.log('Recording progress for flashcard:', insertProgress.flashcardId, 'Known:', insertProgress.known);
+    
     // Find the Notion page for this flashcard
     const response = await notion.databases.query({
       database_id: this.flashcardsDatabaseId,
@@ -203,11 +205,16 @@ export class NotionStorage implements IStorage {
 
     const targetPage = response.results.find((page: any) => {
       const pageId = parseInt(page.id.replace(/-/g, '').slice(-8), 16);
+      console.log('Checking page ID:', pageId, 'against flashcard ID:', insertProgress.flashcardId);
       return pageId === insertProgress.flashcardId;
     });
 
     if (targetPage) {
+      console.log('Found target page, updating Notion...');
       await updateProgressInNotion(this.flashcardsDatabaseId, targetPage.id, insertProgress.known);
+      console.log('Notion update completed');
+    } else {
+      console.error('Target page not found for flashcard ID:', insertProgress.flashcardId);
     }
     
     return {
