@@ -137,9 +137,9 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
                   </div>
                 )}
                 
-                {/* Speaker Icon */}
+                {/* Speaker Icon - moved to bottom right */}
                 <button
-                  className="speaker-btn absolute top-3 right-3 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
+                  className="speaker-btn absolute bottom-3 right-3 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
                   onClick={handleSpeakerClick}
                 >
                   <Volume2 className="text-primary text-xl" size={24} />
@@ -165,9 +165,9 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
           {/* Card Back */}
           <div className="flashcard-face flashcard-back">
             <div className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer h-full flex flex-col justify-center relative">
-              {/* Speaker Icon */}
+              {/* Speaker Icon - moved to bottom right */}
               <button
-                className="speaker-btn absolute top-6 right-6 bg-sky-400 hover:bg-sky-500 rounded-full p-3 shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
+                className="speaker-btn absolute bottom-6 right-6 bg-sky-400 hover:bg-sky-500 rounded-full p-3 shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
                 onClick={handleSpeakerClick}
               >
                 <Volume2 className="text-white" size={24} />
@@ -215,18 +215,18 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
       {/* Action Buttons */}
       <div className="flex gap-6 mb-8">
         <button
-          onClick={() => handleButtonAction(onMarkAsUnknown)}
-          className="action-btn flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-6 rounded-3xl text-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
-          disabled={isTransitioning}
-        >
-          모름
-        </button>
-        <button
           onClick={() => handleButtonAction(onMarkAsKnown)}
           className="action-btn flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-4 px-6 rounded-3xl text-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
           disabled={isTransitioning}
         >
           외움
+        </button>
+        <button
+          onClick={() => handleButtonAction(onMarkAsUnknown)}
+          className="action-btn flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-6 rounded-3xl text-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
+          disabled={isTransitioning}
+        >
+          모름
         </button>
       </div>
     </div>
