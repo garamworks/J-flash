@@ -78,6 +78,8 @@
   position: absolute;
   width: 100%;
   backface-visibility: hidden;
+  top: 0;
+  left: 0;
 }
 
 .flashcard-back {

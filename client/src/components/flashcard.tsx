@@ -65,16 +65,19 @@ export default function FlashcardComponent({ flashcard }: FlashcardProps) {
 
         {/* Card Back */}
         <div className="flashcard-face flashcard-back">
-          <div className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer min-h-full flex flex-col justify-center">
+          <div className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer">
+            {/* Empty space to match image area */}
+            <div className="w-full aspect-square mb-6"></div>
+
             {/* Furigana Reading */}
-            <div className="text-center mb-8">
+            <div className="text-center mb-4">
               <p className="text-4xl font-semibold text-gray-900">
                 {flashcard.furigana}
               </p>
             </div>
 
             {/* Korean Translation */}
-            <div className="text-center mb-8">
+            <div className="text-center mb-4">
               <p className="text-3xl font-semibold text-gray-900">
                 {flashcard.korean}
               </p>
