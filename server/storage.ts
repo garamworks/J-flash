@@ -1,4 +1,5 @@
 import { flashcards, userProgress, type Flashcard, type InsertFlashcard, type UserProgress, type InsertUserProgress, users, type User, type InsertUser } from "@shared/schema";
+import { findDatabaseByTitle, getFlashcardsFromNotion, getProgressFromNotion, recordProgressInNotion } from "./notion";
 
 export interface IStorage {
   // User methods
