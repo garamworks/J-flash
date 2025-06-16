@@ -114,7 +114,15 @@ export default function FlashcardComponent({ flashcard }: FlashcardProps) {
 
         {/* Card Back */}
         <div className="flashcard-face flashcard-back">
-          <div className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer h-full flex flex-col justify-center">
+          <div className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer h-full flex flex-col justify-center relative">
+            {/* Speaker Icon */}
+            <button
+              className="speaker-btn absolute top-3 right-3 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
+              onClick={handleSpeakerClick}
+            >
+              <Volume2 className="text-primary text-xl" size={24} />
+            </button>
+
             {/* Japanese Word (Kanji) */}
             <div className="text-center mb-6">
               <p className="text-4xl font-bold text-gray-900">
