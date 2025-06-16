@@ -1,53 +1,66 @@
 import { useState } from "react";
 import { Volume2 } from "lucide-react";
-import { type Flashcard } from "@shared/schema";
+import { Flashcard } from "@shared/schema";
 import { useSpeech } from "@/hooks/use-speech";
 
 // Function to add furigana to Japanese text
-const addFurigana = (sentence: string, japanese: string, furigana: string) => {
-  // Single consistent reading for each kanji character
-  const kanjiReadings: { [key: string]: string } = {
-    '母': 'はは',
-    '茶': 'ちゃ', 
-    '道': 'どう',
-    '習': 'なら',
-    '桜': 'さくら',
-    '春': 'はる',
-    '咲': 'さ',
-    '寿': 'す',
-    '司': 'し',
-    '今': 'きょう', // Special case for 今日
-    '日': '', // Handled with 今日
-    '食': 'た'
-  };
-
-  // Override with readings from the main word if applicable
-  if (japanese && furigana) {
-    // For compound words, map individual characters to their readings
-    if (japanese === '茶道' && furigana === 'さどう') {
-      kanjiReadings['茶'] = 'さ';
-      kanjiReadings['道'] = 'どう';
-    } else if (japanese === '寿司' && furigana === 'すし') {
-      kanjiReadings['寿'] = 'す';
-      kanjiReadings['司'] = 'し';
-    }
-    // Add more compound word mappings as needed
-  }
-
-  // Replace individual kanji with ruby tags
-  let result = sentence;
+const addFurigana = (sentence: string, kanji: string, furigana: string): string => {
+  if (!furigana || !kanji) return sentence;
   
-  // Handle special cases first (like 今日)
-  if (result.includes('今日')) {
-    result = result.replace(/今日/g, '<ruby>今日<rt>きょう</rt></ruby>');
-  }
+  // Simple replacement - in a real app, you'd want more sophisticated parsing
+  const furiganaHtml = `<ruby>${kanji}<rt>${furigana}</rt></ruby>`;
+  return sentence.replace(kanji, furiganaHtml);
+};
 
-  // Then handle individual kanji
-  Object.entries(kanjiReadings).forEach(([kanji, reading]) => {
-    if (reading && result.includes(kanji) && !result.includes(`<ruby>${kanji}`)) {
-      result = result.replace(new RegExp(kanji, 'g'), `<ruby>${kanji}<rt>${reading}</rt></ruby>`);
-    }
+// Function to render furigana for display
+const renderFurigana = (furigana: string) => {
+  if (!furigana) return null;
+  
+  // Split furigana by common separators and create spans
+  const parts = furigana.split(/[・、。]/);
+  
+  return (
+    <div className="flex flex-wrap justify-center gap-2">
+      {parts.map((part, index) => (
+        <span key={index} className="text-sm bg-gray-100 px-2 py-1 rounded">
+          {part.trim()}
+        </span>
+      ))}
+    </div>
+  );
+};
+
+// More sophisticated furigana rendering function
+const advancedRenderFurigana = (furigana: string) => {
+  if (!furigana) return null;
+  
+  // Handle different furigana formats
+  const patterns = [
+    /([^（）]+)（([^）]+)）/g, // kanji(reading) format
+    /([^【】]+)【([^】]+)】/g, // kanji【reading】 format
+  ];
+  
+  let result = furigana;
+  
+  patterns.forEach(pattern => {
+    result = result.replace(pattern, (match, kanji, reading) => {
+      return `<ruby>${kanji}<rt>${reading}</rt></ruby>`;
+    });
   });
+  
+  // If no patterns matched, return as is
+  if (result === furigana) {
+    return <span className="text-gray-600">{furigana}</span>;
+  }
+  
+  return <span dangerouslySetInnerHTML={{ __html: result }} />;
+};
+
+// Main function to process and render furigana
+const processRuby = (text: string) => {
+  if (!text) return text;
+  
+  const result = advancedRenderFurigana(text);
   
   return result;
 };
@@ -58,8 +71,9 @@ interface FlashcardProps {
   onMarkAsUnknown: () => void;
 }
 
-export default function FlashcardComponent({ flashcard }: FlashcardProps) {
+export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsUnknown }: FlashcardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const { speak } = useSpeech();
 
   const handleCardClick = (e: React.MouseEvent) => {
@@ -85,102 +99,139 @@ export default function FlashcardComponent({ flashcard }: FlashcardProps) {
     }
   };
 
+  const handleButtonAction = (action: () => void) => {
+    if (isFlipped) {
+      // If card is flipped, first flip back to front with animation
+      setIsTransitioning(true);
+      setIsFlipped(false);
+      
+      // After animation completes, execute the action
+      setTimeout(() => {
+        setIsTransitioning(false);
+        action();
+      }, 300); // Match CSS transition duration
+    } else {
+      // If card is already on front, execute action immediately
+      action();
+    }
+  };
+
   return (
-    <div className="flashcard-container mb-6" onClick={handleCardClick}>
-      <div className={`flashcard-inner ${isFlipped ? 'flipped' : ''}`}>
-        {/* Card Front */}
-        <div className="flashcard-face flashcard-front">
-          <div className="bg-white rounded-2xl shadow-lg p-6 relative cursor-pointer">
-            {/* Square Image with Speaker Icon */}
-            <div className="relative mb-6">
-              {flashcard.imageUrl ? (
-                <img
-                  src={flashcard.imageUrl}
-                  alt={flashcard.japanese}
-                  className="w-full aspect-square object-cover rounded-xl"
-                />
-              ) : (
-                <div className="w-full aspect-square bg-gray-100 rounded-xl flex items-center justify-center">
-                  <span className="text-gray-400 text-lg">이미지 없음</span>
-                </div>
-              )}
-              
+    <div className="space-y-6">
+      <div className="flashcard-container mb-6" onClick={handleCardClick}>
+        <div className={`flashcard-inner ${isFlipped ? 'flipped' : ''} ${isTransitioning ? 'transitioning' : ''}`}>
+          {/* Card Front */}
+          <div className="flashcard-face flashcard-front">
+            <div className="bg-white rounded-2xl shadow-lg p-6 relative cursor-pointer">
+              {/* Square Image with Speaker Icon */}
+              <div className="relative mb-6">
+                {flashcard.imageUrl ? (
+                  <img
+                    src={flashcard.imageUrl}
+                    alt={flashcard.japanese}
+                    className="w-full aspect-square object-cover rounded-xl"
+                  />
+                ) : (
+                  <div className="w-full aspect-square bg-gray-100 rounded-xl flex items-center justify-center">
+                    <span className="text-gray-400 text-lg">이미지 없음</span>
+                  </div>
+                )}
+                
+                {/* Speaker Icon */}
+                <button
+                  className="speaker-btn absolute top-3 right-3 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
+                  onClick={handleSpeakerClick}
+                >
+                  <Volume2 className="text-primary text-xl" size={24} />
+                </button>
+              </div>
+
+              {/* Japanese Vocabulary */}
+              <div className="text-center mb-4">
+                <p className="text-4xl font-bold text-gray-900 leading-tight">
+                  {flashcard.japanese}
+                </p>
+              </div>
+
+              {/* Sample Sentence */}
+              <div className="text-center">
+                <p className="text-2xl text-gray-700 leading-relaxed">
+                  {flashcard.sentence}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Card Back */}
+          <div className="flashcard-face flashcard-back">
+            <div className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer h-full flex flex-col justify-center relative">
               {/* Speaker Icon */}
               <button
-                className="speaker-btn absolute top-3 right-3 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
+                className="speaker-btn absolute top-6 right-6 bg-sky-400 hover:bg-sky-500 rounded-full p-3 shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
                 onClick={handleSpeakerClick}
               >
-                <Volume2 className="text-primary text-xl" size={24} />
+                <Volume2 className="text-white" size={24} />
               </button>
-            </div>
 
-            {/* Japanese Vocabulary */}
-            <div className="text-center mb-4">
-              <p className="text-4xl font-bold text-gray-900 leading-tight">
-                {flashcard.japanese}
-              </p>
-            </div>
+              {/* Japanese Word (Kanji) */}
+              <div className="text-center mb-6">
+                <p className="text-4xl font-bold text-gray-900">
+                  {flashcard.japanese}
+                </p>
+              </div>
 
-            {/* Sample Sentence */}
-            <div className="text-center">
-              <p className="text-2xl text-gray-700 leading-relaxed">
-                {flashcard.sentence}
-              </p>
-            </div>
-          </div>
-        </div>
+              {/* Furigana Reading */}
+              <div className="text-center mb-6">
+                <p className="text-4xl font-semibold text-gray-900">
+                  {flashcard.furigana}
+                </p>
+              </div>
 
-        {/* Card Back */}
-        <div className="flashcard-face flashcard-back">
-          <div className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer h-full flex flex-col justify-center relative">
-            {/* Speaker Icon */}
-            <button
-              className="speaker-btn absolute top-6 right-6 bg-sky-400 hover:bg-sky-500 rounded-full p-3 shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
-              onClick={handleSpeakerClick}
-            >
-              <Volume2 className="text-white" size={24} />
-            </button>
+              {/* Korean Translation */}
+              <div className="text-center mb-6">
+                <p className="text-3xl font-semibold text-gray-900">
+                  {flashcard.korean}
+                </p>
+              </div>
 
-            {/* Japanese Word (Kanji) */}
-            <div className="text-center mb-6">
-              <p className="text-4xl font-bold text-gray-900">
-                {flashcard.japanese}
-              </p>
-            </div>
+              {/* Japanese Example Sentence */}
+              <div className="text-center mb-4">
+                <p 
+                  className="text-2xl text-gray-700 leading-relaxed" 
+                  style={{ fontSize: '1.5em' }}
+                  dangerouslySetInnerHTML={{ 
+                    __html: addFurigana(flashcard.sentence, flashcard.japanese, flashcard.furigana) 
+                  }}
+                />
+              </div>
 
-            {/* Furigana Reading */}
-            <div className="text-center mb-6">
-              <p className="text-4xl font-semibold text-gray-900">
-                {flashcard.furigana}
-              </p>
-            </div>
-
-            {/* Korean Translation */}
-            <div className="text-center mb-6">
-              <p className="text-3xl font-semibold text-gray-900">
-                {flashcard.korean}
-              </p>
-            </div>
-
-            {/* Japanese Example Sentence */}
-            <div className="text-center mb-4">
-              <p 
-                className="text-2xl text-gray-700 leading-relaxed" 
-                style={{ fontSize: '1.5em' }}
-                dangerouslySetInnerHTML={{ 
-                  __html: addFurigana(flashcard.sentence, flashcard.japanese, flashcard.furigana) 
-                }}
-              />
-            </div>
-
-            {/* Korean Sentence Translation */}
-            <div className="text-center">
-              <p className="text-2xl text-gray-700 leading-relaxed">
-                {flashcard.sentenceKorean}
-              </p>
+              {/* Korean Sentence Translation */}
+              <div className="text-center">
+                <p className="text-2xl text-gray-700 leading-relaxed">
+                  {flashcard.sentenceKorean}
+                </p>
+              </div>
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex gap-6 mb-8">
+        <button
+          onClick={() => handleButtonAction(onMarkAsKnown)}
+          className="action-btn flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-4 px-6 rounded-3xl text-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
+          disabled={isTransitioning}
+        >
+          외움
+        </button>
+        <button
+          onClick={() => handleButtonAction(onMarkAsUnknown)}
+          className="action-btn flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-6 rounded-3xl text-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
+          disabled={isTransitioning}
+        >
+          모름
+        </button>
       </div>
     </div>
   );
