@@ -114,17 +114,32 @@ export async function createDatabaseIfNotExists(title: string, properties: any) 
 // Get all flashcards from the existing Notion database
 export async function getFlashcardsFromNotion(flashcardsDatabaseId: string, sortDirection: "ascending" | "descending" = "ascending") {
     try {
-        const response = await notion.databases.query({
-            database_id: flashcardsDatabaseId,
-            sorts: [
-                {
-                    property: "Random",
-                    direction: sortDirection
-                }
-            ]
-        });
+        const allResults: any[] = [];
+        let hasMore = true;
+        let startCursor: string | undefined = undefined;
 
-        return response.results.map((page: any) => {
+        // Fetch all pages using pagination
+        while (hasMore) {
+            const response = await notion.databases.query({
+                database_id: flashcardsDatabaseId,
+                sorts: [
+                    {
+                        property: "Random",
+                        direction: sortDirection
+                    }
+                ],
+                start_cursor: startCursor,
+                page_size: 100 // Maximum allowed by Notion API
+            });
+
+            allResults.push(...response.results);
+            hasMore = response.has_more;
+            startCursor = response.next_cursor || undefined;
+        }
+
+        console.log(`Loaded ${allResults.length} flashcards from Notion database`);
+
+        return allResults.map((page: any) => {
             const properties = page.properties;
 
             // Extract image URL from files field
