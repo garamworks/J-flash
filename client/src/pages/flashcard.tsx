@@ -320,7 +320,7 @@ export default function FlashcardPage() {
               </span>
             </div>
             <div className="text-lg font-semibold text-black">
-              {totalCards - knownCount}
+              {totalCards ? totalCards - knownCount : 0}
             </div>
           </div>
         </div>

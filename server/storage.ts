@@ -132,30 +132,16 @@ export class NotionStorage implements IStorage {
   private databaseIds: Map<string, string> = new Map();
 
   private async initializeDatabases() {
-    // Set up database IDs for different levels
+    // Set up database IDs for different levels - for now, use the main database for all levels
     if (!this.databaseIds.has("N2")) {
-      // Find N2 database (main database from NOTION_PAGE_URL)
-      const n2Db = await findDatabaseByTitle("J-Flash Flashcards");
-      if (n2Db) {
-        this.databaseIds.set("N2", n2Db.id);
-      }
+      // Use main database for N2
+      this.databaseIds.set("N2", this.flashcardsDatabaseId);
       
-      // Find N4 database
-      const n4Db = await findDatabaseByTitle("J-Flash N4");
-      if (n4Db) {
-        this.databaseIds.set("N4", n4Db.id);
-      }
-      
-      // Find other levels if they exist
-      const n3Db = await findDatabaseByTitle("J-Flash N3");
-      if (n3Db) {
-        this.databaseIds.set("N3", n3Db.id);
-      }
-      
-      const n5Db = await findDatabaseByTitle("J-Flash N5");
-      if (n5Db) {
-        this.databaseIds.set("N5", n5Db.id);
-      }
+      // For N4, N3, N5 - use same database for now
+      // In future, these can be connected to separate Notion databases
+      this.databaseIds.set("N4", this.flashcardsDatabaseId);
+      this.databaseIds.set("N3", this.flashcardsDatabaseId);
+      this.databaseIds.set("N5", this.flashcardsDatabaseId);
     }
   }
 
