@@ -4,12 +4,15 @@ import { type Flashcard } from "@shared/schema";
 import FlashcardComponent from "@/components/flashcard";
 import ProgressStats from "@/components/progress-stats";
 import { apiRequest } from "@/lib/queryClient";
+import { Menu, X } from "lucide-react";
 
 export default function FlashcardPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [knownCount, setKnownCount] = useState(0);
   const [unknownCount, setUnknownCount] = useState(0);
   const [sortDirection, setSortDirection] = useState<"ascending" | "descending">("ascending");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [selectedLevel, setSelectedLevel] = useState("N2");
   const queryClient = useQueryClient();
 
   const { data: allFlashcards, isLoading, error } = useQuery<Flashcard[]>({
@@ -90,14 +93,71 @@ export default function FlashcardPage() {
     setCurrentIndex(0);
   };
 
+  const handleMenuToggle = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleLevelSelect = (level: string) => {
+    setSelectedLevel(level);
+    setIsMenuOpen(false);
+    // Reset to first card when switching levels
+    setCurrentIndex(0);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
         <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
-          <div className="max-w-md mx-auto px-4 py-4">
-            <h1 className="text-2xl font-bold text-center text-gray-900">J-Flash</h1>
+          <div className="max-w-md mx-auto px-4 py-4 relative">
+            <div className="flex items-center justify-between">
+              <button
+                onClick={handleMenuToggle}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <Menu size={24} className="text-gray-700" />
+              </button>
+              <h1 className="text-2xl font-bold text-gray-900">J-Flash</h1>
+              <div className="w-10"></div> {/* Placeholder for balance */}
+            </div>
           </div>
         </header>
+        {/* Sidebar Menu */}
+        {isMenuOpen && (
+          <div className="fixed inset-0 z-50">
+            <div 
+              className="absolute inset-0 bg-black bg-opacity-50" 
+              onClick={() => setIsMenuOpen(false)}
+            />
+            <div className="absolute left-0 top-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300">
+              <div className="p-4 border-b border-gray-200">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-semibold text-gray-900">레벨 선택</h2>
+                  <button
+                    onClick={() => setIsMenuOpen(false)}
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    <X size={20} className="text-gray-700" />
+                  </button>
+                </div>
+              </div>
+              <nav className="p-4">
+                {['N2', 'N3', 'N4', 'N5'].map((level) => (
+                  <button
+                    key={level}
+                    onClick={() => handleLevelSelect(level)}
+                    className={`w-full text-left p-3 rounded-lg mb-2 transition-colors ${
+                      selectedLevel === level
+                        ? 'bg-blue-100 text-blue-800 font-semibold'
+                        : 'hover:bg-gray-100 text-gray-700'
+                    }`}
+                  >
+                    {level}
+                  </button>
+                ))}
+              </nav>
+            </div>
+          </div>
+        )}
         <main className="max-w-md mx-auto px-4 py-6">
           <div className="flex items-center justify-center h-64">
             <div className="text-lg text-gray-600">Loading flashcards...</div>
@@ -111,10 +171,55 @@ export default function FlashcardPage() {
     return (
       <div className="min-h-screen bg-gray-50">
         <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
-          <div className="max-w-md mx-auto px-4 py-4">
-            <h1 className="text-2xl font-bold text-center text-gray-900">J-Flash</h1>
+          <div className="max-w-md mx-auto px-4 py-4 relative">
+            <div className="flex items-center justify-between">
+              <button
+                onClick={handleMenuToggle}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <Menu size={24} className="text-gray-700" />
+              </button>
+              <h1 className="text-2xl font-bold text-gray-900">J-Flash</h1>
+              <div className="w-10"></div>
+            </div>
           </div>
         </header>
+        {isMenuOpen && (
+          <div className="fixed inset-0 z-50">
+            <div 
+              className="absolute inset-0 bg-black bg-opacity-50" 
+              onClick={() => setIsMenuOpen(false)}
+            />
+            <div className="absolute left-0 top-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300">
+              <div className="p-4 border-b border-gray-200">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-semibold text-gray-900">레벨 선택</h2>
+                  <button
+                    onClick={() => setIsMenuOpen(false)}
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    <X size={20} className="text-gray-700" />
+                  </button>
+                </div>
+              </div>
+              <nav className="p-4">
+                {['N2', 'N3', 'N4', 'N5'].map((level) => (
+                  <button
+                    key={level}
+                    onClick={() => handleLevelSelect(level)}
+                    className={`w-full text-left p-3 rounded-lg mb-2 transition-colors ${
+                      selectedLevel === level
+                        ? 'bg-blue-100 text-blue-800 font-semibold'
+                        : 'hover:bg-gray-100 text-gray-700'
+                    }`}
+                  >
+                    {level}
+                  </button>
+                ))}
+              </nav>
+            </div>
+          </div>
+        )}
         <main className="max-w-md mx-auto px-4 py-6">
           <div className="flex items-center justify-center h-64">
             <div className="text-lg text-red-600">Failed to load flashcards</div>
@@ -128,10 +233,55 @@ export default function FlashcardPage() {
     return (
       <div className="min-h-screen bg-gray-50">
         <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
-          <div className="max-w-md mx-auto px-4 py-4">
-            <h1 className="text-2xl font-bold text-center text-gray-900">J-Flash</h1>
+          <div className="max-w-md mx-auto px-4 py-4 relative">
+            <div className="flex items-center justify-between">
+              <button
+                onClick={handleMenuToggle}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <Menu size={24} className="text-gray-700" />
+              </button>
+              <h1 className="text-2xl font-bold text-gray-900">J-Flash</h1>
+              <div className="w-10"></div>
+            </div>
           </div>
         </header>
+        {isMenuOpen && (
+          <div className="fixed inset-0 z-50">
+            <div 
+              className="absolute inset-0 bg-black bg-opacity-50" 
+              onClick={() => setIsMenuOpen(false)}
+            />
+            <div className="absolute left-0 top-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300">
+              <div className="p-4 border-b border-gray-200">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-semibold text-gray-900">레벨 선택</h2>
+                  <button
+                    onClick={() => setIsMenuOpen(false)}
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    <X size={20} className="text-gray-700" />
+                  </button>
+                </div>
+              </div>
+              <nav className="p-4">
+                {['N2', 'N3', 'N4', 'N5'].map((level) => (
+                  <button
+                    key={level}
+                    onClick={() => handleLevelSelect(level)}
+                    className={`w-full text-left p-3 rounded-lg mb-2 transition-colors ${
+                      selectedLevel === level
+                        ? 'bg-blue-100 text-blue-800 font-semibold'
+                        : 'hover:bg-gray-100 text-gray-700'
+                    }`}
+                  >
+                    {level}
+                  </button>
+                ))}
+              </nav>
+            </div>
+          </div>
+        )}
         <main className="max-w-md mx-auto px-4 py-6">
           <div className="flex items-center justify-center h-64">
             <div className="text-lg text-gray-600">No flashcards available</div>
@@ -149,19 +299,69 @@ export default function FlashcardPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-md mx-auto px-6 py-4 flex justify-between items-center">
-          <h1 
-            className="text-2xl font-bold text-gray-900 pl-2 cursor-pointer hover:text-blue-600 transition-colors duration-200"
-            onClick={handleTitleClick}
-            title="순서 바꾸기"
-          >
-            J-Flash
-          </h1>
-          <div className="text-lg font-semibold text-black pr-2">
-            {totalCards - knownCount}
+        <div className="max-w-md mx-auto px-4 py-4 relative">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={handleMenuToggle}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <Menu size={24} className="text-gray-700" />
+            </button>
+            <h1 
+              className="text-2xl font-bold text-gray-900 cursor-pointer hover:text-blue-600 transition-colors duration-200"
+              onClick={handleTitleClick}
+              title="순서 바꾸기"
+            >
+              J-Flash
+            </h1>
+            <div className="text-lg font-semibold text-black">
+              {totalCards - knownCount}
+            </div>
           </div>
         </div>
       </header>
+
+      {/* Sidebar Menu */}
+      {isMenuOpen && (
+        <div className="fixed inset-0 z-50">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black bg-opacity-50" 
+            onClick={() => setIsMenuOpen(false)}
+          />
+          
+          {/* Sidebar */}
+          <div className="absolute left-0 top-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300">
+            <div className="p-4 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-gray-900">레벨 선택</h2>
+                <button
+                  onClick={() => setIsMenuOpen(false)}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <X size={20} className="text-gray-700" />
+                </button>
+              </div>
+            </div>
+            
+            <nav className="p-4">
+              {['N2', 'N3', 'N4', 'N5'].map((level) => (
+                <button
+                  key={level}
+                  onClick={() => handleLevelSelect(level)}
+                  className={`w-full text-left p-3 rounded-lg mb-2 transition-colors ${
+                    selectedLevel === level
+                      ? 'bg-blue-100 text-blue-800 font-semibold'
+                      : 'hover:bg-gray-100 text-gray-700'
+                  }`}
+                >
+                  {level}
+                </button>
+              ))}
+            </nav>
+          </div>
+        </div>
+      )}
 
       <main className="max-w-md mx-auto px-4 py-6">
         <FlashcardComponent 
