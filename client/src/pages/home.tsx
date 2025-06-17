@@ -23,23 +23,22 @@ export default function HomePage() {
 
       <div className="max-w-2xl mx-auto p-4">
         {/* Header */}
-        <div className="text-center mb-12 pt-8">
-          <p className="text-xl text-gray-600">일본어 플래시카드 학습</p>
-          <p className="text-gray-500 mt-2">학습하고 싶은 레벨을 선택하세요</p>
+        <div className="text-center mb-6 pt-4">
+          <p className="text-lg text-gray-600">일본어 플래시카드 학습</p>
         </div>
 
         {/* Level Selection Cards */}
-        <div className="space-y-3">
+        <div className="space-y-4">
           {levels.map((item) => (
             <Link key={item.level} href={`/flashcard?level=${item.level}`}>
-              <div className={`bg-gradient-to-r ${item.color} rounded-3xl p-4 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 cursor-pointer`}>
+              <div className={`bg-gradient-to-r ${item.color} rounded-3xl p-3 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 cursor-pointer`}>
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-2xl font-bold mb-1">{item.level}</h2>
-                    <p className="text-white/90">{item.description}</p>
+                    <h2 className="text-xl font-bold mb-1">{item.level}</h2>
+                    <p className="text-white/90 text-sm">{item.description}</p>
                   </div>
-                  <div className="text-4xl font-bold opacity-50">
-                    {item.level}
+                  <div className="text-3xl font-bold opacity-50">
+                    {item.level === "히라가나/가타가나" ? "あア" : item.level}
                   </div>
                 </div>
               </div>
