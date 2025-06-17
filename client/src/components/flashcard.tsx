@@ -188,7 +188,7 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
               </div>
 
               {/* Korean Translation */}
-              <div className="text-center mb-8">
+              <div className="text-center" style={{ marginBottom: '3.0rem' }}>
                 <p className="text-3xl font-semibold text-gray-900" style={{ lineHeight: '0.7' }}>
                   {flashcard.korean}
                 </p>
