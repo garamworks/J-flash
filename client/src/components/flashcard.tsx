@@ -195,7 +195,7 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
               </div>
 
               {/* Japanese Example Sentence (without furigana) */}
-              <div className="text-center" style={{ marginBottom: '0.80rem' }}>
+              <div className="text-center" style={{ marginBottom: '0.64rem' }}>
                 <p className="text-2xl text-gray-700 leading-relaxed" style={{ fontSize: '1.65em' }}>
                   {flashcard.sentence}
                 </p>
