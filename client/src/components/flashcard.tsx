@@ -174,14 +174,14 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
               </button>
 
               {/* Japanese Word (Kanji) */}
-              <div className="text-center" style={{ marginBottom: '1.04rem' }}>
+              <div className="text-center" style={{ marginBottom: '1.5rem' }}>
                 <p className="text-4xl font-bold text-gray-900" style={{ lineHeight: '0.7' }}>
                   {flashcard.japanese}
                 </p>
               </div>
 
               {/* Furigana Reading (Hiragana) */}
-              <div className="text-center" style={{ marginBottom: '1.3rem' }}>
+              <div className="text-center" style={{ marginBottom: '1.8rem' }}>
                 <p className="text-3xl font-semibold text-gray-600" style={{ lineHeight: '0.7' }}>
                   {flashcard.furigana}
                 </p>
