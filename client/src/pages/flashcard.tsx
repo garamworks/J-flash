@@ -315,11 +315,11 @@ export default function FlashcardPage() {
               >
                 J-Flash
               </h1>
-              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-md text-sm font-medium">
+              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-md text-sm font-medium mt-0.5">
                 {selectedLevel}
               </span>
             </div>
-            <div className="text-lg font-semibold text-black">
+            <div className="text-lg font-semibold text-black mr-4">
               {totalCards ? totalCards - knownCount : 0}
             </div>
           </div>
