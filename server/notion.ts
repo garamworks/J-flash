@@ -150,8 +150,8 @@ export async function getFlashcardsFromNotion(flashcardsDatabaseId: string, sort
 
             // Extract image URL from files field
             let imageUrl = "";
-            if (properties['image']?.files && properties['image'].files.length > 0) {
-                const imageFile = properties['image'].files[0];
+            if (properties['img']?.files && properties['img'].files.length > 0) {
+                const imageFile = properties['img'].files[0];
                 if (imageFile.type === 'external') {
                     imageUrl = imageFile.external.url;
                 } else if (imageFile.type === 'file') {
