@@ -350,7 +350,15 @@ export default function FlashcardPage() {
             </div>
             
             <nav className="p-4">
-              {['N2', 'N3', 'N4', 'N5'].map((level) => (
+              <button
+                onClick={() => window.location.href = '/'}
+                className="w-full text-left p-3 rounded-lg mb-4 bg-gray-50 hover:bg-gray-100 text-gray-700 border-b border-gray-200"
+              >
+                🏠 Home
+              </button>
+              
+              <div className="text-sm text-gray-500 mb-2 px-3">레벨 선택</div>
+              {['N1', 'N2', 'N3', 'N4', 'N5'].map((level) => (
                 <button
                   key={level}
                   onClick={() => handleLevelSelect(level)}

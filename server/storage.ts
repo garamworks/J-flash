@@ -141,7 +141,8 @@ export class NotionStorage implements IStorage {
       // Use specific database for N4
       this.databaseIds.set("N4", this.n4DatabaseId);
       
-      // For N3, N5 - use main database for now
+      // For N1, N3, N5 - use main database for now
+      this.databaseIds.set("N1", this.flashcardsDatabaseId);
       this.databaseIds.set("N3", this.flashcardsDatabaseId);
       this.databaseIds.set("N5", this.flashcardsDatabaseId);
     }
@@ -218,7 +219,7 @@ export class NotionStorage implements IStorage {
     let targetPage: any = null;
     let targetDatabaseId: string = "";
     
-    for (const [level, databaseId] of this.databaseIds.entries()) {
+    for (const [level, databaseId] of Array.from(this.databaseIds.entries())) {
       console.log(`Searching in ${level} database (${databaseId})`);
       
       const allResults: any[] = [];
