@@ -1,5 +1,5 @@
 import { flashcards, userProgress, type Flashcard, type InsertFlashcard, type UserProgress, type InsertUserProgress, users, type User, type InsertUser } from "@shared/schema";
-import { getFlashcardsFromNotion, updateProgressInNotion, notion } from "./notion";
+import { getFlashcardsFromNotion, updateProgressInNotion, notion, findDatabaseByTitle } from "./notion";
 
 export interface IStorage {
   // User methods
@@ -8,7 +8,7 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   
   // Flashcard methods
-  getAllFlashcards(sortDirection?: "ascending" | "descending"): Promise<Flashcard[]>;
+  getAllFlashcards(sortDirection?: "ascending" | "descending", level?: string): Promise<Flashcard[]>;
   getFlashcard(id: number): Promise<Flashcard | undefined>;
   createFlashcard(flashcard: InsertFlashcard): Promise<Flashcard>;
   
@@ -88,7 +88,7 @@ export class MemStorage implements IStorage {
     return user;
   }
 
-  async getAllFlashcards(sortDirection?: "ascending" | "descending"): Promise<Flashcard[]> {
+  async getAllFlashcards(sortDirection?: "ascending" | "descending", level?: string): Promise<Flashcard[]> {
     return Array.from(this.flashcards.values());
   }
 
@@ -129,9 +129,34 @@ export class MemStorage implements IStorage {
 // Notion-based storage implementation
 export class NotionStorage implements IStorage {
   private flashcardsDatabaseId: string = process.env.NOTION_PAGE_URL?.match(/([a-f0-9]{32})(?:[?#]|$)/i)?.[1] || "";
+  private databaseIds: Map<string, string> = new Map();
 
   private async initializeDatabases() {
-    // Database ID is already set from the URL
+    // Set up database IDs for different levels
+    if (!this.databaseIds.has("N2")) {
+      // Find N2 database (main database from NOTION_PAGE_URL)
+      const n2Db = await findDatabaseByTitle("J-Flash Flashcards");
+      if (n2Db) {
+        this.databaseIds.set("N2", n2Db.id);
+      }
+      
+      // Find N4 database
+      const n4Db = await findDatabaseByTitle("J-Flash N4");
+      if (n4Db) {
+        this.databaseIds.set("N4", n4Db.id);
+      }
+      
+      // Find other levels if they exist
+      const n3Db = await findDatabaseByTitle("J-Flash N3");
+      if (n3Db) {
+        this.databaseIds.set("N3", n3Db.id);
+      }
+      
+      const n5Db = await findDatabaseByTitle("J-Flash N5");
+      if (n5Db) {
+        this.databaseIds.set("N5", n5Db.id);
+      }
+    }
   }
 
   // User methods - using default user for now
@@ -148,14 +173,17 @@ export class NotionStorage implements IStorage {
   }
 
   // Flashcard methods
-  async getAllFlashcards(sortDirection: "ascending" | "descending" = "ascending"): Promise<Flashcard[]> {
+  async getAllFlashcards(sortDirection: "ascending" | "descending" = "ascending", level: string = "N2"): Promise<Flashcard[]> {
     await this.initializeDatabases();
     
-    if (!this.flashcardsDatabaseId) {
-      throw new Error("J-Flash Flashcards database not found. Please run setup first.");
+    // Get the database ID for the requested level
+    const databaseId = this.databaseIds.get(level) || this.flashcardsDatabaseId;
+    
+    if (!databaseId) {
+      throw new Error(`Database for level ${level} not found. Please run setup first.`);
     }
 
-    return await getFlashcardsFromNotion(this.flashcardsDatabaseId, sortDirection);
+    return await getFlashcardsFromNotion(databaseId, sortDirection);
   }
 
   async getFlashcard(id: number): Promise<Flashcard | undefined> {

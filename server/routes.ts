@@ -8,7 +8,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/flashcards", async (req, res) => {
     try {
       const sortDirection = req.query.sort as "ascending" | "descending" | undefined;
-      const flashcards = await storage.getAllFlashcards(sortDirection);
+      const level = req.query.level as string | undefined;
+      const flashcards = await storage.getAllFlashcards(sortDirection, level);
       res.json(flashcards);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch flashcards" });

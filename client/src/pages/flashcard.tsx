@@ -16,8 +16,8 @@ export default function FlashcardPage() {
   const queryClient = useQueryClient();
 
   const { data: allFlashcards, isLoading, error } = useQuery<Flashcard[]>({
-    queryKey: ["/api/flashcards", sortDirection],
-    queryFn: () => fetch(`/api/flashcards?sort=${sortDirection}`).then(res => res.json()),
+    queryKey: ["/api/flashcards", sortDirection, selectedLevel],
+    queryFn: () => fetch(`/api/flashcards?sort=${sortDirection}&level=${selectedLevel}`).then(res => res.json()),
   });
 
   const { data: progressData } = useQuery<Array<{id: number, flashcardId: number, known: boolean}>>({
@@ -307,13 +307,18 @@ export default function FlashcardPage() {
             >
               <Menu size={24} className="text-gray-700" />
             </button>
-            <h1 
-              className="text-2xl font-bold text-gray-900 cursor-pointer hover:text-blue-600 transition-colors duration-200"
-              onClick={handleTitleClick}
-              title="순서 바꾸기"
-            >
-              J-Flash
-            </h1>
+            <div className="flex items-center gap-2">
+              <h1 
+                className="text-2xl font-bold text-gray-900 cursor-pointer hover:text-blue-600 transition-colors duration-200"
+                onClick={handleTitleClick}
+                title="순서 바꾸기"
+              >
+                J-Flash
+              </h1>
+              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-md text-sm font-medium">
+                {selectedLevel}
+              </span>
+            </div>
             <div className="text-lg font-semibold text-black">
               {totalCards - knownCount}
             </div>
