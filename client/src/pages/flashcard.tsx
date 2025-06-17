@@ -360,7 +360,7 @@ export default function FlashcardPage() {
                 <button
                   key={level}
                   onClick={() => handleLevelSelect(level)}
-                  className={`w-full text-left p-3 rounded-lg mb-2 transition-colors ${
+                  className={`w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors ${
                     selectedLevel === level
                       ? 'bg-blue-100 text-blue-800 font-semibold'
                       : 'hover:bg-gray-100 text-gray-700'
@@ -369,6 +369,13 @@ export default function FlashcardPage() {
                   {level}
                 </button>
               ))}
+              
+              <button
+                onClick={() => {/* TODO: Add hiragana/katakana functionality */}}
+                className="w-full text-left py-2 px-3 rounded-lg mb-1 hover:bg-gray-100 text-gray-700 mt-2"
+              >
+                히라가나/가타가나
+              </button>
             </nav>
           </div>
         </div>
