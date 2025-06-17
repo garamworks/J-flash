@@ -37,11 +37,6 @@ export default function HomePage() {
             </Link>
           ))}
         </div>
-
-        {/* Footer */}
-        <div className="text-center mt-12 text-gray-500">
-          <p>각 레벨을 클릭하여 학습을 시작하세요</p>
-        </div>
       </div>
     </div>
   );
