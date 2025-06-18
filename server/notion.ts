@@ -213,16 +213,34 @@ export async function getFlashcardsFromNotion(flashcardsDatabaseId: string, sort
                 }
             }
 
-            return {
-                id: parseInt(page.id.replace(/-/g, '').slice(-8), 16), // Convert to number for compatibility
-                japanese: properties['단어']?.title?.[0]?.plain_text || "",
-                furigana: properties['독음']?.rich_text?.[0]?.plain_text || "",
-                korean: properties['뜻']?.rich_text?.[0]?.plain_text || "",
-                sentence: properties['예문']?.rich_text?.[0]?.plain_text || "",
-                sentenceKorean: properties['예문 해석']?.rich_text?.[0]?.plain_text || "",
-                imageUrl: imageUrl || "",
-                audioUrl: audioUrl || null, // Add audio URL for use in frontend
-            };
+            // Check if this is hiragana/katakana database or vocabulary database
+            const isHiraganaKatakana = properties['문자'] || properties['파일명_히라가나'];
+            
+            if (isHiraganaKatakana) {
+                // Hiragana/Katakana database mapping
+                return {
+                    id: parseInt(page.id.replace(/-/g, '').slice(-8), 16),
+                    japanese: properties['문자']?.rich_text?.[0]?.plain_text || "",
+                    furigana: properties['파일명_히라가나']?.rich_text?.[0]?.plain_text || "",
+                    korean: properties['단어 뜻']?.rich_text?.[0]?.plain_text || "",
+                    sentence: properties['단어']?.rich_text?.[0]?.plain_text || "",
+                    sentenceKorean: properties['단어 뜻']?.rich_text?.[0]?.plain_text || "",
+                    imageUrl: imageUrl || "",
+                    audioUrl: audioUrl || null,
+                };
+            } else {
+                // Regular vocabulary database mapping
+                return {
+                    id: parseInt(page.id.replace(/-/g, '').slice(-8), 16),
+                    japanese: properties['단어']?.title?.[0]?.plain_text || "",
+                    furigana: properties['독음']?.rich_text?.[0]?.plain_text || "",
+                    korean: properties['뜻']?.rich_text?.[0]?.plain_text || "",
+                    sentence: properties['예문']?.rich_text?.[0]?.plain_text || "",
+                    sentenceKorean: properties['예문 해석']?.rich_text?.[0]?.plain_text || "",
+                    imageUrl: imageUrl || "",
+                    audioUrl: audioUrl || null,
+                };
+            }
         });
     } catch (error) {
         console.error("Error fetching flashcards from Notion:", error);
