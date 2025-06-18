@@ -229,7 +229,7 @@ export async function getFlashcardsFromNotion(flashcardsDatabaseId: string, sort
                     furigana: hiraganaFilename,
                     korean: wordMeaning,
                     sentence: word,
-                    sentenceKorean: wordMeaning,
+                    sentenceKorean: "", // Empty to avoid duplication
                     imageUrl: imageUrl || "",
                     audioUrl: audioUrl || null,
                 };
