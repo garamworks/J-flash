@@ -147,21 +147,39 @@ export async function getFlashcardsFromNotion(flashcardsDatabaseId: string, sort
                 // If Random property doesn't exist, try without sorting
                 if (error.code === 'validation_error' && error.message?.includes('Random')) {
                     console.log('Random property not found, fetching without sorting');
-                    const response = await notion.databases.query({
-                        database_id: flashcardsDatabaseId,
-                        filter: {
-                            property: "암기",
-                            checkbox: {
-                                equals: false
-                            }
-                        },
-                        start_cursor: startCursor,
-                        page_size: 100 // Maximum allowed by Notion API
-                    });
+                    try {
+                        const response = await notion.databases.query({
+                            database_id: flashcardsDatabaseId,
+                            filter: {
+                                property: "암기",
+                                checkbox: {
+                                    equals: false
+                                }
+                            },
+                            start_cursor: startCursor,
+                            page_size: 100 // Maximum allowed by Notion API
+                        });
 
-                    allResults.push(...response.results);
-                    hasMore = response.has_more;
-                    startCursor = response.next_cursor || undefined;
+                        allResults.push(...response.results);
+                        hasMore = response.has_more;
+                        startCursor = response.next_cursor || undefined;
+                    } catch (filterError: any) {
+                        // If "암기" property doesn't exist either, fetch all pages without filter
+                        if (filterError.code === 'validation_error' && filterError.message?.includes('암기')) {
+                            console.log('암기 property not found, fetching all pages');
+                            const response = await notion.databases.query({
+                                database_id: flashcardsDatabaseId,
+                                start_cursor: startCursor,
+                                page_size: 100 // Maximum allowed by Notion API
+                            });
+
+                            allResults.push(...response.results);
+                            hasMore = response.has_more;
+                            startCursor = response.next_cursor || undefined;
+                        } else {
+                            throw filterError;
+                        }
+                    }
                 } else {
                     throw error;
                 }
