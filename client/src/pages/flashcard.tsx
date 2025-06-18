@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { type Flashcard } from "@shared/schema";
 import FlashcardComponent from "@/components/flashcard";
 import ProgressStats from "@/components/progress-stats";
 import { apiRequest } from "@/lib/queryClient";
 import { Menu, X } from "lucide-react";
+import { useLocation } from "wouter";
 
 export default function FlashcardPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -13,6 +14,16 @@ export default function FlashcardPage() {
   const [sortDirection, setSortDirection] = useState<"ascending" | "descending">("ascending");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState("N2");
+  const [location] = useLocation();
+
+  // Extract level from URL parameters
+  useEffect(() => {
+    const params = new URLSearchParams(location.split('?')[1] || '');
+    const levelParam = params.get('level');
+    if (levelParam) {
+      setSelectedLevel(levelParam);
+    }
+  }, [location]);
   const queryClient = useQueryClient();
 
   const { data: allFlashcards, isLoading, error } = useQuery<Flashcard[]>({
@@ -316,7 +327,7 @@ export default function FlashcardPage() {
                 J-Flash
               </h1>
               <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-md text-sm font-medium mt-0.5">
-                {selectedLevel}
+                {selectedLevel === "히라가나/가타가나" ? "문자" : selectedLevel}
               </span>
             </div>
             <div className="text-lg font-semibold text-black mr-4">

@@ -218,13 +218,18 @@ export async function getFlashcardsFromNotion(flashcardsDatabaseId: string, sort
             
             if (isHiraganaKatakana) {
                 // Hiragana/Katakana database mapping
+                const character = properties['문자']?.title?.[0]?.plain_text || properties['문자']?.rich_text?.[0]?.plain_text || "";
+                const hiraganaFilename = properties['파일명_히라가나']?.rich_text?.[0]?.plain_text || "";
+                const word = properties['단어']?.rich_text?.[0]?.plain_text || "";
+                const wordMeaning = properties['단어 뜻']?.rich_text?.[0]?.plain_text || "";
+                
                 return {
                     id: parseInt(page.id.replace(/-/g, '').slice(-8), 16),
-                    japanese: properties['문자']?.rich_text?.[0]?.plain_text || "",
-                    furigana: properties['파일명_히라가나']?.rich_text?.[0]?.plain_text || "",
-                    korean: properties['단어 뜻']?.rich_text?.[0]?.plain_text || "",
-                    sentence: properties['단어']?.rich_text?.[0]?.plain_text || "",
-                    sentenceKorean: properties['단어 뜻']?.rich_text?.[0]?.plain_text || "",
+                    japanese: character,
+                    furigana: hiraganaFilename,
+                    korean: wordMeaning,
+                    sentence: word,
+                    sentenceKorean: wordMeaning,
                     imageUrl: imageUrl || "",
                     audioUrl: audioUrl || null,
                 };
