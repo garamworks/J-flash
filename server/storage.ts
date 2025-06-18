@@ -131,6 +131,7 @@ export class NotionStorage implements IStorage {
   private flashcardsDatabaseId: string = process.env.NOTION_PAGE_URL?.match(/([a-f0-9]{32})(?:[?#]|$)/i)?.[1] || "";
   private databaseIds: Map<string, string> = new Map();
   private n4DatabaseId: string = "215fe404b3dc8099b972e96296fc14af"; // N4 database ID
+  private hiraganaKatakanaDatabaseId: string = "215fe404b3dc8040bac6f54c99a949a8"; // Hiragana/Katakana database ID
 
   private async initializeDatabases() {
     // Set up database IDs for different levels
@@ -140,6 +141,9 @@ export class NotionStorage implements IStorage {
       
       // Use specific database for N4
       this.databaseIds.set("N4", this.n4DatabaseId);
+      
+      // Use specific database for Hiragana/Katakana
+      this.databaseIds.set("히라가나/가타가나", this.hiraganaKatakanaDatabaseId);
       
       // For N1, N3, N5 - use main database for now
       this.databaseIds.set("N1", this.flashcardsDatabaseId);

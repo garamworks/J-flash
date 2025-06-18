@@ -371,8 +371,12 @@ export default function FlashcardPage() {
               ))}
               
               <button
-                onClick={() => {/* TODO: Add hiragana/katakana functionality */}}
-                className="w-full text-left py-2 px-3 rounded-lg mb-1 hover:bg-gray-100 text-gray-700 mt-2"
+                onClick={() => handleLevelSelect("히라가나/가타가나")}
+                className={`w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors mt-2 ${
+                  selectedLevel === "히라가나/가타가나"
+                    ? 'bg-blue-100 text-blue-800 font-semibold'
+                    : 'hover:bg-gray-100 text-gray-700'
+                }`}
               >
                 히라가나/가타가나
               </button>
