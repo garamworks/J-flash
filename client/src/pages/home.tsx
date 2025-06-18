@@ -4,7 +4,12 @@ export default function HomePage() {
   const [, setLocation] = useLocation();
 
   const handleLevelClick = (level: string) => {
-    setLocation(`/flashcard?level=${encodeURIComponent(level)}`);
+    console.log('Clicking level:', level);
+    const encodedLevel = encodeURIComponent(level);
+    console.log('Encoded level:', encodedLevel);
+    const url = `/flashcard?level=${encodedLevel}`;
+    console.log('Navigating to URL:', url);
+    setLocation(url);
   };
   const levels = [
     { level: "N1", color: "from-red-500 to-red-600", description: "가장 높은 난이도" },
