@@ -317,12 +317,14 @@ export async function updateProgressInNotion(databaseId: string, pageId: string,
         
         console.log('Notion update successful:', updateResult.id);
         
-        // Verify the update by reading back the value
+        // Verify the update by reading back the value and show more details
         setTimeout(async () => {
             try {
                 const verifyPage = await notion.pages.retrieve({ page_id: pageId });
                 const checkboxValue = (verifyPage as any).properties[checkboxField]?.checkbox;
-                console.log(`Verification: ${checkboxField} field is now set to:`, checkboxValue);
+                const titleField = (verifyPage as any).properties['단어']?.title?.[0]?.plain_text || 'Unknown';
+                console.log(`Verification: Page "${titleField}" (${pageId}) - ${checkboxField} field is now set to:`, checkboxValue);
+                console.log(`Direct Notion URL: https://www.notion.so/${pageId.replace(/-/g, '')}`);
             } catch (verifyError) {
                 console.log('Could not verify update:', (verifyError as any).message);
             }
