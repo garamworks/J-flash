@@ -286,10 +286,30 @@ export async function updateProgressInNotion(databaseId: string, pageId: string,
     try {
         console.log('Attempting to update Notion page:', pageId, 'with checkbox value:', isKnown);
         
+        // First check what properties are available on this page
+        const pageInfo = await notion.pages.retrieve({ page_id: pageId });
+        const availableProps = Object.keys((pageInfo as any).properties);
+        console.log('Available properties in this page:', availableProps);
+        
+        // Try to find the checkbox field - could be '암기', 'Done', 'Completed', etc.
+        let checkboxField = '암기';
+        if (!availableProps.includes('암기')) {
+            // Look for other common checkbox field names
+            const possibleFields = ['Done', 'Completed', 'Finished', 'Known', 'Memorized', '완료', '체크'];
+            const foundField = possibleFields.find(field => availableProps.includes(field));
+            if (foundField) {
+                checkboxField = foundField;
+                console.log('Using checkbox field:', checkboxField);
+            } else {
+                console.warn('No suitable checkbox field found. Available properties:', availableProps);
+                // Still try with '암기' as fallback
+            }
+        }
+        
         const updateResult = await notion.pages.update({
             page_id: pageId,
             properties: {
-                '암기': {
+                [checkboxField]: {
                     checkbox: isKnown
                 }
             }
@@ -300,6 +320,7 @@ export async function updateProgressInNotion(databaseId: string, pageId: string,
         console.error("Error updating progress in Notion:", error);
         console.error("Page ID:", pageId);
         console.error("Checkbox value:", isKnown);
+        console.error("Error details:", (error as any).message);
         throw new Error("Failed to update progress in Notion");
     }
 }
