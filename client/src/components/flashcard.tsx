@@ -191,10 +191,19 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
           {/* Card Back */}
           <div className="flashcard-face flashcard-back">
             <div className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer h-full flex flex-col justify-center relative">
-              {/* Speaker Icon - moved to bottom right */}
+              {/* Speaker Buttons - Left and Right */}
               <button
-                className="speaker-btn absolute bottom-6 right-6 bg-sky-400 hover:bg-sky-500 rounded-full p-3 shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
-                onClick={handleSpeakerClick}
+                className="speaker-btn absolute bottom-6 left-6 bg-blue-500 hover:bg-blue-600 rounded-full p-3 shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
+                onClick={handleWordAudioClick}
+                title="단어발음"
+              >
+                <Volume2 className="text-white" size={24} />
+              </button>
+              
+              <button
+                className="speaker-btn absolute bottom-6 right-6 bg-green-500 hover:bg-green-600 rounded-full p-3 shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
+                onClick={handlePronunciationAudioClick}
+                title="발음"
               >
                 <Volume2 className="text-white" size={24} />
               </button>

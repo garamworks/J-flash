@@ -23,6 +23,9 @@ export const userProgress = pgTable("user_progress", {
 
 export const insertFlashcardSchema = createInsertSchema(flashcards).omit({
   id: true,
+}).extend({
+  wordAudioUrl: z.string().nullable().optional(),
+  pronunciationAudioUrl: z.string().nullable().optional(),
 });
 
 export const insertUserProgressSchema = createInsertSchema(userProgress).omit({
