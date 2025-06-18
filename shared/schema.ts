@@ -11,6 +11,8 @@ export const flashcards = pgTable("flashcards", {
   sentenceKorean: text("sentence_korean").notNull(),
   imageUrl: text("image_url").notNull(),
   audioUrl: text("audio_url"),
+  wordAudioUrl: text("word_audio_url"),
+  pronunciationAudioUrl: text("pronunciation_audio_url"),
 });
 
 export const userProgress = pgTable("user_progress", {

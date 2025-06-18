@@ -202,14 +202,38 @@ export async function getFlashcardsFromNotion(flashcardsDatabaseId: string, sort
                 }
             }
 
-            // Extract audio URL from 오디오(예문) field
+            // Extract audio URLs from multiple fields
             let audioUrl = "";
+            let wordAudioUrl = "";
+            let pronunciationAudioUrl = "";
+            
+            // Extract from 오디오(예문) field (legacy)
             if (properties['오디오(예문)']?.files && properties['오디오(예문)'].files.length > 0) {
                 const audioFile = properties['오디오(예문)'].files[0];
                 if (audioFile.type === 'external') {
                     audioUrl = audioFile.external.url;
                 } else if (audioFile.type === 'file') {
                     audioUrl = audioFile.file.url;
+                }
+            }
+            
+            // Extract from 단어발음 field
+            if (properties['단어발음']?.files && properties['단어발음'].files.length > 0) {
+                const audioFile = properties['단어발음'].files[0];
+                if (audioFile.type === 'external') {
+                    wordAudioUrl = audioFile.external.url;
+                } else if (audioFile.type === 'file') {
+                    wordAudioUrl = audioFile.file.url;
+                }
+            }
+            
+            // Extract from 발음 field
+            if (properties['발음']?.files && properties['발음'].files.length > 0) {
+                const audioFile = properties['발음'].files[0];
+                if (audioFile.type === 'external') {
+                    pronunciationAudioUrl = audioFile.external.url;
+                } else if (audioFile.type === 'file') {
+                    pronunciationAudioUrl = audioFile.file.url;
                 }
             }
 
@@ -232,6 +256,8 @@ export async function getFlashcardsFromNotion(flashcardsDatabaseId: string, sort
                     sentenceKorean: "", // Empty to avoid duplication
                     imageUrl: imageUrl || "",
                     audioUrl: audioUrl || null,
+                    wordAudioUrl: wordAudioUrl || null,
+                    pronunciationAudioUrl: pronunciationAudioUrl || null,
                 };
             } else {
                 // Regular vocabulary database mapping
@@ -244,6 +270,8 @@ export async function getFlashcardsFromNotion(flashcardsDatabaseId: string, sort
                     sentenceKorean: properties['예문 해석']?.rich_text?.[0]?.plain_text || "",
                     imageUrl: imageUrl || "",
                     audioUrl: audioUrl || null,
+                    wordAudioUrl: wordAudioUrl || null,
+                    pronunciationAudioUrl: pronunciationAudioUrl || null,
                 };
             }
         });

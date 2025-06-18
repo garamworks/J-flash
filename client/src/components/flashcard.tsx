@@ -82,19 +82,36 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
     setIsFlipped(!isFlipped);
   };
 
-  const handleSpeakerClick = (e: React.MouseEvent) => {
+  const handleWordAudioClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     
-    // If there's an audio URL from Notion, play that instead of TTS
-    if (flashcard.audioUrl) {
-      const audio = new Audio(flashcard.audioUrl);
+    // Play word audio from 단어발음 field
+    if (flashcard.wordAudioUrl) {
+      const audio = new Audio(flashcard.wordAudioUrl);
       audio.play().catch(error => {
-        console.error('Error playing audio:', error);
+        console.error('Error playing word audio:', error);
+        // Fallback to TTS if audio file fails
+        speak(flashcard.japanese, 'ja-JP');
+      });
+    } else {
+      // Fallback to TTS for word
+      speak(flashcard.japanese, 'ja-JP');
+    }
+  };
+
+  const handlePronunciationAudioClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    // Play pronunciation audio from 발음 field
+    if (flashcard.pronunciationAudioUrl) {
+      const audio = new Audio(flashcard.pronunciationAudioUrl);
+      audio.play().catch(error => {
+        console.error('Error playing pronunciation audio:', error);
         // Fallback to TTS if audio file fails
         speak(flashcard.sentence, 'ja-JP');
       });
     } else {
-      // Fallback to TTS
+      // Fallback to TTS for sentence
       speak(flashcard.sentence, 'ja-JP');
     }
   };
@@ -137,12 +154,21 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
                   </div>
                 )}
                 
-                {/* Speaker Icon - moved to bottom right */}
+                {/* Speaker Buttons - Left and Right */}
+                <button
+                  className="speaker-btn absolute bottom-3 left-3 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
+                  onClick={handleWordAudioClick}
+                  title="단어발음"
+                >
+                  <Volume2 className="text-blue-600 text-xl" size={24} />
+                </button>
+                
                 <button
                   className="speaker-btn absolute bottom-3 right-3 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
-                  onClick={handleSpeakerClick}
+                  onClick={handlePronunciationAudioClick}
+                  title="발음"
                 >
-                  <Volume2 className="text-primary text-xl" size={24} />
+                  <Volume2 className="text-green-600 text-xl" size={24} />
                 </button>
               </div>
 

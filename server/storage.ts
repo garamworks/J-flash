@@ -101,7 +101,9 @@ export class MemStorage implements IStorage {
     const flashcard: Flashcard = { 
       ...insertFlashcard, 
       id,
-      audioUrl: insertFlashcard.audioUrl ?? null 
+      audioUrl: insertFlashcard.audioUrl ?? null,
+      wordAudioUrl: insertFlashcard.wordAudioUrl ?? null,
+      pronunciationAudioUrl: insertFlashcard.pronunciationAudioUrl ?? null
     };
     this.flashcards.set(id, flashcard);
     return flashcard;
