@@ -251,14 +251,26 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
       <div className="flex gap-6 mb-8">
         <button
           onClick={() => handleButtonAction(onMarkAsKnown)}
-          className="action-btn flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-4 px-6 rounded-3xl text-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
+          className="action-btn flex-1 text-white font-semibold py-4 px-6 rounded-3xl text-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
+          style={{ 
+            backgroundColor: '#6A8D7A',
+            ':hover': { backgroundColor: '#5a7a6a' }
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#5a7a6a'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#6A8D7A'}
           disabled={isTransitioning}
         >
           외움
         </button>
         <button
           onClick={() => handleButtonAction(onMarkAsUnknown)}
-          className="action-btn flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-6 rounded-3xl text-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
+          className="action-btn flex-1 text-white font-semibold py-4 px-6 rounded-3xl text-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
+          style={{ 
+            backgroundColor: '#9E4E46',
+            ':hover': { backgroundColor: '#8a433c' }
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#8a433c'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#9E4E46'}
           disabled={isTransitioning}
         >
           모름
