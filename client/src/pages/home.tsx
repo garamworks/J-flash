@@ -9,12 +9,12 @@ export default function HomePage() {
     setLocation(url);
   };
   const levels = [
-    { level: "N1", color: "from-red-500 to-red-600", description: "가장 높은 난이도" },
-    { level: "N2", color: "from-orange-500 to-orange-600", description: "고급 수준" },
-    { level: "N3", color: "from-yellow-500 to-yellow-600", description: "중급 수준" },
-    { level: "N4", color: "from-green-500 to-green-600", description: "초중급 수준" },
-    { level: "N5", color: "from-blue-500 to-blue-600", description: "기초 수준" },
-    { level: "히라가나/가타가나", color: "from-purple-500 to-purple-600", description: "기본 문자 학습" }
+    { level: "N1", color: "#5E4154", description: "가장 높은 난이도" },
+    { level: "N2", color: "#6A6A53", description: "고급 수준" },
+    { level: "N3", color: "#905E4E", description: "중급 수준" },
+    { level: "N4", color: "#899C8A", description: "초중급 수준" },
+    { level: "N5", color: "#C18F82", description: "기초 수준" },
+    { level: "히라가나/가타가나", color: "#788796", description: "기본 문자 학습" }
   ];
 
   return (
@@ -40,7 +40,8 @@ export default function HomePage() {
             <div 
               key={item.level} 
               onClick={() => handleLevelClick(item.level)}
-              className={`bg-gradient-to-r ${item.color} rounded-3xl p-3 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 cursor-pointer`}
+              className="rounded-3xl p-3 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 cursor-pointer"
+              style={{ backgroundColor: item.color }}
             >
               <div className="flex items-center justify-between">
                 <div>
