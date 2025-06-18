@@ -18,10 +18,17 @@ export default function FlashcardPage() {
 
   // Extract level from URL parameters
   useEffect(() => {
-    const params = new URLSearchParams(location.split('?')[1] || '');
-    const levelParam = params.get('level');
-    if (levelParam) {
-      setSelectedLevel(decodeURIComponent(levelParam));
+    const urlParts = location.split('?');
+    if (urlParts.length > 1) {
+      const params = new URLSearchParams(urlParts[1]);
+      const levelParam = params.get('level');
+      console.log('URL location:', location);
+      console.log('Level param:', levelParam);
+      if (levelParam) {
+        const decodedLevel = decodeURIComponent(levelParam);
+        console.log('Decoded level:', decodedLevel);
+        setSelectedLevel(decodedLevel);
+      }
     }
   }, [location]);
   const queryClient = useQueryClient();
