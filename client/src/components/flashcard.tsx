@@ -253,11 +253,10 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
           onClick={() => handleButtonAction(onMarkAsKnown)}
           className="action-btn flex-1 text-white font-semibold py-4 px-6 rounded-3xl text-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
           style={{ 
-            backgroundColor: '#6A8D7A',
-            ':hover': { backgroundColor: '#5a7a6a' }
+            backgroundColor: '#4CAF50'
           }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#5a7a6a'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#6A8D7A'}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#45a049'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#4CAF50'}
           disabled={isTransitioning}
         >
           외움
@@ -266,11 +265,10 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
           onClick={() => handleButtonAction(onMarkAsUnknown)}
           className="action-btn flex-1 text-white font-semibold py-4 px-6 rounded-3xl text-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
           style={{ 
-            backgroundColor: '#9E4E46',
-            ':hover': { backgroundColor: '#8a433c' }
+            backgroundColor: '#E53E3E'
           }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#8a433c'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#9E4E46'}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#C53030'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#E53E3E'}
           disabled={isTransitioning}
         >
           모름
