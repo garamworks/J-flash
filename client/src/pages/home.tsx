@@ -4,11 +4,8 @@ export default function HomePage() {
   const [, setLocation] = useLocation();
 
   const handleLevelClick = (level: string) => {
-    console.log('Clicking level:', level);
     const encodedLevel = encodeURIComponent(level);
-    console.log('Encoded level:', encodedLevel);
     const url = `/flashcard?level=${encodedLevel}`;
-    console.log('Navigating to URL:', url);
     setLocation(url);
   };
   const levels = [
