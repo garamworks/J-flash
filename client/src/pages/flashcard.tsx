@@ -21,7 +21,7 @@ export default function FlashcardPage() {
     const params = new URLSearchParams(location.split('?')[1] || '');
     const levelParam = params.get('level');
     if (levelParam) {
-      setSelectedLevel(levelParam);
+      setSelectedLevel(decodeURIComponent(levelParam));
     }
   }, [location]);
   const queryClient = useQueryClient();

@@ -30,7 +30,7 @@ export default function HomePage() {
         {/* Level Selection Cards */}
         <div className="space-y-4">
           {levels.map((item) => (
-            <Link key={item.level} href={`/flashcard?level=${item.level}`}>
+            <Link key={item.level} href={`/flashcard?level=${encodeURIComponent(item.level)}`}>
               <div className={`bg-gradient-to-r ${item.color} rounded-3xl p-3 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 cursor-pointer`}>
                 <div className="flex items-center justify-between">
                   <div>
