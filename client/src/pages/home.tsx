@@ -9,12 +9,12 @@ export default function HomePage() {
     setLocation(url);
   };
   const levels = [
-    { level: "N1", color: "#5E4154", description: "가장 높은 난이도" },
-    { level: "N2", color: "#6A6A53", description: "고급 수준" },
-    { level: "N3", color: "#905E4E", description: "중급 수준" },
-    { level: "N4", color: "#899C8A", description: "초중급 수준" },
-    { level: "N5", color: "#C18F82", description: "기초 수준" },
-    { level: "히라가나/가타가나", color: "#788796", description: "기본 문자 학습" }
+    { level: "N1", color: "#8B5A7A", description: "가장 높은 난이도" },
+    { level: "N2", color: "#9D9D6F", description: "고급 수준" },
+    { level: "N3", color: "#B8756A", description: "중급 수준" },
+    { level: "N4", color: "#A8C8A9", description: "초중급 수준" },
+    { level: "N5", color: "#E5A898", description: "기초 수준" },
+    { level: "히라가나/가타가나", color: "#95A8BB", description: "기본 문자 학습" }
   ];
 
   return (
