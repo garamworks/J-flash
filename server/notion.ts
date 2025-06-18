@@ -316,6 +316,18 @@ export async function updateProgressInNotion(databaseId: string, pageId: string,
         });
         
         console.log('Notion update successful:', updateResult.id);
+        
+        // Verify the update by reading back the value
+        setTimeout(async () => {
+            try {
+                const verifyPage = await notion.pages.retrieve({ page_id: pageId });
+                const checkboxValue = (verifyPage as any).properties[checkboxField]?.checkbox;
+                console.log(`Verification: ${checkboxField} field is now set to:`, checkboxValue);
+            } catch (verifyError) {
+                console.log('Could not verify update:', (verifyError as any).message);
+            }
+        }, 1000);
+        
     } catch (error) {
         console.error("Error updating progress in Notion:", error);
         console.error("Page ID:", pageId);
