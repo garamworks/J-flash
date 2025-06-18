@@ -132,6 +132,7 @@ export class MemStorage implements IStorage {
 export class NotionStorage implements IStorage {
   private flashcardsDatabaseId: string = process.env.NOTION_PAGE_URL?.match(/([a-f0-9]{32})(?:[?#]|$)/i)?.[1] || "";
   private databaseIds: Map<string, string> = new Map();
+  private n3DatabaseId: string = "216fe404b3dc804a9130f21b2b3a0e54"; // N3 database ID
   private n4DatabaseId: string = "215fe404b3dc8099b972e96296fc14af"; // N4 database ID
   private hiraganaKatakanaDatabaseId: string = "215fe404b3dc8040bac6f54c99a949a8"; // Hiragana/Katakana database ID
 
@@ -141,15 +142,17 @@ export class NotionStorage implements IStorage {
       // Use main database for N2
       this.databaseIds.set("N2", this.flashcardsDatabaseId);
       
+      // Use specific database for N3
+      this.databaseIds.set("N3", this.n3DatabaseId);
+      
       // Use specific database for N4
       this.databaseIds.set("N4", this.n4DatabaseId);
       
       // Use specific database for Hiragana/Katakana
       this.databaseIds.set("히라가나/가타가나", this.hiraganaKatakanaDatabaseId);
       
-      // For N1, N3, N5 - use main database for now
+      // For N1, N5 - use main database for now
       this.databaseIds.set("N1", this.flashcardsDatabaseId);
-      this.databaseIds.set("N3", this.flashcardsDatabaseId);
       this.databaseIds.set("N5", this.flashcardsDatabaseId);
     }
   }
