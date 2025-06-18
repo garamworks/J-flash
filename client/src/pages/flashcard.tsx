@@ -16,25 +16,24 @@ export default function FlashcardPage() {
   const [selectedLevel, setSelectedLevel] = useState("N2");
   const [location] = useLocation();
 
-  // Extract level from URL parameters
+  // Extract level from URL parameters using window.location
   useEffect(() => {
-    console.log('FlashcardPage useEffect triggered, location:', location);
-    const urlParts = location.split('?');
-    console.log('URL parts:', urlParts);
-    if (urlParts.length > 1) {
-      const params = new URLSearchParams(urlParts[1]);
-      const levelParam = params.get('level');
-      console.log('Level param from URLSearchParams:', levelParam);
-      if (levelParam) {
-        const decodedLevel = decodeURIComponent(levelParam);
-        console.log('Decoded level:', decodedLevel);
-        console.log('Setting selectedLevel to:', decodedLevel);
-        setSelectedLevel(decodedLevel);
-      } else {
-        console.log('No level param found, using default N2');
-      }
+    console.log('FlashcardPage useEffect triggered');
+    console.log('wouter location:', location);
+    console.log('window.location.href:', window.location.href);
+    console.log('window.location.search:', window.location.search);
+    
+    const params = new URLSearchParams(window.location.search);
+    const levelParam = params.get('level');
+    console.log('Level param from window.location:', levelParam);
+    
+    if (levelParam) {
+      const decodedLevel = decodeURIComponent(levelParam);
+      console.log('Decoded level:', decodedLevel);
+      console.log('Setting selectedLevel to:', decodedLevel);
+      setSelectedLevel(decodedLevel);
     } else {
-      console.log('No query parameters found in URL');
+      console.log('No level param found, using default N2');
     }
   }, [location]);
   const queryClient = useQueryClient();
