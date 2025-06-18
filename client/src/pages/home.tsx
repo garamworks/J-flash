@@ -1,6 +1,11 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 
 export default function HomePage() {
+  const [, setLocation] = useLocation();
+
+  const handleLevelClick = (level: string) => {
+    setLocation(`/flashcard?level=${encodeURIComponent(level)}`);
+  };
   const levels = [
     { level: "N1", color: "from-red-500 to-red-600", description: "가장 높은 난이도" },
     { level: "N2", color: "from-orange-500 to-orange-600", description: "고급 수준" },
@@ -30,19 +35,21 @@ export default function HomePage() {
         {/* Level Selection Cards */}
         <div className="space-y-4">
           {levels.map((item) => (
-            <Link key={item.level} href={`/flashcard?level=${encodeURIComponent(item.level)}`}>
-              <div className={`bg-gradient-to-r ${item.color} rounded-3xl p-3 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 cursor-pointer`}>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="text-xl font-bold mb-1">{item.level}</h2>
-                    <p className="text-white/90 text-sm">{item.description}</p>
-                  </div>
-                  <div className="text-3xl font-bold opacity-50">
-                    {item.level === "히라가나/가타가나" ? "あア" : item.level}
-                  </div>
+            <div 
+              key={item.level} 
+              onClick={() => handleLevelClick(item.level)}
+              className={`bg-gradient-to-r ${item.color} rounded-3xl p-3 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 cursor-pointer`}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-bold mb-1">{item.level}</h2>
+                  <p className="text-white/90 text-sm">{item.description}</p>
+                </div>
+                <div className="text-3xl font-bold opacity-50">
+                  {item.level === "히라가나/가타가나" ? "あア" : item.level}
                 </div>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       </div>
