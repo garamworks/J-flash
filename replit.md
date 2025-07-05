@@ -97,6 +97,12 @@ Changelog:
   * Implemented grammar-specific database schema and API endpoints
   * Updated home page to show split N2 options
   * Added navigation menu entry for N2 grammar
+- July 05, 2025. Enhanced UI layout and navigation:
+  * Fixed card-button spacing issues with proper flexbox layout
+  * Updated N2 grammar page navigation to match N2 words page format
+  * Implemented consistent header structure with sticky navigation
+  * Optimized mobile layout with reduced padding and proper spacing
+  * Changed grammar page header from "J-Flash" to "Grammar" while keeping "N2" badge
 ```
 
 ## User Preferences

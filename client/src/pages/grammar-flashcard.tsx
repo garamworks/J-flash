@@ -147,27 +147,37 @@ export default function GrammarFlashcardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8 relative">
-          <button 
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            <Menu size={24} />
-          </button>
-          
-          <h1 className="text-3xl font-bold text-gray-800">N2 문법</h1>
-          
-          <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full">
-            <span className="text-xl font-bold text-gray-800">
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+        <div className="max-w-md mx-auto px-4 py-4 relative">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <Menu size={24} className="text-gray-700" />
+            </button>
+            <div className="flex items-center gap-2">
+              <h1 
+                className="text-2xl font-bold text-gray-900 cursor-pointer hover:text-blue-600 transition-colors duration-200"
+                onClick={handleSortToggle}
+                title="순서 바꾸기"
+              >
+                Grammar
+              </h1>
+              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-md text-sm font-medium mt-0.5">
+                N2
+              </span>
+            </div>
+            <div className="text-lg font-semibold text-black mr-4">
               {totalFlashcards - (progressStats?.known || 0)}
-            </span>
+            </div>
           </div>
+        </div>
+      </header>
 
-          {/* Navigation Menu */}
-          {isMenuOpen && (
+      {/* Navigation Menu */}
+      {isMenuOpen && (
             <div className="fixed inset-0 z-50">
               {/* Backdrop */}
               <div 
@@ -230,10 +240,8 @@ export default function GrammarFlashcardPage() {
               </div>
             </div>
           )}
-        </div>
 
-
-
+      <main className="max-w-md mx-auto px-4 py-6">
         {/* Flashcard */}
         {currentFlashcard && (
           <GrammarFlashcardComponent
@@ -242,7 +250,7 @@ export default function GrammarFlashcardPage() {
             onMarkAsUnknown={handleMarkAsUnknown}
           />
         )}
-      </div>
+      </main>
     </div>
   );
 }
