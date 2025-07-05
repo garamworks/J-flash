@@ -156,17 +156,19 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
                 
                 {/* Speaker Buttons - Left and Right */}
                 <button
-                  className="speaker-btn absolute bottom-4 left-4 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 shadow-md transition-all duration-200"
+                  className="speaker-btn absolute bottom-4 left-4 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 shadow-md"
                   onClick={handleWordAudioClick}
                   title="단어발음"
+                  style={{ touchAction: 'manipulation' }}
                 >
                   <Volume2 className="text-blue-600 text-xl" size={24} />
                 </button>
                 
                 <button
-                  className="speaker-btn absolute bottom-4 right-4 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 shadow-md transition-all duration-200"
+                  className="speaker-btn absolute bottom-4 right-4 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 shadow-md"
                   onClick={handlePronunciationAudioClick}
                   title="발음"
+                  style={{ touchAction: 'manipulation' }}
                 >
                   <Volume2 className="text-green-600 text-xl" size={24} />
                 </button>
@@ -193,17 +195,19 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
             <div className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer h-full flex flex-col justify-center relative">
               {/* Speaker Buttons - Left and Right */}
               <button
-                className="speaker-btn absolute bottom-6 left-6 bg-blue-500 hover:bg-blue-600 rounded-full p-3 shadow-md transition-all duration-200"
+                className="speaker-btn absolute bottom-6 left-6 bg-blue-500 hover:bg-blue-600 rounded-full p-3 shadow-md"
                 onClick={handleWordAudioClick}
                 title="단어발음"
+                style={{ touchAction: 'manipulation' }}
               >
                 <Volume2 className="text-white" size={24} />
               </button>
               
               <button
-                className="speaker-btn absolute bottom-6 right-6 bg-green-500 hover:bg-green-600 rounded-full p-3 shadow-md transition-all duration-200"
+                className="speaker-btn absolute bottom-6 right-6 bg-green-500 hover:bg-green-600 rounded-full p-3 shadow-md"
                 onClick={handlePronunciationAudioClick}
                 title="발음"
+                style={{ touchAction: 'manipulation' }}
               >
                 <Volume2 className="text-white" size={24} />
               </button>

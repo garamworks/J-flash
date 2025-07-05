@@ -108,13 +108,32 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  touch-action: manipulation;
 }
 
-/* Prevent any scaling on mobile touch */
+/* Override all possible state changes */
 .speaker-btn:active,
 .speaker-btn:focus,
-.speaker-btn:hover {
+.speaker-btn:hover,
+.speaker-btn:focus-visible,
+.speaker-btn:focus-within {
   transform: scale(1.3) !important;
+  outline: none !important;
+}
+
+/* Mobile-specific overrides */
+@media (hover: none) and (pointer: coarse) {
+  .speaker-btn {
+    transition: none !important;
+    transform: scale(1.3) !important;
+  }
+  
+  .speaker-btn:active,
+  .speaker-btn:focus,
+  .speaker-btn:hover {
+    transform: scale(1.3) !important;
+    transition: none !important;
+  }
 }
 
 /* Speaker button effects */
