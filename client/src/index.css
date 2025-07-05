@@ -98,10 +98,10 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Scale speaker buttons to 130% */
+/* Speaker buttons - native larger size instead of scaling */
 .speaker-btn {
-  transform: scale(1.3);
-  transform-origin: center;
+  width: 62px;
+  height: 62px;
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -111,27 +111,27 @@
   touch-action: manipulation;
 }
 
-/* Override all possible state changes */
+/* Remove outline and prevent any transform changes */
 .speaker-btn:active,
 .speaker-btn:focus,
 .speaker-btn:hover,
 .speaker-btn:focus-visible,
 .speaker-btn:focus-within {
-  transform: scale(1.3) !important;
   outline: none !important;
+  transform: none !important;
 }
 
-/* Mobile-specific overrides */
+/* Mobile-specific: completely disable any scaling effects */
 @media (hover: none) and (pointer: coarse) {
   .speaker-btn {
     transition: none !important;
-    transform: scale(1.3) !important;
+    transform: none !important;
   }
   
   .speaker-btn:active,
   .speaker-btn:focus,
   .speaker-btn:hover {
-    transform: scale(1.3) !important;
+    transform: none !important;
     transition: none !important;
   }
 }
