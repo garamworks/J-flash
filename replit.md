@@ -90,6 +90,13 @@ J-Flash is a full-stack Japanese language learning application built with React 
 ```
 Changelog:
 - July 05, 2025. Initial setup
+- July 05, 2025. Added N2 grammar flashcards feature:
+  * Split N2 level into separate "단어" (words) and "문법" (grammar) sections
+  * Created grammar flashcard component with problem/answer format
+  * Added dedicated grammar flashcard page with progress tracking
+  * Implemented grammar-specific database schema and API endpoints
+  * Updated home page to show split N2 options
+  * Added navigation menu entry for N2 grammar
 ```
 
 ## User Preferences

@@ -1,4 +1,4 @@
-import { flashcards, userProgress, type Flashcard, type InsertFlashcard, type UserProgress, type InsertUserProgress, users, type User, type InsertUser } from "@shared/schema";
+import { flashcards, userProgress, grammarFlashcards, grammarProgress, type Flashcard, type InsertFlashcard, type GrammarFlashcard, type InsertGrammarFlashcard, type UserProgress, type InsertUserProgress, type GrammarProgress, type InsertGrammarProgress, users, type User, type InsertUser } from "@shared/schema";
 import { getFlashcardsFromNotion, updateProgressInNotion, notion, findDatabaseByTitle } from "./notion";
 
 export interface IStorage {
@@ -12,30 +12,49 @@ export interface IStorage {
   getFlashcard(id: number): Promise<Flashcard | undefined>;
   createFlashcard(flashcard: InsertFlashcard): Promise<Flashcard>;
   
+  // Grammar flashcard methods
+  getAllGrammarFlashcards(sortDirection?: "ascending" | "descending", level?: string): Promise<GrammarFlashcard[]>;
+  getGrammarFlashcard(id: number): Promise<GrammarFlashcard | undefined>;
+  createGrammarFlashcard(flashcard: InsertGrammarFlashcard): Promise<GrammarFlashcard>;
+  
   // Progress methods
   getUserProgress(): Promise<UserProgress[]>;
   recordProgress(progress: InsertUserProgress): Promise<UserProgress>;
   getProgressStats(): Promise<{ known: number; unknown: number }>;
+  
+  // Grammar progress methods
+  getGrammarProgress(): Promise<GrammarProgress[]>;
+  recordGrammarProgress(progress: InsertGrammarProgress): Promise<GrammarProgress>;
+  getGrammarProgressStats(): Promise<{ known: number; unknown: number }>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
   private flashcards: Map<number, Flashcard>;
+  private grammarFlashcards: Map<number, GrammarFlashcard>;
   private userProgress: Map<number, UserProgress>;
+  private grammarProgress: Map<number, GrammarProgress>;
   private currentUserId: number;
   private currentFlashcardId: number;
+  private currentGrammarFlashcardId: number;
   private currentProgressId: number;
+  private currentGrammarProgressId: number;
 
   constructor() {
     this.users = new Map();
     this.flashcards = new Map();
+    this.grammarFlashcards = new Map();
     this.userProgress = new Map();
+    this.grammarProgress = new Map();
     this.currentUserId = 1;
     this.currentFlashcardId = 1;
+    this.currentGrammarFlashcardId = 1;
     this.currentProgressId = 1;
+    this.currentGrammarProgressId = 1;
     
     // Initialize with sample flashcards
     this.initializeFlashcards();
+    this.initializeGrammarFlashcards();
   }
 
   private initializeFlashcards() {
@@ -68,6 +87,29 @@ export class MemStorage implements IStorage {
 
     sampleFlashcards.forEach(flashcard => {
       this.createFlashcard(flashcard);
+    });
+  }
+
+  private initializeGrammarFlashcards() {
+    const sampleGrammarFlashcards: InsertGrammarFlashcard[] = [
+      {
+        problemSentence: "日本に来て___、日本語が上手になりました。",
+        exampleSentence: "日本に来てから、日本語が上手になりました。",
+        exampleKorean: "일본에 와서부터 일본어가 능숙해졌습니다.",
+        grammar: "～てから",
+        meaning: "～한 후에, ～하고 나서"
+      },
+      {
+        problemSentence: "雨が降って___、試合が中止になった。",
+        exampleSentence: "雨が降ったため、試合が中止になった。",
+        exampleKorean: "비가 내렸기 때문에 경기가 중지되었다.",
+        grammar: "～ため",
+        meaning: "～때문에, ～으로 인해"
+      }
+    ];
+
+    sampleGrammarFlashcards.forEach(flashcard => {
+      this.createGrammarFlashcard(flashcard);
     });
   }
 
@@ -122,6 +164,45 @@ export class MemStorage implements IStorage {
 
   async getProgressStats(): Promise<{ known: number; unknown: number }> {
     const progress = Array.from(this.userProgress.values());
+    const known = progress.filter(p => p.known).length;
+    const unknown = progress.filter(p => !p.known).length;
+    return { known, unknown };
+  }
+
+  // Grammar flashcard methods
+  async getAllGrammarFlashcards(sortDirection?: "ascending" | "descending", level?: string): Promise<GrammarFlashcard[]> {
+    return Array.from(this.grammarFlashcards.values());
+  }
+
+  async getGrammarFlashcard(id: number): Promise<GrammarFlashcard | undefined> {
+    return this.grammarFlashcards.get(id);
+  }
+
+  async createGrammarFlashcard(insertGrammarFlashcard: InsertGrammarFlashcard): Promise<GrammarFlashcard> {
+    const id = this.currentGrammarFlashcardId++;
+    const grammarFlashcard: GrammarFlashcard = { 
+      ...insertGrammarFlashcard, 
+      id,
+      audioUrl: insertGrammarFlashcard.audioUrl ?? null
+    };
+    this.grammarFlashcards.set(id, grammarFlashcard);
+    return grammarFlashcard;
+  }
+
+  // Grammar progress methods
+  async getGrammarProgress(): Promise<GrammarProgress[]> {
+    return Array.from(this.grammarProgress.values());
+  }
+
+  async recordGrammarProgress(insertProgress: InsertGrammarProgress): Promise<GrammarProgress> {
+    const id = this.currentGrammarProgressId++;
+    const progress: GrammarProgress = { ...insertProgress, id };
+    this.grammarProgress.set(id, progress);
+    return progress;
+  }
+
+  async getGrammarProgressStats(): Promise<{ known: number; unknown: number }> {
+    const progress = Array.from(this.grammarProgress.values());
     const known = progress.filter(p => p.known).length;
     const unknown = progress.filter(p => !p.known).length;
     return { known, unknown };
@@ -290,6 +371,46 @@ export class NotionStorage implements IStorage {
     }
     
     return { known, unknown };
+  }
+
+  // Grammar flashcard methods (placeholder implementations for now)
+  async getAllGrammarFlashcards(sortDirection?: "ascending" | "descending", level?: string): Promise<GrammarFlashcard[]> {
+    // For now, return empty array. Will implement Notion integration later
+    return [];
+  }
+
+  async getGrammarFlashcard(id: number): Promise<GrammarFlashcard | undefined> {
+    // For now, return undefined. Will implement Notion integration later
+    return undefined;
+  }
+
+  async createGrammarFlashcard(insertGrammarFlashcard: InsertGrammarFlashcard): Promise<GrammarFlashcard> {
+    // For now, return a mock flashcard. Will implement Notion integration later
+    return {
+      id: Date.now(),
+      ...insertGrammarFlashcard,
+      audioUrl: insertGrammarFlashcard.audioUrl ?? null
+    };
+  }
+
+  // Grammar progress methods (placeholder implementations for now)
+  async getGrammarProgress(): Promise<GrammarProgress[]> {
+    // For now, return empty array. Will implement later
+    return [];
+  }
+
+  async recordGrammarProgress(insertProgress: InsertGrammarProgress): Promise<GrammarProgress> {
+    // For now, return a mock progress. Will implement later
+    return {
+      id: Date.now(),
+      grammarFlashcardId: insertProgress.grammarFlashcardId,
+      known: insertProgress.known
+    };
+  }
+
+  async getGrammarProgressStats(): Promise<{ known: number; unknown: number }> {
+    // For now, return zeros. Will implement later
+    return { known: 0, unknown: 0 };
   }
 }
 

@@ -8,9 +8,20 @@ export default function HomePage() {
     const url = `/flashcard?level=${encodedLevel}`;
     setLocation(url);
   };
+
+  const handleGrammarClick = (level: string) => {
+    const url = `/grammar-flashcard?level=${level}`;
+    setLocation(url);
+  };
+
   const levels = [
     { level: "N1", color: "#8B5A7A", description: "가장 높은 난이도" },
-    { level: "N2", color: "#9D9D6F", description: "고급 수준" },
+    { 
+      level: "N2", 
+      color: "#9D9D6F", 
+      description: "고급 수준",
+      hasSplit: true
+    },
     { level: "N3", color: "#B8756A", description: "중급 수준" },
     { level: "N4", color: "#A8C8A9", description: "초중급 수준" },
     { level: "N5", color: "#E5A898", description: "기초 수준" },
@@ -37,22 +48,66 @@ export default function HomePage() {
         {/* Level Selection Cards */}
         <div className="space-y-4">
           {levels.map((item) => (
-            <div 
-              key={item.level} 
-              onClick={() => handleLevelClick(item.level)}
-              className="rounded-3xl p-3 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 cursor-pointer"
-              style={{ backgroundColor: item.color }}
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-xl font-bold mb-1">{item.level}</h2>
-                  <p className="text-white/90 text-sm">{item.description}</p>
-                </div>
-                <div className="text-3xl font-bold opacity-50">
-                  {item.level === "히라가나/가타가나" ? "あア" : item.level}
+            item.hasSplit ? (
+              // N2 with split options
+              <div key={item.level} className="space-y-2">
+                <div 
+                  className="rounded-3xl p-3 text-white shadow-lg"
+                  style={{ backgroundColor: item.color }}
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <h2 className="text-xl font-bold mb-1">{item.level}</h2>
+                      <p className="text-white/90 text-sm">{item.description}</p>
+                    </div>
+                    <div className="text-3xl font-bold opacity-50">
+                      {item.level}
+                    </div>
+                  </div>
+                  
+                  {/* Split buttons for N2 */}
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => handleLevelClick(item.level)}
+                      className="flex-1 bg-white/20 hover:bg-white/30 rounded-2xl py-3 px-4 transition-all duration-200 hover:scale-105"
+                    >
+                      <div className="text-center">
+                        <div className="text-lg font-semibold">단어</div>
+                        <div className="text-sm opacity-90">어휘 학습</div>
+                      </div>
+                    </button>
+                    
+                    <button
+                      onClick={() => handleGrammarClick(item.level)}
+                      className="flex-1 bg-white/20 hover:bg-white/30 rounded-2xl py-3 px-4 transition-all duration-200 hover:scale-105"
+                    >
+                      <div className="text-center">
+                        <div className="text-lg font-semibold">문법</div>
+                        <div className="text-sm opacity-90">문법 학습</div>
+                      </div>
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
+            ) : (
+              // Regular single option levels
+              <div 
+                key={item.level} 
+                onClick={() => handleLevelClick(item.level)}
+                className="rounded-3xl p-3 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 cursor-pointer"
+                style={{ backgroundColor: item.color }}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xl font-bold mb-1">{item.level}</h2>
+                    <p className="text-white/90 text-sm">{item.description}</p>
+                  </div>
+                  <div className="text-3xl font-bold opacity-50">
+                    {item.level === "히라가나/가타가나" ? "あア" : item.level}
+                  </div>
+                </div>
+              </div>
+            )
           ))}
         </div>
       </div>
