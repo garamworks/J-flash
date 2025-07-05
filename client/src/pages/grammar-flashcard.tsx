@@ -81,9 +81,10 @@ export default function GrammarFlashcardPage() {
   };
 
   const handleMarkAsKnown = () => {
-    if (currentFlashcard) {
+    if (currentFlashcard && currentFlashcard.notionPageId) {
       recordProgressMutation.mutate({
         grammarFlashcardId: currentFlashcard.id,
+        notionPageId: currentFlashcard.notionPageId,
         known: true,
       });
       handleNext();
@@ -91,9 +92,10 @@ export default function GrammarFlashcardPage() {
   };
 
   const handleMarkAsUnknown = () => {
-    if (currentFlashcard) {
+    if (currentFlashcard && currentFlashcard.notionPageId) {
       recordProgressMutation.mutate({
         grammarFlashcardId: currentFlashcard.id,
+        notionPageId: currentFlashcard.notionPageId,
         known: false,
       });
       handleNext();

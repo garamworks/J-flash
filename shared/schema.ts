@@ -57,6 +57,8 @@ export const insertUserProgressSchema = createInsertSchema(userProgress).omit({
 
 export const insertGrammarProgressSchema = createInsertSchema(grammarProgress).omit({
   id: true,
+}).extend({
+  notionPageId: z.string().optional(), // Add notionPageId for direct updates
 });
 
 export type InsertFlashcard = z.infer<typeof insertFlashcardSchema>;
