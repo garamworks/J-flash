@@ -63,14 +63,14 @@ export default function GrammarFlashcardComponent({ flashcard, onMarkAsKnown, on
 
   return (
     <div className="w-full max-w-lg mx-auto">
-      {/* Card Container with fixed height */}
-      <div className="flashcard-container" onClick={handleCardClick} style={{ height: '560px', marginBottom: '0px' }}>
+      {/* Card Container with flexible height */}
+      <div className="flashcard-container" onClick={handleCardClick} style={{ minHeight: '400px', marginBottom: '0px' }}>
         <div className={`flashcard-inner ${isFlipped ? 'flipped' : ''} ${isTransitioning ? 'transitioning' : ''}`}>
           {/* Card Front - Problem Sentence */}
           <div className="flashcard-face flashcard-front">
-            <div className="bg-white rounded-2xl shadow-lg px-4 py-10 relative cursor-pointer h-full">
+            <div className="bg-white rounded-2xl shadow-lg px-4 py-6 relative cursor-pointer min-h-[400px] flex flex-col justify-center">
               {/* Problem Sentence with blanks */}
-              <div className="text-center flex items-center justify-center h-full pb-16 pt-8">
+              <div className="text-center flex items-center justify-center flex-1 pb-8">
                 <p className="text-3xl font-bold text-gray-900 leading-relaxed">
                   {flashcard.problemSentence}
                 </p>
@@ -90,31 +90,31 @@ export default function GrammarFlashcardComponent({ flashcard, onMarkAsKnown, on
 
           {/* Card Back - Answer */}
           <div className="flashcard-face flashcard-back">
-            <div className="bg-white rounded-2xl shadow-lg px-4 py-10 cursor-pointer h-full flex flex-col justify-center relative">
-              <div className="pb-24 pt-8">
+            <div className="bg-white rounded-2xl shadow-lg px-4 py-6 cursor-pointer min-h-[400px] flex flex-col justify-center relative">
+              <div className="flex-1 flex flex-col justify-center space-y-4 pb-12">
                 {/* Example Sentence (Complete) */}
-                <div className="text-center mb-4">
+                <div className="text-center">
                   <p className="text-2xl font-bold text-gray-900 leading-relaxed">
                     {flashcard.exampleSentence}
                   </p>
                 </div>
 
                 {/* Korean Translation */}
-                <div className="text-center mb-6">
+                <div className="text-center">
                   <p className="text-xl text-gray-800 leading-relaxed">
                     {flashcard.exampleKorean}
                   </p>
                 </div>
 
                 {/* Grammar Pattern */}
-                <div className="text-center mb-4">
+                <div className="text-center">
                   <p className="text-2xl font-bold text-gray-900">
                     {flashcard.grammar}
                   </p>
                 </div>
 
                 {/* Meaning */}
-                <div className="text-center pb-4">
+                <div className="text-center">
                   <p className="text-xl text-gray-800">
                     {flashcard.meaning}
                   </p>
