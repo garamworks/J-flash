@@ -154,23 +154,23 @@ export default function GrammarFlashcardComponent({ flashcard, allFlashcards, on
           {/* Card Back - Answer */}
           <div className="flashcard-face flashcard-back">
             <div className="bg-white rounded-2xl shadow-lg px-4 py-6 cursor-pointer min-h-[400px] flex flex-col justify-center relative">
-              <div className="flex-1 flex flex-col justify-center space-y-4 pb-12">
+              <div className="flex-1 flex flex-col justify-center pb-12">
                 {/* Example Sentence (Complete) */}
-                <div className="text-center">
+                <div className="text-center mb-2">
                   <p className="text-2xl font-bold text-gray-900 leading-relaxed">
                     {flashcard.exampleSentence}
                   </p>
                 </div>
 
                 {/* Korean Translation */}
-                <div className="text-center mb-8">
+                <div className="text-center mb-12">
                   <p className="text-xl text-gray-800 leading-relaxed">
                     {flashcard.exampleKorean}
                   </p>
                 </div>
 
                 {/* Grammar Pattern */}
-                <div className="text-center">
+                <div className="text-center mb-2">
                   <p className="text-2xl font-bold text-gray-900">
                     {flashcard.grammar}
                   </p>
