@@ -183,7 +183,8 @@ export class MemStorage implements IStorage {
     const grammarFlashcard: GrammarFlashcard = { 
       ...insertGrammarFlashcard, 
       id,
-      audioUrl: insertGrammarFlashcard.audioUrl ?? null
+      audioUrl: insertGrammarFlashcard.audioUrl ?? null,
+
     };
     this.grammarFlashcards.set(id, grammarFlashcard);
     return grammarFlashcard;
@@ -419,6 +420,7 @@ export class NotionStorage implements IStorage {
           grammar,
           meaning,
           audioUrl: null,
+
           randomValue // Store random value for sorting
         };
       });
@@ -520,7 +522,7 @@ export class NotionStorage implements IStorage {
     try {
       console.log('Recording grammar progress for flashcard:', insertProgress.grammarFlashcardId, 'Known:', insertProgress.known);
       
-      // Get all pages from the grammar database
+      // Get ONLY unchecked pages from the grammar database (same filter as getAllGrammarFlashcards)
       const allResults: any[] = [];
       let hasMore = true;
       let startCursor: string | undefined = undefined;
@@ -529,7 +531,13 @@ export class NotionStorage implements IStorage {
         const response = await notion.databases.query({
           database_id: this.grammarDatabaseId,
           start_cursor: startCursor,
-          page_size: 100
+          page_size: 100,
+          filter: {
+            property: '암기',
+            checkbox: {
+              equals: false
+            }
+          }
         });
 
         allResults.push(...response.results);
@@ -556,8 +564,14 @@ export class NotionStorage implements IStorage {
       const targetEntry = flashcardsWithRandom[insertProgress.grammarFlashcardId - 1]; // flashcard ID is 1-based
       
       if (targetEntry) {
-        console.log(`Recording grammar progress for flashcard: ${insertProgress.grammarFlashcardId} Known: ${insertProgress.known}`);
+        const grammarPattern = targetEntry.page.properties['문법']?.title?.[0]?.plain_text || 'Unknown';
+        const problemSentence = targetEntry.page.properties['문제풀이']?.rich_text?.[0]?.plain_text || 'Unknown';
+        
         console.log(`Target page ID: ${targetEntry.page.id}`);
+        console.log(`Grammar pattern: ${grammarPattern}`);
+        console.log(`Problem sentence: ${problemSentence}`);
+        console.log(`Total unchecked pages found: ${allResults.length}`);
+        console.log(`Flashcard ID requested: ${insertProgress.grammarFlashcardId}, Array index: ${insertProgress.grammarFlashcardId - 1}`);
         
         // Update the '암기' checkbox in Notion
         await notion.pages.update({
@@ -571,7 +585,7 @@ export class NotionStorage implements IStorage {
         
         console.log(`Updated grammar progress in Notion for page ${targetEntry.page.id}`);
       } else {
-        console.log(`No page found for flashcard ID ${insertProgress.grammarFlashcardId}`);
+        console.log(`No page found for flashcard ID ${insertProgress.grammarFlashcardId}. Total unchecked pages: ${allResults.length}`);
       }
 
       return {
