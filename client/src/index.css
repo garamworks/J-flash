@@ -98,7 +98,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Speaker buttons - native larger size instead of scaling */
+/* Speaker buttons - native larger size with manual JS feedback */
 .speaker-btn {
   width: 62px;
   height: 62px;
@@ -109,31 +109,16 @@
   -ms-user-select: none;
   user-select: none;
   touch-action: manipulation;
+  transition: transform 0.1s ease;
 }
 
-/* Remove outline and prevent any transform changes */
+/* Remove all default browser feedback */
 .speaker-btn:active,
 .speaker-btn:focus,
 .speaker-btn:hover,
 .speaker-btn:focus-visible,
 .speaker-btn:focus-within {
   outline: none !important;
-  transform: none !important;
-}
-
-/* Mobile-specific: completely disable any scaling effects */
-@media (hover: none) and (pointer: coarse) {
-  .speaker-btn {
-    transition: none !important;
-    transform: none !important;
-  }
-  
-  .speaker-btn:active,
-  .speaker-btn:focus,
-  .speaker-btn:hover {
-    transform: none !important;
-    transition: none !important;
-  }
 }
 
 /* Speaker button effects */

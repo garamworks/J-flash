@@ -85,6 +85,13 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
   const handleWordAudioClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     
+    // Manual visual feedback for mobile
+    const button = e.currentTarget as HTMLElement;
+    button.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+      button.style.transform = 'scale(1)';
+    }, 100);
+    
     // Play word audio from 단어발음 field
     if (flashcard.wordAudioUrl) {
       const audio = new Audio(flashcard.wordAudioUrl);
@@ -101,6 +108,13 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
 
   const handlePronunciationAudioClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+    
+    // Manual visual feedback for mobile
+    const button = e.currentTarget as HTMLElement;
+    button.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+      button.style.transform = 'scale(1)';
+    }, 100);
     
     // Play pronunciation audio from 발음 field
     if (flashcard.pronunciationAudioUrl) {
