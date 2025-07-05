@@ -63,7 +63,7 @@ export default function GrammarFlashcardComponent({ flashcard, onMarkAsKnown, on
 
   return (
     <div className="space-y-6">
-      <div className="flashcard-container mb-6" onClick={handleCardClick}>
+      <div className="flashcard-container mb-6" onClick={handleCardClick} style={{ position: 'relative', zIndex: 1 }}>
         <div className={`flashcard-inner ${isFlipped ? 'flipped' : ''} ${isTransitioning ? 'transitioning' : ''}`}>
           {/* Card Front - Problem Sentence */}
           <div className="flashcard-face flashcard-front">
@@ -135,7 +135,7 @@ export default function GrammarFlashcardComponent({ flashcard, onMarkAsKnown, on
       </div>
 
       {/* Action Buttons */}
-      <div className="flex gap-6 mb-8">
+      <div className="flex gap-6 mb-8" style={{ position: 'relative', zIndex: 10 }}>
         <button
           onClick={() => handleButtonAction(onMarkAsKnown)}
           className="action-btn flex-1 text-white font-semibold py-4 px-6 rounded-3xl text-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"

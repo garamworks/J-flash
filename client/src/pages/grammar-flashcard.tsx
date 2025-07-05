@@ -10,6 +10,7 @@ import { apiRequest } from "@/lib/queryClient";
 export default function GrammarFlashcardPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [sortDirection, setSortDirection] = useState<"ascending" | "descending">("ascending");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const queryClient = useQueryClient();
 
   // Fetch grammar flashcards
@@ -77,6 +78,7 @@ export default function GrammarFlashcardPage() {
 
   const handleReset = () => {
     setCurrentIndex(0);
+    setSortDirection("ascending");
   };
 
   const handleSortToggle = () => {
@@ -135,8 +137,11 @@ export default function GrammarFlashcardPage() {
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <button className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors">
+        <div className="flex items-center justify-between mb-8 relative">
+          <button 
+            className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
             <Menu size={24} />
           </button>
           
@@ -147,6 +152,34 @@ export default function GrammarFlashcardPage() {
               {totalFlashcards - (progressStats?.known || 0)}
             </span>
           </div>
+
+          {/* Navigation Menu */}
+          {isMenuOpen && (
+            <div className="absolute top-12 left-0 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+              <Link href="/">
+                <button className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors w-full text-left">
+                  <Home size={20} />
+                  <span>홈으로 가기</span>
+                </button>
+              </Link>
+              <Link href="/flashcard">
+                <button className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors w-full text-left">
+                  <span>📚</span>
+                  <span>N2 단어</span>
+                </button>
+              </Link>
+              <button 
+                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors w-full text-left"
+                onClick={() => {
+                  handleReset();
+                  setIsMenuOpen(false);
+                }}
+              >
+                <RotateCcw size={20} />
+                <span>처음부터 시작</span>
+              </button>
+            </div>
+          )}
         </div>
 
 
