@@ -5,6 +5,18 @@ async function listAccessibleDatabases() {
     try {
         console.log("Listing all accessible databases...");
         
+        // Test the specific N2 database ID from the new URL
+        const n2DatabaseId = "213fe404b3dc802e8b1bd26d77f8cc84";
+        try {
+            console.log("Testing direct access to N2 database...");
+            const n2Database = await notion.databases.retrieve({ database_id: n2DatabaseId });
+            console.log("SUCCESS: N2 database is accessible!");
+            console.log("Title:", (n2Database as any).title?.[0]?.plain_text || 'Untitled');
+        } catch (error) {
+            console.log("Cannot access N2 database:", n2DatabaseId);
+            console.log("Error:", (error as any).message);
+        }
+        
         // First, try to access the parent page
         try {
             const parentPage = await notion.pages.retrieve({ page_id: NOTION_PAGE_ID });
