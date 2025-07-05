@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ChevronLeft, RotateCcw, Home, Menu } from "lucide-react";
+import { ChevronLeft, RotateCcw, Home, Menu, X } from "lucide-react";
 import { Link } from "wouter";
 import { GrammarFlashcard, InsertGrammarProgress } from "@shared/schema";
 import GrammarFlashcardComponent from "@/components/grammar-flashcard";
@@ -86,6 +86,17 @@ export default function GrammarFlashcardPage() {
     setCurrentIndex(0);
   };
 
+  const handleLevelSelect = (level: string) => {
+    setIsMenuOpen(false);
+    if (level === "N2") {
+      // Stay on current page
+    } else if (level === "Home") {
+      window.location.href = '/';
+    } else {
+      window.location.href = `/flashcard?level=${encodeURIComponent(level)}`;
+    }
+  };
+
   const progressPercentage = progressStats 
     ? Math.round((progressStats.known / (progressStats.known + progressStats.unknown)) * 100) || 0
     : 0;
@@ -155,29 +166,56 @@ export default function GrammarFlashcardPage() {
 
           {/* Navigation Menu */}
           {isMenuOpen && (
-            <div className="absolute top-12 left-0 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-              <Link href="/">
-                <button className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors w-full text-left">
-                  <Home size={20} />
-                  <span>홈으로 가기</span>
-                </button>
-              </Link>
-              <Link href="/flashcard">
-                <button className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors w-full text-left">
-                  <span>📚</span>
-                  <span>N2 단어</span>
-                </button>
-              </Link>
-              <button 
-                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors w-full text-left"
-                onClick={() => {
-                  handleReset();
-                  setIsMenuOpen(false);
-                }}
-              >
-                <RotateCcw size={20} />
-                <span>처음부터 시작</span>
-              </button>
+            <div className="fixed inset-0 z-50">
+              {/* Backdrop */}
+              <div 
+                className="absolute inset-0 bg-black bg-opacity-50" 
+                onClick={() => setIsMenuOpen(false)}
+              />
+              
+              {/* Sidebar */}
+              <div className="absolute left-0 top-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300">
+                <div className="p-4 border-b border-gray-200">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-semibold text-gray-900">J-Flash</h2>
+                    <button
+                      onClick={() => setIsMenuOpen(false)}
+                      className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    >
+                      <X size={20} className="text-gray-700" />
+                    </button>
+                  </div>
+                </div>
+                
+                <nav className="p-4">
+                  <button
+                    onClick={() => handleLevelSelect("Home")}
+                    className="w-full text-left p-3 rounded-lg mb-4 bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold"
+                  >
+                    Home
+                  </button>
+                  {['N1', 'N2', 'N3', 'N4', 'N5'].map((level) => (
+                    <button
+                      key={level}
+                      onClick={() => handleLevelSelect(level)}
+                      className={`w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors ${
+                        level === "N2"
+                          ? 'bg-blue-100 text-blue-800 font-semibold'
+                          : 'hover:bg-gray-100 text-gray-700'
+                      }`}
+                    >
+                      {level}
+                    </button>
+                  ))}
+                  
+                  <button
+                    onClick={() => handleLevelSelect("히라가나/가타가나")}
+                    className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors mt-2 hover:bg-gray-100 text-gray-700"
+                  >
+                    히라가나/가타가나
+                  </button>
+                </nav>
+              </div>
             </div>
           )}
         </div>
