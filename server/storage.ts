@@ -556,6 +556,9 @@ export class NotionStorage implements IStorage {
       const targetEntry = flashcardsWithRandom[insertProgress.grammarFlashcardId - 1]; // flashcard ID is 1-based
       
       if (targetEntry) {
+        console.log(`Recording grammar progress for flashcard: ${insertProgress.grammarFlashcardId} Known: ${insertProgress.known}`);
+        console.log(`Target page ID: ${targetEntry.page.id}`);
+        
         // Update the '암기' checkbox in Notion
         await notion.pages.update({
           page_id: targetEntry.page.id,
