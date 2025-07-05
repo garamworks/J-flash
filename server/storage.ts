@@ -212,6 +212,7 @@ export class MemStorage implements IStorage {
 // Notion-based storage implementation
 export class NotionStorage implements IStorage {
   private flashcardsDatabaseId: string = "213fe404b3dc802e8b1bd26d77f8cc84"; // N2 database ID from user's link
+  private grammarDatabaseId: string = "227fe404b3dc8040946ce0921f4d9550"; // N2 grammar database ID
   private databaseIds: Map<string, string> = new Map();
   private n3DatabaseId: string = "216fe404b3dc804a9130f21b2b3a0e54"; // N3 database ID
   private n4DatabaseId: string = "215fe404b3dc8099b972e96296fc14af"; // N4 database ID
@@ -373,58 +374,57 @@ export class NotionStorage implements IStorage {
     return { known, unknown };
   }
 
-  // Grammar flashcard methods - using sample data for now
+  // Grammar flashcard methods - fetch from Notion database
   async getAllGrammarFlashcards(sortDirection?: "ascending" | "descending", level?: string): Promise<GrammarFlashcard[]> {
-    // Return sample grammar flashcards for now
-    const sampleFlashcards: GrammarFlashcard[] = [
-      {
-        id: 1,
-        problemSentence: "日本に来て___、日本語が上手になりました。",
-        exampleSentence: "日本に来てから、日本語が上手になりました。",
-        exampleKorean: "일본에 와서부터 일본어가 능숙해졌습니다.",
-        grammar: "～てから",
-        meaning: "～한 후에, ～하고 나서",
-        audioUrl: null
-      },
-      {
-        id: 2,
-        problemSentence: "雨が降って___、試合が中止になった。",
-        exampleSentence: "雨が降ったため、試合が中止になった。",
-        exampleKorean: "비가 내렸기 때문에 경기가 중지되었다.",
-        grammar: "～ため",
-        meaning: "～때문에, ～으로 인해",
-        audioUrl: null
-      },
-      {
-        id: 3,
-        problemSentence: "この本は難しくて、読む___がない。",
-        exampleSentence: "この本は難しくて、読む気がない。",
-        exampleKorean: "이 책은 어려워서 읽을 기분이 없다.",
-        grammar: "～気がない",
-        meaning: "～할 마음이 없다, ～하고 싶지 않다",
-        audioUrl: null
-      },
-      {
-        id: 4,
-        problemSentence: "彼は忙しい___、いつも元気だ。",
-        exampleSentence: "彼は忙しいにもかかわらず、いつも元気だ。",
-        exampleKorean: "그는 바쁨에도 불구하고 항상 건강하다.",
-        grammar: "～にもかかわらず",
-        meaning: "～에도 불구하고",
-        audioUrl: null
-      },
-      {
-        id: 5,
-        problemSentence: "子供の___、よく働いている。",
-        exampleSentence: "子供のわりに、よく働いている。",
-        exampleKorean: "아이치고는 잘 일하고 있다.",
-        grammar: "～わりに",
-        meaning: "～치고는, ～에 비해",
-        audioUrl: null
+    try {
+      const allResults: any[] = [];
+      let hasMore = true;
+      let startCursor: string | undefined = undefined;
+
+      // Fetch all pages from the grammar database
+      while (hasMore) {
+        const response = await notion.databases.query({
+          database_id: this.grammarDatabaseId,
+          start_cursor: startCursor,
+          page_size: 100
+        });
+
+        allResults.push(...response.results);
+        hasMore = response.has_more;
+        startCursor = response.next_cursor || undefined;
       }
-    ];
-    
-    return sampleFlashcards;
+
+      // Transform Notion pages to GrammarFlashcard format
+      const flashcards: GrammarFlashcard[] = allResults.map((page: any, index: number) => {
+        const properties = page.properties;
+        
+        const grammar = properties['문법']?.title?.[0]?.plain_text || "";
+        const problemSentence = properties['문제풀이']?.rich_text?.[0]?.plain_text || "";
+        const exampleSentence = properties['예문']?.rich_text?.[0]?.plain_text || "";
+        const exampleKorean = properties['예문해석']?.rich_text?.[0]?.plain_text || "";
+        const meaning = properties['뜻']?.rich_text?.[0]?.plain_text || "";
+        
+        return {
+          id: index + 1,
+          problemSentence,
+          exampleSentence,
+          exampleKorean,
+          grammar,
+          meaning,
+          audioUrl: null
+        };
+      });
+
+      // Apply sorting if specified
+      if (sortDirection === "descending") {
+        flashcards.reverse();
+      }
+
+      return flashcards;
+    } catch (error) {
+      console.error("Error fetching grammar flashcards from Notion:", error);
+      throw new Error("Failed to fetch grammar flashcards from Notion");
+    }
   }
 
   async getGrammarFlashcard(id: number): Promise<GrammarFlashcard | undefined> {
@@ -440,24 +440,98 @@ export class NotionStorage implements IStorage {
     };
   }
 
-  // Grammar progress methods (placeholder implementations for now)
+  // Grammar progress methods - fetch from Notion database
   async getGrammarProgress(): Promise<GrammarProgress[]> {
-    // For now, return empty array. Will implement later
-    return [];
+    try {
+      const progressData: GrammarProgress[] = [];
+      
+      // Get progress from Notion grammar database directly
+      const response = await notion.databases.query({
+        database_id: this.grammarDatabaseId,
+      });
+
+      response.results.forEach((page: any, index: number) => {
+        const properties = page.properties;
+        const isKnown = properties['암기']?.checkbox || false;
+        
+        progressData.push({
+          id: index + 1,
+          grammarFlashcardId: index + 1, // Using index as flashcard ID
+          known: isKnown
+        });
+      });
+
+      return progressData;
+    } catch (error) {
+      console.error("Error fetching grammar progress from Notion:", error);
+      return [];
+    }
   }
 
   async recordGrammarProgress(insertProgress: InsertGrammarProgress): Promise<GrammarProgress> {
-    // For now, return a mock progress. Will implement later
-    return {
-      id: Date.now(),
-      grammarFlashcardId: insertProgress.grammarFlashcardId,
-      known: insertProgress.known
-    };
+    try {
+      console.log('Recording grammar progress for flashcard:', insertProgress.grammarFlashcardId, 'Known:', insertProgress.known);
+      
+      // Get all pages from the grammar database
+      const response = await notion.databases.query({
+        database_id: this.grammarDatabaseId,
+      });
+
+      // Find the page that corresponds to this flashcard ID
+      const targetPage = response.results[insertProgress.grammarFlashcardId - 1]; // flashcard ID is 1-based
+      
+      if (targetPage) {
+        // Update the '암기' checkbox in Notion
+        await notion.pages.update({
+          page_id: targetPage.id,
+          properties: {
+            '암기': {
+              checkbox: insertProgress.known
+            }
+          }
+        });
+        
+        console.log(`Updated grammar progress in Notion for page ${targetPage.id}`);
+      } else {
+        console.log(`No page found for flashcard ID ${insertProgress.grammarFlashcardId}`);
+      }
+
+      return {
+        id: Date.now(),
+        grammarFlashcardId: insertProgress.grammarFlashcardId,
+        known: insertProgress.known
+      };
+    } catch (error) {
+      console.error("Error recording grammar progress:", error);
+      throw new Error("Failed to record grammar progress");
+    }
   }
 
   async getGrammarProgressStats(): Promise<{ known: number; unknown: number }> {
-    // For now, return zeros. Will implement later
-    return { known: 0, unknown: 0 };
+    try {
+      const response = await notion.databases.query({
+        database_id: this.grammarDatabaseId,
+      });
+
+      let known = 0;
+      let unknown = 0;
+
+      response.results.forEach((page: any) => {
+        const properties = page.properties;
+        const isKnown = properties['암기']?.checkbox || false;
+        
+        if (isKnown) {
+          known++;
+        } else {
+          unknown++;
+        }
+      });
+
+      return { known, unknown };
+    } catch (error) {
+      console.error("Error fetching grammar progress stats:", error);
+      return { known: 0, unknown: 0 };
+    }
   }
 }
 
