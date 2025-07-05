@@ -339,7 +339,7 @@ export class NotionStorage implements IStorage {
         
         return {
           id: index + 1, // Sequential ID starting from 1
-          problemSentence: properties['문제문']?.rich_text?.[0]?.plain_text || "",
+          problemSentence: properties['문제풀이']?.rich_text?.[0]?.plain_text || "",
           exampleSentence: properties['예문']?.rich_text?.[0]?.plain_text || "",
           exampleKorean: properties['예문해석']?.rich_text?.[0]?.plain_text || "",
           grammar: properties['문법']?.title?.[0]?.plain_text || "",
