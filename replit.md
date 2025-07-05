@@ -103,6 +103,14 @@ Changelog:
   * Implemented consistent header structure with sticky navigation
   * Optimized mobile layout with reduced padding and proper spacing
   * Changed grammar page header from "J-Flash" to "Grammar" while keeping "N2" badge
+- July 05, 2025. Connected N2 grammar to Notion database:
+  * Successfully integrated N2 grammar flashcards with Notion database (227fe404b3dc8040946ce0921f4d9550)
+  * Implemented Random field sorting for grammar flashcards (132 total cards)
+  * Added multiple choice functionality to grammar card front side
+  * Each grammar card now shows 3 options: 1 correct answer + 2 random incorrect answers from other grammar patterns
+  * Removed ~ prefix from grammar choices for cleaner display
+  * Added visual feedback for correct/incorrect choices with color coding
+  * Progress tracking integrated with Notion checkbox field for persistent learning state
 ```
 
 ## User Preferences

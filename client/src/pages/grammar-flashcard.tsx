@@ -257,6 +257,7 @@ export default function GrammarFlashcardPage() {
         {currentFlashcard && (
           <GrammarFlashcardComponent
             flashcard={currentFlashcard}
+            allFlashcards={flashcards}
             onMarkAsKnown={handleMarkAsKnown}
             onMarkAsUnknown={handleMarkAsUnknown}
           />

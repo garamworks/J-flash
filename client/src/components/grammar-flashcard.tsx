@@ -5,19 +5,60 @@ import { useSpeech } from "@/hooks/use-speech";
 
 interface GrammarFlashcardProps {
   flashcard: GrammarFlashcard;
+  allFlashcards: GrammarFlashcard[];
   onMarkAsKnown: () => void;
   onMarkAsUnknown: () => void;
 }
 
-export default function GrammarFlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsUnknown }: GrammarFlashcardProps) {
+export default function GrammarFlashcardComponent({ flashcard, allFlashcards, onMarkAsKnown, onMarkAsUnknown }: GrammarFlashcardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
   const { speak } = useSpeech();
 
+  // Generate multiple choice options
+  const generateChoices = () => {
+    // Remove ~ prefix from grammar patterns
+    const cleanGrammar = (grammar: string) => grammar.replace(/^〜/, '');
+    
+    const correctAnswer = cleanGrammar(flashcard.grammar);
+    
+    // Safety check for allFlashcards
+    if (!allFlashcards || allFlashcards.length < 3) {
+      return {
+        choices: [correctAnswer],
+        correctIndex: 0
+      };
+    }
+    
+    // Get two random incorrect options from other flashcards
+    const otherFlashcards = allFlashcards.filter(f => f.id !== flashcard.id);
+    const shuffled = otherFlashcards.sort(() => Math.random() - 0.5);
+    const wrongChoices = shuffled.slice(0, 2).map(f => cleanGrammar(f.grammar));
+    
+    // Combine and shuffle all choices
+    const allChoices = [correctAnswer, ...wrongChoices];
+    const shuffledChoices = allChoices.sort(() => Math.random() - 0.5);
+    
+    return {
+      choices: shuffledChoices,
+      correctIndex: shuffledChoices.indexOf(correctAnswer)
+    };
+  };
+
+  const { choices, correctIndex } = generateChoices();
+
   const handleCardClick = (e: React.MouseEvent) => {
-    // Don't flip if speaker button was clicked
-    if ((e.target as HTMLElement).closest('.speaker-btn')) return;
+    // Don't flip if speaker button or choice button was clicked
+    if ((e.target as HTMLElement).closest('.speaker-btn, .choice-btn')) return;
     setIsFlipped(!isFlipped);
+  };
+
+  const handleChoiceClick = (choiceIndex: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedChoice(choiceIndex);
+    // Automatically flip to show answer after selection
+    setTimeout(() => setIsFlipped(true), 500);
   };
 
   const handleAudioClick = (e: React.MouseEvent) => {
@@ -66,15 +107,37 @@ export default function GrammarFlashcardComponent({ flashcard, onMarkAsKnown, on
       {/* Card Container with flexible height */}
       <div className="flashcard-container" onClick={handleCardClick} style={{ minHeight: '400px', marginBottom: '0px' }}>
         <div className={`flashcard-inner ${isFlipped ? 'flipped' : ''} ${isTransitioning ? 'transitioning' : ''}`}>
-          {/* Card Front - Problem Sentence */}
+          {/* Card Front - Problem Sentence with Multiple Choice */}
           <div className="flashcard-face flashcard-front">
             <div className="bg-white rounded-2xl shadow-lg px-4 py-6 relative cursor-pointer min-h-[400px] flex flex-col justify-center">
               {/* Problem Sentence with blanks */}
-              <div className="text-center flex items-center justify-center flex-1 pb-8">
-                <p className="text-3xl font-bold text-gray-900 leading-relaxed">
+              <div className="text-center flex items-center justify-center flex-1 pb-16">
+                <p className="text-3xl font-bold text-gray-900 leading-relaxed mb-8">
                   {flashcard.problemSentence}
                 </p>
               </div>
+              
+              {/* Multiple Choice Options */}
+              {allFlashcards && allFlashcards.length > 0 && (
+                <div className="flex flex-col gap-3 px-4 pb-8">
+                  {choices.map((choice, index) => (
+                    <button
+                      key={index}
+                      className={`choice-btn py-3 px-6 rounded-xl text-lg font-medium transition-all duration-200 ${
+                        selectedChoice === index
+                          ? index === correctIndex
+                            ? 'bg-green-500 text-white'
+                            : 'bg-red-500 text-white'
+                          : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
+                      }`}
+                      onClick={(e) => handleChoiceClick(index, e)}
+                      disabled={selectedChoice !== null}
+                    >
+                      {choice}
+                    </button>
+                  ))}
+                </div>
+              )}
               
               {/* Speaker Button - Bottom Right */}
               <button
