@@ -179,7 +179,7 @@ export default function GrammarFlashcardPage() {
               <div className="absolute left-0 top-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300">
                 <div className="p-4 border-b border-gray-200">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-semibold text-gray-900">J-Flash</h2>
+                    <h2 className="text-lg font-semibold text-gray-900">Grammar</h2>
                     <button
                       onClick={() => setIsMenuOpen(false)}
                       className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
