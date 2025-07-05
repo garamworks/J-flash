@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Volume2 } from "lucide-react";
 import { GrammarFlashcard } from "@shared/schema";
 import { useSpeech } from "@/hooks/use-speech";
@@ -15,6 +15,13 @@ export default function GrammarFlashcardComponent({ flashcard, allFlashcards, on
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
   const { speak } = useSpeech();
+
+  // Reset states when flashcard changes
+  useEffect(() => {
+    setIsFlipped(false);
+    setIsTransitioning(false);
+    setSelectedChoice(null);
+  }, [flashcard.id]);
 
   // Generate multiple choice options - memoized to prevent regeneration
   const { choices, correctIndex } = useMemo(() => {
