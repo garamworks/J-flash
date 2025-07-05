@@ -217,7 +217,7 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
 
               {/* Furigana Reading (Hiragana) */}
               <div className="text-center" style={{ marginBottom: '1.8rem' }}>
-                <p className="text-3xl font-semibold text-gray-600" style={{ lineHeight: '0.7' }}>
+                <p className="text-2xl font-semibold text-gray-600" style={{ lineHeight: '0.7' }}>
                   {flashcard.furigana}
                 </p>
               </div>
