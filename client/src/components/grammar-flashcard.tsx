@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Volume2 } from "lucide-react";
 import { GrammarFlashcard } from "@shared/schema";
 import { useSpeech } from "@/hooks/use-speech";
@@ -16,8 +16,8 @@ export default function GrammarFlashcardComponent({ flashcard, allFlashcards, on
   const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
   const { speak } = useSpeech();
 
-  // Generate multiple choice options
-  const generateChoices = () => {
+  // Generate multiple choice options - memoized to prevent regeneration
+  const { choices, correctIndex } = useMemo(() => {
     // Remove ~ prefix from grammar patterns
     const cleanGrammar = (grammar: string) => grammar.replace(/^〜/, '');
     
@@ -44,9 +44,7 @@ export default function GrammarFlashcardComponent({ flashcard, allFlashcards, on
       choices: shuffledChoices,
       correctIndex: shuffledChoices.indexOf(correctAnswer)
     };
-  };
-
-  const { choices, correctIndex } = generateChoices();
+  }, [flashcard.id, flashcard.grammar, allFlashcards]);
 
   const handleCardClick = (e: React.MouseEvent) => {
     // Don't flip if speaker button or choice button was clicked
