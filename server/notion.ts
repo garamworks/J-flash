@@ -1,8 +1,8 @@
 import { Client } from "@notionhq/client";
 
-// Initialize Notion client
+// Initialize Notion client with N2-specific secrets
 export const notion = new Client({
-    auth: process.env.NOTION_INTEGRATION_SECRET!,
+    auth: process.env.N2_NOTION_INTEGRATION_SECRET || process.env.NOTION_INTEGRATION_SECRET!,
 });
 
 // Extract the page ID from the Notion page URL
@@ -15,7 +15,9 @@ function extractPageIdFromUrl(pageUrl: string): string {
     throw Error("Failed to extract page ID");
 }
 
-export const NOTION_PAGE_ID = extractPageIdFromUrl(process.env.NOTION_PAGE_URL!);
+export const NOTION_PAGE_ID = extractPageIdFromUrl(
+    process.env.N2_NOTION_PAGE_URL || process.env.NOTION_PAGE_URL!
+);
 
 /**
  * Lists all child databases contained within NOTION_PAGE_ID
