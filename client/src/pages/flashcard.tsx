@@ -399,12 +399,18 @@ export default function FlashcardPage() {
       )}
 
       <main className="max-w-md mx-auto px-4 py-6">
-        <FlashcardComponent 
-          key={currentIndex}
-          flashcard={currentCard}
-          onMarkAsKnown={handleMarkAsKnown}
-          onMarkAsUnknown={handleMarkAsUnknown}
-        />
+        {currentCard ? (
+          <FlashcardComponent 
+            key={currentIndex}
+            flashcard={currentCard}
+            onMarkAsKnown={handleMarkAsKnown}
+            onMarkAsUnknown={handleMarkAsUnknown}
+          />
+        ) : (
+          <div className="flex items-center justify-center h-64">
+            <div className="text-lg text-gray-600">데이터를 불러오는 중...</div>
+          </div>
+        )}
       </main>
     </div>
   );

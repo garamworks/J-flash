@@ -130,7 +130,7 @@ export class MemStorage implements IStorage {
 
 // Notion-based storage implementation
 export class NotionStorage implements IStorage {
-  private flashcardsDatabaseId: string = "213fe404b3dc802e8b1bd26d77f8cc84"; // N2 database ID from user's link
+  private flashcardsDatabaseId: string = "216fe404b3dc804a9130f21b2b3a0e54"; // Temporarily using N3 database until N2 is shared
   private databaseIds: Map<string, string> = new Map();
   private n3DatabaseId: string = "216fe404b3dc804a9130f21b2b3a0e54"; // N3 database ID
   private n4DatabaseId: string = "215fe404b3dc8099b972e96296fc14af"; // N4 database ID
@@ -294,6 +294,5 @@ export class NotionStorage implements IStorage {
 }
 
 // Use Notion storage if secrets are available, otherwise fallback to memory storage
-export const storage = process.env.NOTION_INTEGRATION_SECRET && process.env.NOTION_PAGE_URL 
-  ? new NotionStorage() 
-  : new MemStorage();
+// Temporarily use MemStorage until Notion databases are properly shared with integration
+export const storage = new MemStorage();
