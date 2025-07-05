@@ -64,14 +64,14 @@ export default function GrammarFlashcardComponent({ flashcard, onMarkAsKnown, on
   return (
     <div className="w-full max-w-lg mx-auto">
       {/* Card Container with fixed height */}
-      <div className="flashcard-container mb-2" onClick={handleCardClick} style={{ height: '520px' }}>
+      <div className="flashcard-container mb-1" onClick={handleCardClick} style={{ height: '520px' }}>
         <div className={`flashcard-inner ${isFlipped ? 'flipped' : ''} ${isTransitioning ? 'transitioning' : ''}`}>
           {/* Card Front - Problem Sentence */}
           <div className="flashcard-face flashcard-front">
-            <div className="bg-white rounded-2xl shadow-lg p-10 relative cursor-pointer h-full">
+            <div className="bg-white rounded-2xl shadow-lg px-4 py-10 relative cursor-pointer h-full">
               {/* Problem Sentence with blanks */}
               <div className="text-center flex items-center justify-center h-full pb-16 pt-8">
-                <p className="text-3xl font-bold text-gray-900 leading-relaxed max-w-[calc(100%-80px)]">
+                <p className="text-3xl font-bold text-gray-900 leading-relaxed">
                   {flashcard.problemSentence}
                 </p>
               </div>
@@ -90,8 +90,8 @@ export default function GrammarFlashcardComponent({ flashcard, onMarkAsKnown, on
 
           {/* Card Back - Answer */}
           <div className="flashcard-face flashcard-back">
-            <div className="bg-white rounded-2xl shadow-lg p-10 cursor-pointer h-full flex flex-col justify-center relative">
-              <div className="pb-16 pt-8">
+            <div className="bg-white rounded-2xl shadow-lg px-4 py-10 cursor-pointer h-full flex flex-col justify-center relative">
+              <div className="pb-24 pt-8">
                 {/* Example Sentence (Complete) */}
                 <div className="text-center mb-4">
                   <p className="text-2xl font-bold text-gray-900 leading-relaxed">
@@ -114,16 +114,16 @@ export default function GrammarFlashcardComponent({ flashcard, onMarkAsKnown, on
                 </div>
 
                 {/* Meaning */}
-                <div className="text-center">
+                <div className="text-center pb-4">
                   <p className="text-xl text-gray-800">
                     {flashcard.meaning}
                   </p>
                 </div>
               </div>
               
-              {/* Speaker Button - Bottom Right */}
+              {/* Speaker Button - Bottom Right, below content */}
               <button
-                className="speaker-btn absolute bottom-4 right-4 bg-blue-500 hover:bg-blue-600 rounded-full shadow-md flex items-center justify-center"
+                className="speaker-btn absolute bottom-2 right-4 bg-blue-500 hover:bg-blue-600 rounded-full shadow-md flex items-center justify-center"
                 onClick={handleAudioClick}
                 title="읽어주기"
                 style={{ touchAction: 'manipulation' }}
