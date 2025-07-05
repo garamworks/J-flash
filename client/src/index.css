@@ -102,14 +102,18 @@
 .speaker-btn {
   transform: scale(1.3);
   transform-origin: center;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
-/* Prevent mobile touch scaling issues */
-.speaker-btn:active {
-  transform: scale(1.3) !important;
-}
-
-.speaker-btn:focus {
+/* Prevent any scaling on mobile touch */
+.speaker-btn:active,
+.speaker-btn:focus,
+.speaker-btn:hover {
   transform: scale(1.3) !important;
 }
 
