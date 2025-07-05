@@ -136,7 +136,7 @@ export default function GrammarFlashcardComponent({ flashcard, onMarkAsKnown, on
       </div>
 
       {/* Action Buttons - Fixed position below card */}
-      <div className="flex gap-6 justify-center w-full">
+      <div className="flex gap-6 justify-center w-full mt-6">
         <button
           onClick={() => handleButtonAction(onMarkAsKnown)}
           className="action-btn flex-1 text-white font-semibold py-4 px-6 rounded-3xl text-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
