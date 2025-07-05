@@ -68,9 +68,9 @@ export default function GrammarFlashcardComponent({ flashcard, onMarkAsKnown, on
           {/* Card Front - Problem Sentence */}
           <div className="flashcard-face flashcard-front">
             <div className="bg-white rounded-2xl shadow-lg p-6 relative cursor-pointer">
-              {/* Speaker Button */}
+              {/* Speaker Button - Bottom Right */}
               <button
-                className="speaker-btn absolute top-4 right-4 bg-blue-500 hover:bg-blue-600 rounded-full shadow-md flex items-center justify-center"
+                className="speaker-btn absolute bottom-4 right-4 bg-blue-500 hover:bg-blue-600 rounded-full shadow-md flex items-center justify-center"
                 onClick={handleAudioClick}
                 title="읽어주기"
                 style={{ touchAction: 'manipulation' }}
@@ -79,17 +79,9 @@ export default function GrammarFlashcardComponent({ flashcard, onMarkAsKnown, on
               </button>
 
               {/* Problem Sentence with blanks */}
-              <div className="text-center mt-12 mb-8">
-                <h2 className="text-2xl font-semibold text-gray-700 mb-6">문제</h2>
+              <div className="text-center flex items-center justify-center h-full">
                 <p className="text-3xl font-bold text-gray-900 leading-relaxed">
                   {flashcard.problemSentence}
-                </p>
-              </div>
-
-              {/* Instruction */}
-              <div className="text-center">
-                <p className="text-lg text-gray-600">
-                  빈칸에 들어갈 알맞은 문법을 생각해보세요
                 </p>
               </div>
             </div>
@@ -98,9 +90,9 @@ export default function GrammarFlashcardComponent({ flashcard, onMarkAsKnown, on
           {/* Card Back - Answer */}
           <div className="flashcard-face flashcard-back">
             <div className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer h-full flex flex-col justify-center relative">
-              {/* Speaker Button */}
+              {/* Speaker Button - Bottom Right */}
               <button
-                className="speaker-btn absolute top-4 right-4 bg-blue-500 hover:bg-blue-600 rounded-full shadow-md flex items-center justify-center"
+                className="speaker-btn absolute bottom-4 right-4 bg-blue-500 hover:bg-blue-600 rounded-full shadow-md flex items-center justify-center"
                 onClick={handleAudioClick}
                 title="읽어주기"
                 style={{ touchAction: 'manipulation' }}
@@ -110,7 +102,6 @@ export default function GrammarFlashcardComponent({ flashcard, onMarkAsKnown, on
 
               {/* Example Sentence (Complete) */}
               <div className="text-center" style={{ marginBottom: '2rem' }}>
-                <h3 className="text-xl font-semibold text-gray-700 mb-3">예문</h3>
                 <p className="text-2xl font-bold text-gray-900 leading-relaxed">
                   {flashcard.exampleSentence}
                 </p>
@@ -118,7 +109,6 @@ export default function GrammarFlashcardComponent({ flashcard, onMarkAsKnown, on
 
               {/* Korean Translation */}
               <div className="text-center" style={{ marginBottom: '2rem' }}>
-                <h3 className="text-xl font-semibold text-gray-700 mb-3">해석</h3>
                 <p className="text-xl text-gray-800 leading-relaxed">
                   {flashcard.exampleKorean}
                 </p>
@@ -126,7 +116,6 @@ export default function GrammarFlashcardComponent({ flashcard, onMarkAsKnown, on
 
               {/* Grammar Pattern */}
               <div className="text-center" style={{ marginBottom: '1rem' }}>
-                <h3 className="text-xl font-semibold text-gray-700 mb-3">문법</h3>
                 <p className="text-2xl font-bold text-blue-600">
                   {flashcard.grammar}
                 </p>
@@ -134,7 +123,6 @@ export default function GrammarFlashcardComponent({ flashcard, onMarkAsKnown, on
 
               {/* Meaning */}
               <div className="text-center">
-                <h3 className="text-xl font-semibold text-gray-700 mb-3">뜻</h3>
                 <p className="text-xl text-gray-800">
                   {flashcard.meaning}
                 </p>

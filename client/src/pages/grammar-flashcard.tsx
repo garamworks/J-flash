@@ -153,38 +153,7 @@ export default function GrammarFlashcardPage() {
           </Link>
         </div>
 
-        {/* Progress Stats */}
-        {progressStats && (
-          <ProgressStats
-            knownCount={progressStats.known}
-            unknownCount={progressStats.unknown}
-            progressPercentage={progressPercentage}
-          />
-        )}
 
-        {/* Controls */}
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex gap-4">
-            <button
-              onClick={handleReset}
-              className="flex items-center gap-2 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors"
-            >
-              <RotateCcw size={20} />
-              처음부터
-            </button>
-            
-            <button
-              onClick={handleSortToggle}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
-            >
-              정렬: {sortDirection === "ascending" ? "오름차순" : "내림차순"}
-            </button>
-          </div>
-          
-          <div className="text-lg font-semibold text-gray-700">
-            {currentIndex + 1} / {totalFlashcards}
-          </div>
-        </div>
 
         {/* Flashcard */}
         {currentFlashcard && (
