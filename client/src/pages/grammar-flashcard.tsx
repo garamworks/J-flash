@@ -40,15 +40,28 @@ export default function GrammarFlashcardPage() {
   // Record progress mutation
   const recordProgressMutation = useMutation({
     mutationFn: async (progress: InsertGrammarProgress) => {
+      console.log('=== FRONTEND PROGRESS RECORDING ===');
+      console.log('Sending progress data:', progress);
+      console.log('Current flashcard displayed:', currentFlashcard?.grammar, currentFlashcard?.problemSentence?.substring(0, 30));
+      console.log('User agent:', navigator.userAgent);
+      console.log('Timestamp:', new Date().toISOString());
+      
       const response = await fetch('/api/grammar-progress', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(progress),
       });
+      
+      console.log('Response status:', response.status);
       if (!response.ok) {
         throw new Error('Failed to record progress');
       }
-      return response.json();
+      
+      const result = await response.json();
+      console.log('Response data:', result);
+      console.log('=== FRONTEND RECORDING END ===');
+      
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/grammar-progress'] });

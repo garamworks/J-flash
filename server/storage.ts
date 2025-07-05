@@ -372,26 +372,38 @@ export class NotionStorage implements IStorage {
 
   async recordGrammarProgress(insertProgress: InsertGrammarProgress): Promise<GrammarProgress> {
     try {
+      console.log('=== PROGRESS RECORDING START ===');
       console.log('Recording grammar progress for flashcard:', insertProgress.grammarFlashcardId, 'Known:', insertProgress.known);
+      console.log('Request timestamp:', new Date().toISOString());
       
       // First, get the current flashcards as shown to the user to find the target page ID
       const currentFlashcards = await this.getAllGrammarFlashcards();
+      console.log(`Total flashcards available: ${currentFlashcards.length}`);
+      
+      // Log first 5 flashcards for debugging
+      console.log('First 5 flashcards:');
+      currentFlashcards.slice(0, 5).forEach(card => {
+        console.log(`  ID ${card.id}: ${card.grammar} - ${card.problemSentence.substring(0, 20)}...`);
+      });
       
       // Find the flashcard with the matching ID
       const targetFlashcard = currentFlashcards.find(f => f.id === insertProgress.grammarFlashcardId);
       
       if (!targetFlashcard) {
-        console.log(`No flashcard found with ID ${insertProgress.grammarFlashcardId}`);
+        console.log(`ERROR: No flashcard found with ID ${insertProgress.grammarFlashcardId}`);
+        console.log('Available IDs:', currentFlashcards.map(f => f.id).slice(0, 10));
         throw new Error(`Flashcard with ID ${insertProgress.grammarFlashcardId} not found`);
       }
       
       if (!targetFlashcard.notionPageId) {
-        console.log(`No Notion page ID found for flashcard ${insertProgress.grammarFlashcardId}`);
+        console.log(`ERROR: No Notion page ID found for flashcard ${insertProgress.grammarFlashcardId}`);
         throw new Error(`No Notion page ID found for flashcard ${insertProgress.grammarFlashcardId}`);
       }
       
-      console.log(`Target flashcard: ${targetFlashcard.grammar} - ${targetFlashcard.problemSentence}`);
-      console.log(`Target page ID: ${targetFlashcard.notionPageId}`);
+      console.log(`SUCCESS: Found target flashcard`);
+      console.log(`  Grammar: ${targetFlashcard.grammar}`);
+      console.log(`  Problem: ${targetFlashcard.problemSentence}`);
+      console.log(`  Page ID: ${targetFlashcard.notionPageId}`);
       
       // Update the '암기' checkbox in Notion using the correct page ID
       await notion.pages.update({
@@ -403,8 +415,8 @@ export class NotionStorage implements IStorage {
         }
       });
       
-      console.log(`Updated grammar progress in Notion for page ${targetFlashcard.notionPageId}`);
-      console.log(`Grammar pattern: ${targetFlashcard.grammar}`);
+      console.log(`SUCCESS: Updated grammar progress in Notion`);
+      console.log('=== PROGRESS RECORDING END ===');
 
       return {
         id: Date.now(),
@@ -412,7 +424,7 @@ export class NotionStorage implements IStorage {
         known: insertProgress.known
       };
     } catch (error) {
-      console.error("Error recording grammar progress:", error);
+      console.error("ERROR in recordGrammarProgress:", error);
       throw error;
     }
   }

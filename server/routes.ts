@@ -69,9 +69,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get all grammar flashcards
   app.get("/api/grammar-flashcards", async (req, res) => {
     try {
+      // Add cache prevention headers
+      res.set({
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      });
+      
       const sortDirection = req.query.sort as "ascending" | "descending" | undefined;
       const level = req.query.level as string | undefined;
       const flashcards = await storage.getAllGrammarFlashcards(sortDirection, level);
+      
+      console.log(`Served ${flashcards.length} grammar flashcards`);
+      console.log(`First flashcard: ID ${flashcards[0]?.id} - ${flashcards[0]?.grammar}`);
+      
       res.json(flashcards);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch grammar flashcards" });
