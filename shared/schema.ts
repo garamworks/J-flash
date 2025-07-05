@@ -23,6 +23,7 @@ export const grammarFlashcards = pgTable("grammar_flashcards", {
   grammar: text("grammar").notNull(), // 문법(일본어)
   meaning: text("meaning").notNull(), // 뜻(한국어)
   audioUrl: text("audio_url"), // 스피커 버튼용 오디오
+  notionPageId: text("notion_page_id"), // Notion 페이지 ID for accurate mapping
 });
 
 export const userProgress = pgTable("user_progress", {
