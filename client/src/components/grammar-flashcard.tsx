@@ -63,7 +63,23 @@ export default function GrammarFlashcardComponent({ flashcard, allFlashcards, on
     e.stopPropagation();
     setSelectedChoice(choiceIndex);
     // Automatically flip to show answer after selection
-    setTimeout(() => setIsFlipped(true), 500);
+    setTimeout(() => {
+      setIsFlipped(true);
+      // Read example sentence after flipping
+      setTimeout(() => {
+        if (flashcard.audioUrl) {
+          const audio = new Audio(flashcard.audioUrl);
+          audio.play().catch(error => {
+            console.error('Error playing audio:', error);
+            // Fallback to TTS for example sentence
+            speak(flashcard.exampleSentence, 'ja-JP');
+          });
+        } else {
+          // Fallback to TTS for example sentence
+          speak(flashcard.exampleSentence, 'ja-JP');
+        }
+      }, 300); // Wait for flip animation to complete
+    }, 500);
   };
 
   const handleAudioClick = (e: React.MouseEvent) => {
