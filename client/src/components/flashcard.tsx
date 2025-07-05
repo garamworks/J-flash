@@ -139,9 +139,9 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
         <div className={`flashcard-inner ${isFlipped ? 'flipped' : ''} ${isTransitioning ? 'transitioning' : ''}`}>
           {/* Card Front */}
           <div className="flashcard-face flashcard-front">
-            <div className="bg-white rounded-2xl shadow-lg p-12 relative cursor-pointer">
+            <div className="bg-white rounded-2xl shadow-lg p-6 relative cursor-pointer">
               {/* Square Image with Speaker Icon */}
-              <div className="relative mb-12">
+              <div className="relative mb-6">
                 {flashcard.imageUrl ? (
                   <img
                     src={flashcard.imageUrl}
@@ -156,7 +156,7 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
                 
                 {/* Speaker Buttons - Left and Right */}
                 <button
-                  className="speaker-btn absolute bottom-6 left-6 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-6 shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
+                  className="speaker-btn absolute bottom-3 left-3 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
                   onClick={handleWordAudioClick}
                   title="단어발음"
                 >
@@ -164,7 +164,7 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
                 </button>
                 
                 <button
-                  className="speaker-btn absolute bottom-6 right-6 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-6 shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
+                  className="speaker-btn absolute bottom-3 right-3 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
                   onClick={handlePronunciationAudioClick}
                   title="발음"
                 >
