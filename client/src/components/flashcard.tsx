@@ -156,7 +156,7 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
                 
                 {/* Speaker Buttons - Left and Right */}
                 <button
-                  className="speaker-btn absolute bottom-3 left-3 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
+                  className="speaker-btn absolute bottom-4 left-4 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
                   onClick={handleWordAudioClick}
                   title="단어발음"
                 >
@@ -164,7 +164,7 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
                 </button>
                 
                 <button
-                  className="speaker-btn absolute bottom-3 right-3 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
+                  className="speaker-btn absolute bottom-4 right-4 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
                   onClick={handlePronunciationAudioClick}
                   title="발음"
                 >
