@@ -394,8 +394,8 @@ export class NotionStorage implements IStorage {
         startCursor = response.next_cursor || undefined;
       }
 
-      // Transform Notion pages to GrammarFlashcard format
-      const flashcards: GrammarFlashcard[] = allResults.map((page: any, index: number) => {
+      // Transform Notion pages to GrammarFlashcard format with Random field
+      const flashcardsWithRandom = allResults.map((page: any, index: number) => {
         const properties = page.properties;
         
         const grammar = properties['문법']?.title?.[0]?.plain_text || "";
@@ -403,6 +403,7 @@ export class NotionStorage implements IStorage {
         const exampleSentence = properties['예문']?.rich_text?.[0]?.plain_text || "";
         const exampleKorean = properties['예문해석']?.rich_text?.[0]?.plain_text || "";
         const meaning = properties['뜻']?.rich_text?.[0]?.plain_text || "";
+        const randomValue = properties['Random']?.formula?.number || 0;
         
         return {
           id: index + 1,
@@ -411,14 +412,28 @@ export class NotionStorage implements IStorage {
           exampleKorean,
           grammar,
           meaning,
-          audioUrl: null
+          audioUrl: null,
+          randomValue // Store random value for sorting
         };
       });
 
-      // Apply sorting if specified
-      if (sortDirection === "descending") {
-        flashcards.reverse();
-      }
+      // Sort by Random field value
+      flashcardsWithRandom.sort((a, b) => {
+        if (sortDirection === "descending") {
+          return b.randomValue - a.randomValue;
+        } else {
+          return a.randomValue - b.randomValue;
+        }
+      });
+
+      // Remove randomValue from final result and reassign sequential IDs
+      const flashcards: GrammarFlashcard[] = flashcardsWithRandom.map((card, index) => {
+        const { randomValue, ...flashcard } = card;
+        return {
+          ...flashcard,
+          id: index + 1 // Reassign sequential IDs after sorting
+        };
+      });
 
       return flashcards;
     } catch (error) {
@@ -445,19 +460,46 @@ export class NotionStorage implements IStorage {
     try {
       const progressData: GrammarProgress[] = [];
       
-      // Get progress from Notion grammar database directly
-      const response = await notion.databases.query({
-        database_id: this.grammarDatabaseId,
-      });
+      // Get all pages from the grammar database
+      const allResults: any[] = [];
+      let hasMore = true;
+      let startCursor: string | undefined = undefined;
 
-      response.results.forEach((page: any, index: number) => {
+      while (hasMore) {
+        const response = await notion.databases.query({
+          database_id: this.grammarDatabaseId,
+          start_cursor: startCursor,
+          page_size: 100
+        });
+
+        allResults.push(...response.results);
+        hasMore = response.has_more;
+        startCursor = response.next_cursor || undefined;
+      }
+
+      // Create the same sorted mapping as in getAllGrammarFlashcards
+      const flashcardsWithRandom = allResults.map((page: any, index: number) => {
         const properties = page.properties;
+        const randomValue = properties['Random']?.formula?.number || 0;
         const isKnown = properties['암기']?.checkbox || false;
         
+        return {
+          originalIndex: index,
+          page,
+          randomValue,
+          isKnown
+        };
+      });
+
+      // Sort by Random field value (ascending by default)
+      flashcardsWithRandom.sort((a, b) => a.randomValue - b.randomValue);
+
+      // Create progress data with sorted order
+      flashcardsWithRandom.forEach((entry, index) => {
         progressData.push({
           id: index + 1,
-          grammarFlashcardId: index + 1, // Using index as flashcard ID
-          known: isKnown
+          grammarFlashcardId: index + 1, // Using sorted index as flashcard ID
+          known: entry.isKnown
         });
       });
 
@@ -473,17 +515,44 @@ export class NotionStorage implements IStorage {
       console.log('Recording grammar progress for flashcard:', insertProgress.grammarFlashcardId, 'Known:', insertProgress.known);
       
       // Get all pages from the grammar database
-      const response = await notion.databases.query({
-        database_id: this.grammarDatabaseId,
+      const allResults: any[] = [];
+      let hasMore = true;
+      let startCursor: string | undefined = undefined;
+
+      while (hasMore) {
+        const response = await notion.databases.query({
+          database_id: this.grammarDatabaseId,
+          start_cursor: startCursor,
+          page_size: 100
+        });
+
+        allResults.push(...response.results);
+        hasMore = response.has_more;
+        startCursor = response.next_cursor || undefined;
+      }
+
+      // Create the same sorted mapping as in getAllGrammarFlashcards
+      const flashcardsWithRandom = allResults.map((page: any, index: number) => {
+        const properties = page.properties;
+        const randomValue = properties['Random']?.formula?.number || 0;
+        
+        return {
+          originalIndex: index,
+          page,
+          randomValue
+        };
       });
 
-      // Find the page that corresponds to this flashcard ID
-      const targetPage = response.results[insertProgress.grammarFlashcardId - 1]; // flashcard ID is 1-based
+      // Sort by Random field value (ascending by default)
+      flashcardsWithRandom.sort((a, b) => a.randomValue - b.randomValue);
+
+      // Find the page that corresponds to this flashcard ID (after sorting)
+      const targetEntry = flashcardsWithRandom[insertProgress.grammarFlashcardId - 1]; // flashcard ID is 1-based
       
-      if (targetPage) {
+      if (targetEntry) {
         // Update the '암기' checkbox in Notion
         await notion.pages.update({
-          page_id: targetPage.id,
+          page_id: targetEntry.page.id,
           properties: {
             '암기': {
               checkbox: insertProgress.known
@@ -491,7 +560,7 @@ export class NotionStorage implements IStorage {
           }
         });
         
-        console.log(`Updated grammar progress in Notion for page ${targetPage.id}`);
+        console.log(`Updated grammar progress in Notion for page ${targetEntry.page.id}`);
       } else {
         console.log(`No page found for flashcard ID ${insertProgress.grammarFlashcardId}`);
       }
@@ -509,14 +578,26 @@ export class NotionStorage implements IStorage {
 
   async getGrammarProgressStats(): Promise<{ known: number; unknown: number }> {
     try {
-      const response = await notion.databases.query({
-        database_id: this.grammarDatabaseId,
-      });
+      const allResults: any[] = [];
+      let hasMore = true;
+      let startCursor: string | undefined = undefined;
+
+      while (hasMore) {
+        const response = await notion.databases.query({
+          database_id: this.grammarDatabaseId,
+          start_cursor: startCursor,
+          page_size: 100
+        });
+
+        allResults.push(...response.results);
+        hasMore = response.has_more;
+        startCursor = response.next_cursor || undefined;
+      }
 
       let known = 0;
       let unknown = 0;
 
-      response.results.forEach((page: any) => {
+      allResults.forEach((page: any) => {
         const properties = page.properties;
         const isKnown = properties['암기']?.checkbox || false;
         
