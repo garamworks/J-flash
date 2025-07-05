@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ChevronLeft, RotateCcw, Home } from "lucide-react";
+import { ChevronLeft, RotateCcw, Home, Menu } from "lucide-react";
 import { Link } from "wouter";
 import { GrammarFlashcard, InsertGrammarProgress } from "@shared/schema";
 import GrammarFlashcardComponent from "@/components/grammar-flashcard";
@@ -136,21 +136,17 @@ export default function GrammarFlashcardPage() {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <Link href="/">
-            <button className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors">
-              <ChevronLeft size={24} />
-              <span className="text-lg">돌아가기</span>
-            </button>
-          </Link>
+          <button className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors">
+            <Menu size={24} />
+          </button>
           
           <h1 className="text-3xl font-bold text-gray-800">N2 문법</h1>
           
-          <Link href="/">
-            <button className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors">
-              <Home size={24} />
-              <span className="text-lg">홈</span>
-            </button>
-          </Link>
+          <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full">
+            <span className="text-xl font-bold text-gray-800">
+              {totalFlashcards - (progressStats?.known || 0)}
+            </span>
+          </div>
         </div>
 
 

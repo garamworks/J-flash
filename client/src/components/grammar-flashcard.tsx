@@ -69,7 +69,7 @@ export default function GrammarFlashcardComponent({ flashcard, onMarkAsKnown, on
           <div className="flashcard-face flashcard-front">
             <div className="bg-white rounded-2xl shadow-lg p-6 relative cursor-pointer min-h-[300px]">
               {/* Problem Sentence with blanks */}
-              <div className="text-center flex items-center justify-center h-full pb-16">
+              <div className="text-center flex items-center justify-center h-full pb-16 pt-8">
                 <p className="text-3xl font-bold text-gray-900 leading-relaxed max-w-[calc(100%-80px)]">
                   {flashcard.problemSentence}
                 </p>
@@ -107,7 +107,7 @@ export default function GrammarFlashcardComponent({ flashcard, onMarkAsKnown, on
 
                 {/* Grammar Pattern */}
                 <div className="text-center mb-4">
-                  <p className="text-2xl font-bold text-blue-600">
+                  <p className="text-2xl font-bold text-gray-900">
                     {flashcard.grammar}
                   </p>
                 </div>
