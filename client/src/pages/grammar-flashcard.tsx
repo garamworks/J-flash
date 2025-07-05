@@ -16,6 +16,17 @@ export default function GrammarFlashcardPage() {
   // Fetch grammar flashcards
   const { data: flashcards = [], isLoading, error } = useQuery<GrammarFlashcard[]>({
     queryKey: ['/api/grammar-flashcards', { sort: sortDirection, level: 'N2' }],
+    queryFn: async () => {
+      const params = new URLSearchParams({
+        sort: sortDirection,
+        level: 'N2'
+      });
+      const response = await fetch(`/api/grammar-flashcards?${params}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch grammar flashcards');
+      }
+      return response.json();
+    },
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
