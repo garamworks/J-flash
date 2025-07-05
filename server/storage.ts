@@ -381,12 +381,18 @@ export class NotionStorage implements IStorage {
       let hasMore = true;
       let startCursor: string | undefined = undefined;
 
-      // Fetch all pages from the grammar database
+      // Fetch only pages where '암기' is not checked
       while (hasMore) {
         const response = await notion.databases.query({
           database_id: this.grammarDatabaseId,
           start_cursor: startCursor,
-          page_size: 100
+          page_size: 100,
+          filter: {
+            property: '암기',
+            checkbox: {
+              equals: false
+            }
+          }
         });
 
         allResults.push(...response.results);
