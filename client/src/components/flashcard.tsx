@@ -90,12 +90,12 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
       const audio = new Audio(flashcard.wordAudioUrl);
       audio.play().catch(error => {
         console.error('Error playing word audio:', error);
-        // Fallback to TTS if audio file fails
-        speak(flashcard.japanese, 'ja-JP');
+        // Fallback to TTS if audio file fails - use furigana for pronunciation
+        speak(flashcard.furigana || flashcard.japanese, 'ja-JP');
       });
     } else {
-      // Fallback to TTS for word
-      speak(flashcard.japanese, 'ja-JP');
+      // Fallback to TTS for word - use furigana for pronunciation
+      speak(flashcard.furigana || flashcard.japanese, 'ja-JP');
     }
   };
 
@@ -156,7 +156,7 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
                 
                 {/* Speaker Buttons - Left and Right */}
                 <button
-                  className="speaker-btn absolute bottom-4 left-4 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
+                  className="speaker-btn absolute bottom-4 left-4 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 shadow-md transition-all duration-200"
                   onClick={handleWordAudioClick}
                   title="단어발음"
                 >
@@ -164,7 +164,7 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
                 </button>
                 
                 <button
-                  className="speaker-btn absolute bottom-4 right-4 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
+                  className="speaker-btn absolute bottom-4 right-4 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 shadow-md transition-all duration-200"
                   onClick={handlePronunciationAudioClick}
                   title="발음"
                 >
@@ -193,7 +193,7 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
             <div className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer h-full flex flex-col justify-center relative">
               {/* Speaker Buttons - Left and Right */}
               <button
-                className="speaker-btn absolute bottom-6 left-6 bg-blue-500 hover:bg-blue-600 rounded-full p-3 shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
+                className="speaker-btn absolute bottom-6 left-6 bg-blue-500 hover:bg-blue-600 rounded-full p-3 shadow-md transition-all duration-200"
                 onClick={handleWordAudioClick}
                 title="단어발음"
               >
@@ -201,7 +201,7 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
               </button>
               
               <button
-                className="speaker-btn absolute bottom-6 right-6 bg-green-500 hover:bg-green-600 rounded-full p-3 shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
+                className="speaker-btn absolute bottom-6 right-6 bg-green-500 hover:bg-green-600 rounded-full p-3 shadow-md transition-all duration-200"
                 onClick={handlePronunciationAudioClick}
                 title="발음"
               >
