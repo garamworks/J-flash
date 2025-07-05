@@ -324,12 +324,13 @@ export class NotionStorage implements IStorage {
         };
       });
 
-      // Sort by Random field, then by original index for stable sort
+      // Sort by Random field, then by page ID for completely stable sort
       flashcardsWithRandom.sort((a, b) => {
         if (a.randomValue !== b.randomValue) {
           return a.randomValue - b.randomValue;
         }
-        return a.originalIndex - b.originalIndex;
+        // Use page ID as secondary sort key for complete stability
+        return a.page.id.localeCompare(b.page.id);
       });
 
       // Map to GrammarFlashcard format
