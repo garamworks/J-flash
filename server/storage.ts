@@ -373,19 +373,66 @@ export class NotionStorage implements IStorage {
     return { known, unknown };
   }
 
-  // Grammar flashcard methods (placeholder implementations for now)
+  // Grammar flashcard methods - using sample data for now
   async getAllGrammarFlashcards(sortDirection?: "ascending" | "descending", level?: string): Promise<GrammarFlashcard[]> {
-    // For now, return empty array. Will implement Notion integration later
-    return [];
+    // Return sample grammar flashcards for now
+    const sampleFlashcards: GrammarFlashcard[] = [
+      {
+        id: 1,
+        problemSentence: "日本に来て___、日本語が上手になりました。",
+        exampleSentence: "日本に来てから、日本語が上手になりました。",
+        exampleKorean: "일본에 와서부터 일본어가 능숙해졌습니다.",
+        grammar: "～てから",
+        meaning: "～한 후에, ～하고 나서",
+        audioUrl: null
+      },
+      {
+        id: 2,
+        problemSentence: "雨が降って___、試合が中止になった。",
+        exampleSentence: "雨が降ったため、試合が中止になった。",
+        exampleKorean: "비가 내렸기 때문에 경기가 중지되었다.",
+        grammar: "～ため",
+        meaning: "～때문에, ～으로 인해",
+        audioUrl: null
+      },
+      {
+        id: 3,
+        problemSentence: "この本は難しくて、読む___がない。",
+        exampleSentence: "この本は難しくて、読む気がない。",
+        exampleKorean: "이 책은 어려워서 읽을 기분이 없다.",
+        grammar: "～気がない",
+        meaning: "～할 마음이 없다, ～하고 싶지 않다",
+        audioUrl: null
+      },
+      {
+        id: 4,
+        problemSentence: "彼は忙しい___、いつも元気だ。",
+        exampleSentence: "彼は忙しいにもかかわらず、いつも元気だ。",
+        exampleKorean: "그는 바쁨에도 불구하고 항상 건강하다.",
+        grammar: "～にもかかわらず",
+        meaning: "～에도 불구하고",
+        audioUrl: null
+      },
+      {
+        id: 5,
+        problemSentence: "子供の___、よく働いている。",
+        exampleSentence: "子供のわりに、よく働いている。",
+        exampleKorean: "아이치고는 잘 일하고 있다.",
+        grammar: "～わりに",
+        meaning: "～치고는, ～에 비해",
+        audioUrl: null
+      }
+    ];
+    
+    return sampleFlashcards;
   }
 
   async getGrammarFlashcard(id: number): Promise<GrammarFlashcard | undefined> {
-    // For now, return undefined. Will implement Notion integration later
-    return undefined;
+    const flashcards = await this.getAllGrammarFlashcards();
+    return flashcards.find(f => f.id === id);
   }
 
   async createGrammarFlashcard(insertGrammarFlashcard: InsertGrammarFlashcard): Promise<GrammarFlashcard> {
-    // For now, return a mock flashcard. Will implement Notion integration later
     return {
       id: Date.now(),
       ...insertGrammarFlashcard,
