@@ -64,11 +64,11 @@ export default function GrammarFlashcardComponent({ flashcard, onMarkAsKnown, on
   return (
     <div className="w-full max-w-lg mx-auto">
       {/* Card Container with fixed height */}
-      <div className="flashcard-container mb-8" onClick={handleCardClick} style={{ height: '500px' }}>
+      <div className="flashcard-container mb-4" onClick={handleCardClick} style={{ height: '520px' }}>
         <div className={`flashcard-inner ${isFlipped ? 'flipped' : ''} ${isTransitioning ? 'transitioning' : ''}`}>
           {/* Card Front - Problem Sentence */}
           <div className="flashcard-face flashcard-front">
-            <div className="bg-white rounded-2xl shadow-lg p-6 relative cursor-pointer h-full">
+            <div className="bg-white rounded-2xl shadow-lg p-10 relative cursor-pointer h-full">
               {/* Problem Sentence with blanks */}
               <div className="text-center flex items-center justify-center h-full pb-16 pt-8">
                 <p className="text-3xl font-bold text-gray-900 leading-relaxed max-w-[calc(100%-80px)]">
@@ -90,7 +90,7 @@ export default function GrammarFlashcardComponent({ flashcard, onMarkAsKnown, on
 
           {/* Card Back - Answer */}
           <div className="flashcard-face flashcard-back">
-            <div className="bg-white rounded-2xl shadow-lg p-8 cursor-pointer h-full flex flex-col justify-center relative">
+            <div className="bg-white rounded-2xl shadow-lg p-10 cursor-pointer h-full flex flex-col justify-center relative">
               <div className="pb-16">
                 {/* Example Sentence (Complete) */}
                 <div className="text-center mb-4">
