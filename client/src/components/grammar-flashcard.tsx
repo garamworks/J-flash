@@ -67,7 +67,14 @@ export default function GrammarFlashcardComponent({ flashcard, onMarkAsKnown, on
         <div className={`flashcard-inner ${isFlipped ? 'flipped' : ''} ${isTransitioning ? 'transitioning' : ''}`}>
           {/* Card Front - Problem Sentence */}
           <div className="flashcard-face flashcard-front">
-            <div className="bg-white rounded-2xl shadow-lg p-6 relative cursor-pointer">
+            <div className="bg-white rounded-2xl shadow-lg p-6 relative cursor-pointer min-h-[300px]">
+              {/* Problem Sentence with blanks */}
+              <div className="text-center flex items-center justify-center h-full pb-16">
+                <p className="text-3xl font-bold text-gray-900 leading-relaxed max-w-[calc(100%-80px)]">
+                  {flashcard.problemSentence}
+                </p>
+              </div>
+              
               {/* Speaker Button - Bottom Right */}
               <button
                 className="speaker-btn absolute bottom-4 right-4 bg-blue-500 hover:bg-blue-600 rounded-full shadow-md flex items-center justify-center"
@@ -77,19 +84,42 @@ export default function GrammarFlashcardComponent({ flashcard, onMarkAsKnown, on
               >
                 <Volume2 className="text-white" size={28} />
               </button>
-
-              {/* Problem Sentence with blanks */}
-              <div className="text-center flex items-center justify-center h-full">
-                <p className="text-3xl font-bold text-gray-900 leading-relaxed">
-                  {flashcard.problemSentence}
-                </p>
-              </div>
             </div>
           </div>
 
           {/* Card Back - Answer */}
           <div className="flashcard-face flashcard-back">
-            <div className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer h-full flex flex-col justify-center relative">
+            <div className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer min-h-[400px] flex flex-col justify-center relative">
+              <div className="pb-20">
+                {/* Example Sentence (Complete) */}
+                <div className="text-center mb-4">
+                  <p className="text-2xl font-bold text-gray-900 leading-relaxed">
+                    {flashcard.exampleSentence}
+                  </p>
+                </div>
+
+                {/* Korean Translation */}
+                <div className="text-center mb-6">
+                  <p className="text-xl text-gray-800 leading-relaxed">
+                    {flashcard.exampleKorean}
+                  </p>
+                </div>
+
+                {/* Grammar Pattern */}
+                <div className="text-center mb-4">
+                  <p className="text-2xl font-bold text-blue-600">
+                    {flashcard.grammar}
+                  </p>
+                </div>
+
+                {/* Meaning */}
+                <div className="text-center">
+                  <p className="text-xl text-gray-800">
+                    {flashcard.meaning}
+                  </p>
+                </div>
+              </div>
+              
               {/* Speaker Button - Bottom Right */}
               <button
                 className="speaker-btn absolute bottom-4 right-4 bg-blue-500 hover:bg-blue-600 rounded-full shadow-md flex items-center justify-center"
@@ -99,34 +129,6 @@ export default function GrammarFlashcardComponent({ flashcard, onMarkAsKnown, on
               >
                 <Volume2 className="text-white" size={28} />
               </button>
-
-              {/* Example Sentence (Complete) */}
-              <div className="text-center" style={{ marginBottom: '2rem' }}>
-                <p className="text-2xl font-bold text-gray-900 leading-relaxed">
-                  {flashcard.exampleSentence}
-                </p>
-              </div>
-
-              {/* Korean Translation */}
-              <div className="text-center" style={{ marginBottom: '2rem' }}>
-                <p className="text-xl text-gray-800 leading-relaxed">
-                  {flashcard.exampleKorean}
-                </p>
-              </div>
-
-              {/* Grammar Pattern */}
-              <div className="text-center" style={{ marginBottom: '1rem' }}>
-                <p className="text-2xl font-bold text-blue-600">
-                  {flashcard.grammar}
-                </p>
-              </div>
-
-              {/* Meaning */}
-              <div className="text-center">
-                <p className="text-xl text-gray-800">
-                  {flashcard.meaning}
-                </p>
-              </div>
             </div>
           </div>
         </div>
