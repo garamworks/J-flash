@@ -88,10 +88,12 @@ export default function GrammarFlashcardPage() {
 
   const handleLevelSelect = (level: string) => {
     setIsMenuOpen(false);
-    if (level === "N2") {
+    if (level === "N2 문법") {
       // Stay on current page
     } else if (level === "Home") {
       window.location.href = '/';
+    } else if (level === "N2 단어") {
+      window.location.href = `/flashcard?level=N2`;
     } else {
       window.location.href = `/flashcard?level=${encodeURIComponent(level)}`;
     }
@@ -194,19 +196,29 @@ export default function GrammarFlashcardPage() {
                   >
                     Home
                   </button>
-                  {['N1', 'N2', 'N3', 'N4', 'N5'].map((level) => (
+                  {['N1', 'N3', 'N4', 'N5'].map((level) => (
                     <button
                       key={level}
                       onClick={() => handleLevelSelect(level)}
-                      className={`w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors ${
-                        level === "N2"
-                          ? 'bg-blue-100 text-blue-800 font-semibold'
-                          : 'hover:bg-gray-100 text-gray-700'
-                      }`}
+                      className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors hover:bg-gray-100 text-gray-700"
                     >
                       {level}
                     </button>
                   ))}
+                  
+                  {/* N2 split into word and grammar */}
+                  <button
+                    onClick={() => handleLevelSelect("N2 단어")}
+                    className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors hover:bg-gray-100 text-gray-700"
+                  >
+                    N2 단어
+                  </button>
+                  <button
+                    onClick={() => window.location.href = '/grammar-flashcard'}
+                    className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors bg-blue-100 text-blue-800 font-semibold"
+                  >
+                    N2 문법
+                  </button>
                   
                   <button
                     onClick={() => handleLevelSelect("히라가나/가타가나")}

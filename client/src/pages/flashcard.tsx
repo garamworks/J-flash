@@ -369,7 +369,7 @@ export default function FlashcardPage() {
               >
                 Home
               </button>
-              {['N1', 'N2', 'N3', 'N4', 'N5'].map((level) => (
+              {['N1', 'N3', 'N4', 'N5'].map((level) => (
                 <button
                   key={level}
                   onClick={() => handleLevelSelect(level)}
@@ -382,6 +382,24 @@ export default function FlashcardPage() {
                   {level}
                 </button>
               ))}
+              
+              {/* N2 split into word and grammar */}
+              <button
+                onClick={() => handleLevelSelect("N2")}
+                className={`w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors ${
+                  selectedLevel === "N2"
+                    ? 'bg-blue-100 text-blue-800 font-semibold'
+                    : 'hover:bg-gray-100 text-gray-700'
+                }`}
+              >
+                N2 단어
+              </button>
+              <button
+                onClick={() => window.location.href = '/grammar-flashcard'}
+                className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors hover:bg-gray-100 text-gray-700"
+              >
+                N2 문법
+              </button>
               
               <button
                 onClick={() => handleLevelSelect("히라가나/가타가나")}
