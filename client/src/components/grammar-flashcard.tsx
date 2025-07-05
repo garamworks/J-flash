@@ -111,8 +111,8 @@ export default function GrammarFlashcardComponent({ flashcard, allFlashcards, on
           <div className="flashcard-face flashcard-front">
             <div className="bg-white rounded-2xl shadow-lg px-4 py-6 relative cursor-pointer min-h-[400px] flex flex-col justify-center">
               {/* Problem Sentence with blanks */}
-              <div className="text-center flex items-center justify-center flex-1 pb-16">
-                <p className="text-3xl font-bold text-gray-900 leading-relaxed mb-8">
+              <div className="text-center flex items-center justify-center flex-1 pb-4">
+                <p className="text-3xl font-bold text-gray-900 leading-relaxed">
                   {flashcard.problemSentence}
                 </p>
               </div>
