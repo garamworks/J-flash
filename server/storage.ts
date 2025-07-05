@@ -294,5 +294,5 @@ export class NotionStorage implements IStorage {
 }
 
 // Use Notion storage if secrets are available, otherwise fallback to memory storage
-// Temporarily use MemStorage - database still not accessible to integration
+// Temporarily use MemStorage until N2 database is connected to new integration
 export const storage = new MemStorage();
