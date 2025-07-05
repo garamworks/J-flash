@@ -163,7 +163,7 @@ export default function GrammarFlashcardComponent({ flashcard, allFlashcards, on
                 </div>
 
                 {/* Korean Translation */}
-                <div className="text-center">
+                <div className="text-center mb-8">
                   <p className="text-xl text-gray-800 leading-relaxed">
                     {flashcard.exampleKorean}
                   </p>
