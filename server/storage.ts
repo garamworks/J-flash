@@ -341,7 +341,14 @@ export class NotionStorage implements IStorage {
   async getAllFlashcards(sortDirection: "ascending" | "descending" = "ascending", level: string = "N2"): Promise<Flashcard[]> {
     try {
       const databaseId = this.databaseIds.get(level) || this.flashcardsDatabaseId;
-      return await getFlashcardsFromNotion(databaseId, sortDirection);
+      
+      // Use N1-specific function for N1 database
+      if (level === "N1") {
+        const { getN1FlashcardsFromNotion } = await import('./notion');
+        return await getN1FlashcardsFromNotion(databaseId, sortDirection);
+      } else {
+        return await getFlashcardsFromNotion(databaseId, sortDirection);
+      }
     } catch (error) {
       console.error("Error fetching flashcards from Notion:", error);
       throw error;

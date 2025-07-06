@@ -284,6 +284,87 @@ export async function getFlashcardsFromNotion(flashcardsDatabaseId: string, sort
 }
 
 // Update progress in existing Notion database using the "암기" checkbox field
+// Get all N1 flashcards from the existing Notion database with Korean field names
+export async function getN1FlashcardsFromNotion(flashcardsDatabaseId: string, sortDirection: "ascending" | "descending" = "ascending") {
+    try {
+        const allResults: any[] = [];
+        let hasMore = true;
+        let startCursor: string | undefined = undefined;
+
+        // Fetch all pages using pagination
+        while (hasMore) {
+            try {
+                const response = await notion.databases.query({
+                    database_id: flashcardsDatabaseId,
+                    filter: {
+                        property: "암기",
+                        checkbox: {
+                            equals: false
+                        }
+                    },
+                    sorts: [
+                        {
+                            property: "Random",
+                            direction: sortDirection
+                        }
+                    ],
+                    start_cursor: startCursor,
+                });
+
+                allResults.push(...response.results);
+                hasMore = response.has_more;
+                startCursor = response.next_cursor || undefined;
+            } catch (sortError) {
+                console.warn("Random sort failed, trying without sorting:", sortError);
+                const response = await notion.databases.query({
+                    database_id: flashcardsDatabaseId,
+                    filter: {
+                        property: "암기",
+                        checkbox: {
+                            equals: false
+                        }
+                    },
+                    start_cursor: startCursor,
+                });
+
+                allResults.push(...response.results);
+                hasMore = response.has_more;
+                startCursor = response.next_cursor || undefined;
+            }
+        }
+
+        console.log(`Loaded ${allResults.length} N1 flashcards from Notion database`);
+
+        return allResults.map((page: any, index: number) => {
+            const properties = page.properties;
+
+            // Generate a numeric ID based on the hash of the Notion page ID
+            const id = Math.abs(page.id.split('').reduce((a: number, b: string) => {
+                a = ((a << 5) - a) + b.charCodeAt(0);
+                return a & a;
+            }, 0));
+
+            return {
+                id,
+                notionPageId: page.id,
+                japanese: properties['단어']?.title?.[0]?.plain_text || "",
+                furigana: properties['독음']?.rich_text?.[0]?.plain_text || "",
+                korean: properties['뜻']?.rich_text?.[0]?.plain_text || "",
+                sentence: properties['예문']?.rich_text?.[0]?.plain_text || "",
+                sentenceKorean: properties['예문 해석']?.rich_text?.[0]?.plain_text || "",
+                imageUrl: properties['img']?.files?.[0]?.file?.url || 
+                          properties['img']?.files?.[0]?.external?.url || "",
+                audioUrl: null,
+                wordAudioUrl: null,
+                pronunciationAudioUrl: null,
+            };
+        });
+    } catch (error) {
+        console.error("Error fetching N1 flashcards from Notion:", error);
+        throw new Error("Failed to fetch N1 flashcards from Notion");
+    }
+}
+
 export async function updateProgressInNotion(databaseId: string, pageId: string, isKnown: boolean) {
     try {
         console.log('Attempting to update Notion page:', pageId, 'with checkbox value:', isKnown);
