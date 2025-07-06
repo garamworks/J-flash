@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Menu, X } from 'lucide-react';
 import { ExpressionFlashcard, InsertExpressionProgress } from '@/../../shared/schema';
 import ExpressionFlashcardComponent from '@/components/expression-flashcard';
 
@@ -9,6 +9,7 @@ export default function ExpressionFlashcardPage() {
   const [, setLocation] = useLocation();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [sortDirection, setSortDirection] = useState<"ascending" | "descending">("ascending");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const queryClient = useQueryClient();
 
   // Auto-focus on page load
@@ -52,6 +53,21 @@ export default function ExpressionFlashcardPage() {
   const handleSortToggle = () => {
     setSortDirection(prev => prev === "ascending" ? "descending" : "ascending");
     setCurrentIndex(0);
+  };
+
+  const handleLevelSelect = (level: string) => {
+    setIsMenuOpen(false);
+    if (level === "Home") {
+      setLocation("/");
+    } else if (level === "N2 단어") {
+      setLocation("/flashcard");
+    } else if (level === "N2 문법") {
+      setLocation("/grammar-flashcard");
+    } else if (level === "응용표현") {
+      setLocation("/expression-flashcard");
+    } else {
+      setLocation(`/flashcard?level=${level}`);
+    }
   };
 
 
@@ -132,17 +148,17 @@ export default function ExpressionFlashcardPage() {
   const currentFlashcard = flashcards[currentIndex];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 py-3">
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+        <div className="max-w-md mx-auto px-4 py-4 relative">
           <div className="flex items-center justify-between">
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <Menu size={24} className="text-gray-700" />
+            </button>
             <div className="flex items-center gap-2">
-              <Link href="/" className="text-blue-600 hover:text-blue-800 transition-colors">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-              </Link>
               <h1 
                 className="text-2xl font-bold text-gray-900 cursor-pointer hover:text-blue-600 transition-colors duration-200"
                 onClick={handleSortToggle}
@@ -152,15 +168,79 @@ export default function ExpressionFlashcardPage() {
               </h1>
             </div>
             <div className="text-lg font-semibold text-black mr-4">
-              {progressStats?.unknown || 0}
+              {flashcards.length}
             </div>
           </div>
+        </div>
+      </header>
+
+      {/* Slide-out Menu */}
+      <div
+        className={`fixed inset-0 bg-black bg-opacity-50 z-50 transition-opacity duration-300 ${
+          isMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={() => setIsMenuOpen(false)}
+      >
+        <div
+          className={`fixed left-0 top-0 h-full w-80 bg-white transform transition-transform duration-300 ease-out ${
+            isMenuOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex items-center justify-between p-4 border-b border-gray-200">
+            <div className="flex items-center">
+              <h2 className="text-lg font-semibold text-gray-900">Expression</h2>
+              <button
+                onClick={() => setIsMenuOpen(false)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X size={20} className="text-gray-700" />
+              </button>
+            </div>
+          </div>
+          
+          <nav className="p-4">
+            <button
+              onClick={() => handleLevelSelect("Home")}
+              className="w-full text-left p-3 rounded-lg mb-4 bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold"
+            >
+              Home
+            </button>
+            {['N1', 'N3', 'N4', 'N5'].map((level) => (
+              <button
+                key={level}
+                onClick={() => handleLevelSelect(level)}
+                className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors hover:bg-gray-100 text-gray-700"
+              >
+                {level}
+              </button>
+            ))}
+            
+            {/* N2 split into word and grammar */}
+            <button
+              onClick={() => handleLevelSelect("N2 단어")}
+              className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors hover:bg-gray-100 text-gray-700"
+            >
+              N2 단어
+            </button>
+            <button
+              onClick={() => handleLevelSelect("N2 문법")}
+              className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors hover:bg-gray-100 text-gray-700"
+            >
+              N2 문법
+            </button>
+            <button
+              onClick={() => handleLevelSelect("응용표현")}
+              className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors bg-purple-100 text-purple-800 font-semibold"
+            >
+              응용표현
+            </button>
+          </nav>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 py-8">
-
+      <div className="max-w-md mx-auto p-4">
         {/* Flashcard */}
         <div className="mb-8">
           <ExpressionFlashcardComponent
