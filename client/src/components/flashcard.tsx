@@ -185,46 +185,47 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
               {level === "Hiragana/Katakana" ? (
                 // Hiragana/Katakana front layout
                 <>
-                  {/* Square Image with Speaker Icon */}
-                  <div className="relative mb-6">
-                    {flashcard.imageUrl ? (
-                      <img
-                        src={flashcard.imageUrl}
-                        alt={flashcard.japanese}
-                        className="w-full aspect-square object-cover rounded-xl"
-                      />
-                    ) : (
-                      <div className="w-full aspect-square bg-gray-100 rounded-xl flex items-center justify-center">
-                        <span className="text-gray-400 text-lg">이미지 없음</span>
-                      </div>
-                    )}
-                    
-                    {/* Speaker Button for word audio */}
+                  {/* Character Audio Button and Square Image */}
+                  <div className="flex items-start gap-4 mb-6">
                     <button
-                      className="speaker-btn absolute bottom-4 right-4 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full shadow-md flex items-center justify-center"
-                      onClick={handleWordAudioClick}
-                      title="단어 발음"
+                      className="speaker-btn bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full shadow-md flex items-center justify-center mt-2"
+                      onClick={handleCharacterAudioClick}
+                      title="문자 발음"
                       style={{ touchAction: 'manipulation' }}
                     >
-                      <Volume2 className="text-blue-600" size={28} />
+                      <Volume2 className="text-red-600" size={28} />
                     </button>
+                    
+                    <div className="relative flex-1">
+                      {flashcard.imageUrl ? (
+                        <img
+                          src={flashcard.imageUrl}
+                          alt={flashcard.japanese}
+                          className="w-full aspect-square object-cover rounded-xl"
+                        />
+                      ) : (
+                        <div className="w-full aspect-square bg-gray-100 rounded-xl flex items-center justify-center">
+                          <span className="text-gray-400 text-lg">이미지 없음</span>
+                        </div>
+                      )}
+                      
+                      {/* Speaker Button for word audio */}
+                      <button
+                        className="speaker-btn absolute bottom-4 right-4 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full shadow-md flex items-center justify-center"
+                        onClick={handleWordAudioClick}
+                        title="단어 발음"
+                        style={{ touchAction: 'manipulation' }}
+                      >
+                        <Volume2 className="text-blue-600" size={28} />
+                      </button>
+                    </div>
                   </div>
 
                   {/* Hiragana/Katakana Character */}
-                  <div className="text-center mb-4 relative">
-                    <div className="flex items-center justify-center gap-4">
-                      <p className="text-6xl font-bold text-gray-900 leading-tight">
-                        {flashcard.japanese}
-                      </p>
-                      <button
-                        className="speaker-btn bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full shadow-md flex items-center justify-center"
-                        onClick={handleCharacterAudioClick}
-                        title="문자 발음"
-                        style={{ touchAction: 'manipulation' }}
-                      >
-                        <Volume2 className="text-red-600" size={28} />
-                      </button>
-                    </div>
+                  <div className="text-center mb-4">
+                    <p className="text-6xl font-bold text-gray-900 leading-tight">
+                      {flashcard.japanese}
+                    </p>
                   </div>
 
                   {/* Word below character */}
@@ -305,21 +306,21 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
                     <Volume2 className="text-white" size={28} />
                   </button>
 
+                  {/* Character Audio Button - Left Bottom */}
+                  <button
+                    className="speaker-btn absolute bottom-6 left-6 bg-red-500 hover:bg-red-600 rounded-full shadow-md flex items-center justify-center"
+                    onClick={handleCharacterAudioClick}
+                    title="문자 발음"
+                    style={{ touchAction: 'manipulation' }}
+                  >
+                    <Volume2 className="text-white" size={28} />
+                  </button>
+
                   {/* Character */}
                   <div className="text-center" style={{ marginBottom: '1.5rem' }}>
-                    <div className="flex items-center justify-center gap-4">
-                      <p className="text-6xl font-bold text-gray-900" style={{ lineHeight: '0.7' }}>
-                        {flashcard.japanese}
-                      </p>
-                      <button
-                        className="speaker-btn bg-red-500 hover:bg-red-600 rounded-full shadow-md flex items-center justify-center"
-                        onClick={handleCharacterAudioClick}
-                        title="문자 발음"
-                        style={{ touchAction: 'manipulation' }}
-                      >
-                        <Volume2 className="text-white" size={28} />
-                      </button>
-                    </div>
+                    <p className="text-6xl font-bold text-gray-900" style={{ lineHeight: '0.7' }}>
+                      {flashcard.japanese}
+                    </p>
                   </div>
 
                   {/* 파일명_히라가나 */}
