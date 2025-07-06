@@ -318,7 +318,7 @@ export default function ExpressionFlashcardPage() {
       {/* Main Content */}
       <div className="max-w-md mx-auto p-4">
         {/* Flashcard */}
-        <div className="mb-8">
+        <div className="mb-4">
           <ExpressionFlashcardComponent
             flashcard={currentFlashcard}
             onTitleClick={handleReadAllSentences}
@@ -329,17 +329,17 @@ export default function ExpressionFlashcardPage() {
         <div className="flex justify-between mb-6">
           <button
             onClick={handlePrevCard}
-            className="p-4 bg-gray-200 hover:bg-gray-300 rounded-full transition-colors"
+            className="p-3 bg-gray-200 hover:bg-gray-300 rounded-full transition-colors"
             disabled={flashcards.length <= 1}
           >
-            <ChevronLeft className="w-8 h-8" />
+            <ChevronLeft className="w-6 h-6" />
           </button>
           <button
             onClick={handleNextCard}
-            className="p-4 bg-gray-200 hover:bg-gray-300 rounded-full transition-colors"
+            className="p-3 bg-gray-200 hover:bg-gray-300 rounded-full transition-colors"
             disabled={flashcards.length <= 1}
           >
-            <ChevronRight className="w-8 h-8" />
+            <ChevronRight className="w-6 h-6" />
           </button>
         </div>
       </div>
