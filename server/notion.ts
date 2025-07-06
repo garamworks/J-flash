@@ -463,7 +463,7 @@ export async function getHiraganaKatakanaFlashcardsFromNotion(databaseId: string
       
       return {
         id: numericId,
-        japanese: properties['문자']?.title?.[0]?.plain_text || properties['문자']?.rich_text?.[0]?.plain_text || "",
+        japanese: properties['문자']?.rich_text?.[0]?.plain_text || properties['문자']?.title?.[0]?.plain_text || "",
         furigana: properties['발음']?.rich_text?.[0]?.plain_text || "",
         korean: properties['단어뜻']?.rich_text?.[0]?.plain_text || "",
         sentence: "", // Hiragana/Katakana doesn't have example sentences
