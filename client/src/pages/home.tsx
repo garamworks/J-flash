@@ -30,7 +30,7 @@ export default function HomePage() {
     { level: "N3", color: "#B8756A", description: "중급 수준" },
     { level: "N4", color: "#A8C8A9", description: "초중급 수준" },
     { level: "N5", color: "#E5A898", description: "기초 수준" },
-    { level: "히라가나/가타가나", color: "#95A8BB", description: "기본 문자 학습" }
+    { level: "Hiragana/Katakana", color: "#95A8BB", description: "기본 문자 학습" }
   ];
 
   return (
