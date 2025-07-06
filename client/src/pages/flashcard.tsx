@@ -122,6 +122,8 @@ export default function FlashcardPage() {
     setIsMenuOpen(false);
     // Reset to first card when switching levels
     setCurrentIndex(0);
+    // Update URL to reflect the new level
+    window.location.href = `/flashcard?level=${encodeURIComponent(level)}`;
   };
 
   if (isLoading) {
