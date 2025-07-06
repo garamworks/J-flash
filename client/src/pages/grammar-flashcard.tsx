@@ -23,7 +23,8 @@ export default function GrammarFlashcardPage() {
       });
       const response = await fetch(`/api/grammar-flashcards?${params}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch grammar flashcards');
+        const errorData = await response.json();
+        throw new Error(errorData.message || '데이터를 불러오는 중 오류가 발생했습니다.');
       }
       return response.json();
     },

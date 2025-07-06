@@ -30,7 +30,14 @@ export default function FlashcardPage() {
 
   const { data: allFlashcards, isLoading, error } = useQuery<Flashcard[]>({
     queryKey: ["/api/flashcards", sortDirection, selectedLevel],
-    queryFn: () => fetch(`/api/flashcards?sort=${sortDirection}&level=${selectedLevel}`).then(res => res.json()),
+    queryFn: async () => {
+      const response = await fetch(`/api/flashcards?sort=${sortDirection}&level=${selectedLevel}`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || '데이터를 불러오는 중 오류가 발생했습니다.');
+      }
+      return response.json();
+    },
   });
 
   const { data: progressData } = useQuery<Array<{id: number, flashcardId: number, known: boolean}>>({

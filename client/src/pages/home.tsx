@@ -15,7 +15,12 @@ export default function HomePage() {
   };
 
   const levels = [
-    { level: "N1", color: "#8B5A7A", description: "가장 높은 난이도" },
+    { 
+      level: "N1", 
+      color: "#8B5A7A", 
+      description: "가장 높은 난이도",
+      hasSplit: true
+    },
     { 
       level: "N2", 
       color: "#9D9D6F", 
