@@ -80,7 +80,7 @@ export default function ExpressionFlashcardPage() {
     }
   };
 
-  // 전체 문장을 순차적으로 읽는 함수
+  // 응용표현 5개만 순차적으로 읽는 함수
   const handleReadAllSentences = () => {
     const currentFlashcard = flashcards[currentIndex];
     if (!currentFlashcard || !('speechSynthesis' in window)) return;
@@ -89,7 +89,6 @@ export default function ExpressionFlashcardPage() {
     window.speechSynthesis.cancel();
 
     const sentences = [
-      currentFlashcard.mainExpression,
       currentFlashcard.application1,
       currentFlashcard.application2,
       currentFlashcard.application3,
