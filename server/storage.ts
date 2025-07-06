@@ -209,6 +209,9 @@ export class NotionStorage implements IStorage {
   private flashcardsDatabaseId: string = "213fe404b3dc802e8b1bd26d77f8cc84"; // N2 database ID from user's link
   private grammarDatabaseId: string = "227fe404b3dc8040946ce0921f4d9550"; // N2 grammar database ID
   private databaseIds: Map<string, string> = new Map();
+  private grammarDatabaseIds: Map<string, string> = new Map();
+  private n1DatabaseId: string = "228fe404b3dc80dc9694fbf032d6491f"; // N1 database ID
+  private n1GrammarDatabaseId: string = "228fe404b3dc80869f39ede14f6de995"; // N1 grammar database ID
   private n3DatabaseId: string = "216fe404b3dc804a9130f21b2b3a0e54"; // N3 database ID
   private n4DatabaseId: string = "215fe404b3dc8099b972e96296fc14af"; // N4 database ID
   private hiraganaKatakanaDatabaseId: string = "215fe404b3dc8040bac6f54c99a949a8"; // Hiragana/Katakana database ID
@@ -218,12 +221,16 @@ export class NotionStorage implements IStorage {
   }
 
   private async initializeDatabases() {
-    // Initialize the database mapping
+    // Initialize the database mapping for flashcards (vocabulary)
+    this.databaseIds.set("N1", this.n1DatabaseId);
     this.databaseIds.set("N2", this.flashcardsDatabaseId);
     this.databaseIds.set("N3", this.n3DatabaseId);
     this.databaseIds.set("N4", this.n4DatabaseId);
     this.databaseIds.set("Hiragana/Katakana", this.hiraganaKatakanaDatabaseId);
-    // Note: N1 is not yet available in user's Notion setup
+    
+    // Initialize the grammar database mapping
+    this.grammarDatabaseIds.set("N1", this.n1GrammarDatabaseId);
+    this.grammarDatabaseIds.set("N2", this.grammarDatabaseId);
   }
 
   async getUser(id: number): Promise<User | undefined> {
@@ -243,10 +250,6 @@ export class NotionStorage implements IStorage {
 
   async getAllFlashcards(sortDirection: "ascending" | "descending" = "ascending", level: string = "N2"): Promise<Flashcard[]> {
     try {
-      if (level === "N1") {
-        throw new Error("N1 단어 데이터베이스가 아직 준비되지 않았습니다. N2 단어 학습을 이용해보세요.");
-      }
-      
       const databaseId = this.databaseIds.get(level) || this.flashcardsDatabaseId;
       return await getFlashcardsFromNotion(databaseId, sortDirection);
     } catch (error) {
@@ -294,13 +297,12 @@ export class NotionStorage implements IStorage {
 
   async getAllGrammarFlashcards(sortDirection?: "ascending" | "descending", level?: string): Promise<GrammarFlashcard[]> {
     try {
-      // Determine which grammar database to use based on level
-      let grammarDatabaseId = this.grammarDatabaseId; // Default to N2
-      
       if (level === "N1") {
-        // For now, N1 grammar is not implemented
-        throw new Error("N1 문법 데이터베이스가 아직 준비되지 않았습니다. N1 단어 학습을 이용해보세요.");
+        throw new Error("N1 문법 데이터베이스가 Notion 통합에 공유되지 않았습니다. Notion에서 N1 문법 데이터베이스를 통합에 공유해주세요.");
       }
+      
+      // Determine which grammar database to use based on level
+      const grammarDatabaseId = this.grammarDatabaseIds.get(level || "N2") || this.grammarDatabaseId;
       
       // Get ONLY unchecked pages from the grammar database
       const allResults: any[] = [];

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ChevronLeft, RotateCcw, Home, Menu, X } from "lucide-react";
 import { Link } from "wouter";
@@ -11,15 +11,26 @@ export default function GrammarFlashcardPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [sortDirection, setSortDirection] = useState<"ascending" | "descending">("ascending");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [selectedLevel, setSelectedLevel] = useState<string>("N2");
   const queryClient = useQueryClient();
+
+  // Get level from URL parameters
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const levelParam = params.get('level');
+    
+    if (levelParam) {
+      setSelectedLevel(levelParam);
+    }
+  }, []);
 
   // Fetch grammar flashcards
   const { data: flashcards = [], isLoading, error } = useQuery<GrammarFlashcard[]>({
-    queryKey: ['/api/grammar-flashcards', { sort: sortDirection, level: 'N2' }],
+    queryKey: ['/api/grammar-flashcards', { sort: sortDirection, level: selectedLevel }],
     queryFn: async () => {
       const params = new URLSearchParams({
         sort: sortDirection,
-        level: 'N2'
+        level: selectedLevel
       });
       const response = await fetch(`/api/grammar-flashcards?${params}`);
       if (!response.ok) {
@@ -193,7 +204,7 @@ export default function GrammarFlashcardPage() {
                 Grammar
               </h1>
               <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-md text-sm font-medium mt-0.5">
-                N2
+                {selectedLevel}
               </span>
             </div>
             <div className="text-lg font-semibold text-black mr-4">
