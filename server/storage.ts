@@ -211,7 +211,7 @@ export class NotionStorage implements IStorage {
   private databaseIds: Map<string, string> = new Map();
   private grammarDatabaseIds: Map<string, string> = new Map();
   private n1DatabaseId: string = "216fe404b3dc80e49e28d68b149ce1bd"; // N1 database ID
-  private n1GrammarDatabaseId: string = "228fe404b3dc80869f39ede14f6de995"; // N1 grammar database ID
+  private n1GrammarDatabaseId: string = "228fe404b3dc80dc9694fbf032d6491f"; // N1 grammar database ID
   private n3DatabaseId: string = "216fe404b3dc804a9130f21b2b3a0e54"; // N3 database ID
   private n4DatabaseId: string = "215fe404b3dc8099b972e96296fc14af"; // N4 database ID
   private hiraganaKatakanaDatabaseId: string = "215fe404b3dc8040bac6f54c99a949a8"; // Hiragana/Katakana database ID
@@ -311,10 +311,6 @@ export class NotionStorage implements IStorage {
 
   async getAllGrammarFlashcards(sortDirection?: "ascending" | "descending", level?: string): Promise<GrammarFlashcard[]> {
     try {
-      if (level === "N1") {
-        throw new Error("N1 문법 데이터베이스가 Notion 통합에 공유되지 않았습니다. Notion에서 N1 문법 데이터베이스를 통합에 공유해주세요.");
-      }
-      
       // Determine which grammar database to use based on level
       const grammarDatabaseId = this.grammarDatabaseIds.get(level || "N2") || this.grammarDatabaseId;
       
@@ -367,9 +363,12 @@ export class NotionStorage implements IStorage {
         const { page } = entry;
         const properties = page.properties;
         
+        // Handle different field names for different levels
+        const problemField = level === "N1" ? "문제풀이" : "문제문";
+        
         return {
           id: index + 1, // Sequential ID starting from 1
-          problemSentence: properties['문제풀이']?.rich_text?.[0]?.plain_text || "",
+          problemSentence: properties[problemField]?.rich_text?.[0]?.plain_text || "",
           exampleSentence: properties['예문']?.rich_text?.[0]?.plain_text || "",
           exampleKorean: properties['예문해석']?.rich_text?.[0]?.plain_text || "",
           grammar: properties['문법']?.title?.[0]?.plain_text || "",
