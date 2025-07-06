@@ -486,6 +486,10 @@ export class NotionStorage implements IStorage {
         }
       });
 
+      console.log(`Grammar progress stats for ${level || "N2"}:`);
+      console.log(`Total entries: ${allResults.length}`);
+      console.log(`Known: ${known}, Unknown: ${unknown}`);
+
       return { known, unknown };
     } catch (error) {
       console.error("Error getting grammar progress stats:", error);
