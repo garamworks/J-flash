@@ -2,10 +2,12 @@ import { ExpressionFlashcard } from "@/../../shared/schema";
 
 interface ExpressionFlashcardProps {
   flashcard: ExpressionFlashcard;
+  onTitleClick?: () => void;
 }
 
 export default function ExpressionFlashcardComponent({ 
-  flashcard
+  flashcard,
+  onTitleClick
 }: ExpressionFlashcardProps) {
   // 응용표현 데이터 배열화
   const applications = [
@@ -16,11 +18,25 @@ export default function ExpressionFlashcardComponent({
     { japanese: flashcard.application5, korean: flashcard.application5Korean },
   ];
 
+  // TTS 함수
+  const speakText = (text: string) => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel(); // 이전 음성 중단
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'ja-JP';
+      utterance.rate = 0.8;
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
   return (
     <div className="bg-white rounded-3xl shadow-lg p-6 max-w-2xl mx-auto">
       {/* 메인 표현 섹션 */}
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <h2 
+          className="text-2xl font-bold text-gray-900 mb-2 cursor-pointer hover:text-blue-600 transition-colors"
+          onClick={onTitleClick}
+        >
           {flashcard.mainExpression}
         </h2>
         <p className="text-lg text-gray-600">
@@ -31,7 +47,11 @@ export default function ExpressionFlashcardComponent({
       {/* 응용표현 목록 */}
       <div className="space-y-4 mb-8">
         {applications.map((app, index) => (
-          <div key={index} className="border-l-4 border-purple-300 pl-4 py-2">
+          <div 
+            key={index} 
+            className="border-l-4 border-purple-300 pl-4 py-2 cursor-pointer hover:bg-gray-50 transition-colors rounded-r-lg"
+            onClick={() => speakText(app.japanese)}
+          >
             <div className="text-xl font-bold text-gray-900 mb-1">
               {app.japanese}
             </div>

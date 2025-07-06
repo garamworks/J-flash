@@ -80,6 +80,48 @@ export default function ExpressionFlashcardPage() {
     }
   };
 
+  // 전체 문장을 순차적으로 읽는 함수
+  const handleReadAllSentences = () => {
+    const currentFlashcard = flashcards[currentIndex];
+    if (!currentFlashcard || !('speechSynthesis' in window)) return;
+
+    // 이전 음성 중단
+    window.speechSynthesis.cancel();
+
+    const sentences = [
+      currentFlashcard.mainExpression,
+      currentFlashcard.application1,
+      currentFlashcard.application2,
+      currentFlashcard.application3,
+      currentFlashcard.application4,
+      currentFlashcard.application5,
+    ];
+
+    let currentSentenceIndex = 0;
+
+    const speakNextSentence = () => {
+      if (currentSentenceIndex >= sentences.length) return;
+
+      const sentence = sentences[currentSentenceIndex];
+      const utterance = new SpeechSynthesisUtterance(sentence);
+      utterance.lang = 'ja-JP';
+      utterance.rate = 0.8;
+
+      utterance.onend = () => {
+        currentSentenceIndex++;
+        if (currentSentenceIndex < sentences.length) {
+          // 문장 길이에 따라 딜레이 조정 (최소 800ms, 최대 1500ms)
+          const delay = Math.max(800, Math.min(1500, sentence.length * 50));
+          setTimeout(speakNextSentence, delay);
+        }
+      };
+
+      window.speechSynthesis.speak(utterance);
+    };
+
+    speakNextSentence();
+  };
+
   const handlePrevCard = () => {
     if (currentIndex > 0) {
       setCurrentIndex(prev => prev - 1);
@@ -245,11 +287,12 @@ export default function ExpressionFlashcardPage() {
         <div className="mb-8">
           <ExpressionFlashcardComponent
             flashcard={currentFlashcard}
+            onTitleClick={handleReadAllSentences}
           />
         </div>
 
         {/* Navigation */}
-        <div className="flex justify-center gap-8 mb-6">
+        <div className="flex justify-between mb-6">
           <button
             onClick={handlePrevCard}
             className="p-4 bg-gray-200 hover:bg-gray-300 rounded-full transition-colors"
