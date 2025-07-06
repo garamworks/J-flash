@@ -136,12 +136,19 @@ export default function GrammarFlashcardPage() {
 
   const handleLevelSelect = (level: string) => {
     setIsMenuOpen(false);
-    if (level === "N2 문법") {
-      // Stay on current page
+    if (level === "N2 문법" || level === "N1 문법") {
+      // Stay on current page or handle grammar navigation
+      if (level === "N1 문법") {
+        window.location.href = '/grammar-flashcard?level=N1';
+      }
     } else if (level === "Home") {
       window.location.href = '/';
+    } else if (level === "응용표현") {
+      window.location.href = '/expression-flashcard';
     } else if (level === "N2 단어") {
       window.location.href = `/flashcard?level=N2`;
+    } else if (level === "N1 단어") {
+      window.location.href = `/flashcard?level=N1`;
     } else {
       window.location.href = `/flashcard?level=${encodeURIComponent(level)}`;
     }
