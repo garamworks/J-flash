@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import FlashcardPage from "@/pages/flashcard";
 import GrammarFlashcardPage from "@/pages/grammar-flashcard";
+import ExpressionFlashcardPage from "@/pages/expression-flashcard";
 import HomePage from "@/pages/home";
 import NotFound from "@/pages/not-found";
 
@@ -14,6 +15,7 @@ function Router() {
       <Route path="/" component={HomePage} />
       <Route path="/flashcard" component={FlashcardPage} />
       <Route path="/grammar-flashcard" component={GrammarFlashcardPage} />
+      <Route path="/expression-flashcard" component={ExpressionFlashcardPage} />
       <Route component={NotFound} />
     </Switch>
   );

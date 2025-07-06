@@ -1,4 +1,4 @@
-import { flashcards, userProgress, grammarFlashcards, grammarProgress, type Flashcard, type InsertFlashcard, type GrammarFlashcard, type InsertGrammarFlashcard, type UserProgress, type InsertUserProgress, type GrammarProgress, type InsertGrammarProgress, users, type User, type InsertUser } from "@shared/schema";
+import { flashcards, userProgress, grammarFlashcards, grammarProgress, expressionFlashcards, expressionProgress, type Flashcard, type InsertFlashcard, type GrammarFlashcard, type InsertGrammarFlashcard, type ExpressionFlashcard, type InsertExpressionFlashcard, type UserProgress, type InsertUserProgress, type GrammarProgress, type InsertGrammarProgress, type ExpressionProgress, type InsertExpressionProgress, users, type User, type InsertUser } from "@shared/schema";
 import { getFlashcardsFromNotion, updateProgressInNotion, notion, findDatabaseByTitle } from "./notion";
 
 export interface IStorage {
@@ -26,34 +26,53 @@ export interface IStorage {
   getGrammarProgress(): Promise<GrammarProgress[]>;
   recordGrammarProgress(progress: InsertGrammarProgress): Promise<GrammarProgress>;
   getGrammarProgressStats(level?: string): Promise<{ known: number; unknown: number }>;
+  
+  // Expression flashcard methods
+  getAllExpressionFlashcards(sortDirection?: "ascending" | "descending"): Promise<ExpressionFlashcard[]>;
+  getExpressionFlashcard(id: number): Promise<ExpressionFlashcard | undefined>;
+  createExpressionFlashcard(flashcard: InsertExpressionFlashcard): Promise<ExpressionFlashcard>;
+  
+  // Expression progress methods
+  getExpressionProgress(): Promise<ExpressionProgress[]>;
+  recordExpressionProgress(progress: InsertExpressionProgress): Promise<ExpressionProgress>;
+  getExpressionProgressStats(): Promise<{ known: number; unknown: number }>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
   private flashcards: Map<number, Flashcard>;
   private grammarFlashcards: Map<number, GrammarFlashcard>;
+  private expressionFlashcards: Map<number, ExpressionFlashcard>;
   private userProgress: Map<number, UserProgress>;
   private grammarProgress: Map<number, GrammarProgress>;
+  private expressionProgress: Map<number, ExpressionProgress>;
   private currentUserId: number;
   private currentFlashcardId: number;
   private currentGrammarFlashcardId: number;
+  private currentExpressionFlashcardId: number;
   private currentProgressId: number;
   private currentGrammarProgressId: number;
+  private currentExpressionProgressId: number;
 
   constructor() {
     this.users = new Map();
     this.flashcards = new Map();
     this.grammarFlashcards = new Map();
+    this.expressionFlashcards = new Map();
     this.userProgress = new Map();
     this.grammarProgress = new Map();
+    this.expressionProgress = new Map();
     this.currentUserId = 1;
     this.currentFlashcardId = 1;
     this.currentGrammarFlashcardId = 1;
+    this.currentExpressionFlashcardId = 1;
     this.currentProgressId = 1;
     this.currentGrammarProgressId = 1;
+    this.currentExpressionProgressId = 1;
     
     this.initializeFlashcards();
     this.initializeGrammarFlashcards();
+    this.initializeExpressionFlashcards();
   }
 
   private initializeFlashcards() {
@@ -95,6 +114,31 @@ export class MemStorage implements IStorage {
 
     sampleGrammarFlashcards.forEach(flashcard => {
       this.grammarFlashcards.set(flashcard.id, flashcard);
+    });
+  }
+
+  private initializeExpressionFlashcards() {
+    const sampleExpressionFlashcards: ExpressionFlashcard[] = [
+      {
+        id: 1,
+        mainExpression: "お疲れ様",
+        mainMeaning: "수고하셨습니다",
+        application1: "お疲れ様でした",
+        application1Korean: "수고하셨습니다 (정중한 표현)",
+        application2: "お疲れ様です",
+        application2Korean: "수고하고 계십니다",
+        application3: "お疲れ",
+        application3Korean: "수고했어 (친근한 표현)",
+        application4: "お疲れ様でございます",
+        application4Korean: "수고하셨습니다 (매우 정중한 표현)",
+        application5: "今日もお疲れ様でした",
+        application5Korean: "오늘도 수고하셨습니다",
+        notionPageId: null
+      }
+    ];
+
+    sampleExpressionFlashcards.forEach(flashcard => {
+      this.expressionFlashcards.set(flashcard.id, flashcard);
     });
   }
 
@@ -199,6 +243,51 @@ export class MemStorage implements IStorage {
 
   async getGrammarProgressStats(level?: string): Promise<{ known: number; unknown: number }> {
     const progressArray = Array.from(this.grammarProgress.values());
+    const known = progressArray.filter(p => p.known).length;
+    const unknown = progressArray.filter(p => !p.known).length;
+    return { known, unknown };
+  }
+
+  // Expression flashcard methods
+  async getAllExpressionFlashcards(sortDirection?: "ascending" | "descending"): Promise<ExpressionFlashcard[]> {
+    const allExpressionFlashcards = Array.from(this.expressionFlashcards.values());
+    
+    if (sortDirection === "descending") {
+      return allExpressionFlashcards.reverse();
+    }
+    
+    return allExpressionFlashcards;
+  }
+
+  async getExpressionFlashcard(id: number): Promise<ExpressionFlashcard | undefined> {
+    return this.expressionFlashcards.get(id);
+  }
+
+  async createExpressionFlashcard(insertExpressionFlashcard: InsertExpressionFlashcard): Promise<ExpressionFlashcard> {
+    const id = this.currentExpressionFlashcardId++;
+    const expressionFlashcard: ExpressionFlashcard = { 
+      ...insertExpressionFlashcard, 
+      id,
+      notionPageId: insertExpressionFlashcard.notionPageId || null
+    };
+    this.expressionFlashcards.set(id, expressionFlashcard);
+    return expressionFlashcard;
+  }
+
+  // Expression progress methods
+  async getExpressionProgress(): Promise<ExpressionProgress[]> {
+    return Array.from(this.expressionProgress.values());
+  }
+
+  async recordExpressionProgress(insertProgress: InsertExpressionProgress): Promise<ExpressionProgress> {
+    const id = this.currentExpressionProgressId++;
+    const progress: ExpressionProgress = { ...insertProgress, id };
+    this.expressionProgress.set(id, progress);
+    return progress;
+  }
+
+  async getExpressionProgressStats(): Promise<{ known: number; unknown: number }> {
+    const progressArray = Array.from(this.expressionProgress.values());
     const known = progressArray.filter(p => p.known).length;
     const unknown = progressArray.filter(p => !p.known).length;
     return { known, unknown };
@@ -495,6 +584,33 @@ export class NotionStorage implements IStorage {
       console.error("Error getting grammar progress stats:", error);
       throw error;
     }
+  }
+
+  // Expression flashcard methods (using MemStorage for now)
+  private memStorage = new MemStorage();
+
+  async getAllExpressionFlashcards(sortDirection?: "ascending" | "descending"): Promise<ExpressionFlashcard[]> {
+    return this.memStorage.getAllExpressionFlashcards(sortDirection);
+  }
+
+  async getExpressionFlashcard(id: number): Promise<ExpressionFlashcard | undefined> {
+    return this.memStorage.getExpressionFlashcard(id);
+  }
+
+  async createExpressionFlashcard(flashcard: InsertExpressionFlashcard): Promise<ExpressionFlashcard> {
+    return this.memStorage.createExpressionFlashcard(flashcard);
+  }
+
+  async getExpressionProgress(): Promise<ExpressionProgress[]> {
+    return this.memStorage.getExpressionProgress();
+  }
+
+  async recordExpressionProgress(progress: InsertExpressionProgress): Promise<ExpressionProgress> {
+    return this.memStorage.recordExpressionProgress(progress);
+  }
+
+  async getExpressionProgressStats(): Promise<{ known: number; unknown: number }> {
+    return this.memStorage.getExpressionProgressStats();
   }
 }
 

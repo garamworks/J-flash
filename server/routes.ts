@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertUserProgressSchema, insertGrammarProgressSchema } from "@shared/schema";
+import { insertUserProgressSchema, insertGrammarProgressSchema, insertExpressionProgressSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Get all flashcards
@@ -134,6 +134,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error getting grammar progress stats:', error);
       res.status(500).json({ message: "Failed to fetch grammar progress stats" });
+    }
+  });
+
+  // Expression flashcard routes
+  app.get("/api/expression-flashcards", async (req, res) => {
+    try {
+      const sortDirection = req.query.sort as "ascending" | "descending" | undefined;
+      const flashcards = await storage.getAllExpressionFlashcards(sortDirection);
+      res.json(flashcards);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch expression flashcards" });
+    }
+  });
+
+  app.get("/api/expression-flashcards/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid expression flashcard ID" });
+      }
+      
+      const flashcard = await storage.getExpressionFlashcard(id);
+      if (!flashcard) {
+        return res.status(404).json({ message: "Expression flashcard not found" });
+      }
+      
+      res.json(flashcard);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch expression flashcard" });
+    }
+  });
+
+  // Record expression progress
+  app.post("/api/expression-progress", async (req, res) => {
+    try {
+      const validatedData = insertExpressionProgressSchema.parse(req.body);
+      const progress = await storage.recordExpressionProgress(validatedData);
+      res.json(progress);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid expression progress data" });
+    }
+  });
+
+  // Get all expression progress
+  app.get("/api/expression-progress", async (req, res) => {
+    try {
+      const progress = await storage.getExpressionProgress();
+      res.json(progress);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch expression progress" });
+    }
+  });
+
+  // Get expression progress statistics
+  app.get("/api/expression-progress/stats", async (req, res) => {
+    try {
+      const stats = await storage.getExpressionProgressStats();
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch expression progress stats" });
     }
   });
 
