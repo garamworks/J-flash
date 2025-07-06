@@ -461,7 +461,7 @@ export class NotionStorage implements IStorage {
         const properties = page.properties;
         
         // Handle different field names for different levels
-        const problemField = level === "N1" ? "문제풀이" : "문제문";
+        const problemField = "문제풀이"; // Both N1 and N2 use 문제풀이 field
         
         return {
           id: index + 1, // Sequential ID starting from 1
