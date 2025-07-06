@@ -30,11 +30,11 @@ export default function ExpressionFlashcardComponent({
   };
 
   return (
-    <div className="bg-white rounded-3xl shadow-lg p-6 max-w-2xl mx-auto">
+    <div className="bg-white rounded-3xl shadow-lg p-5 max-w-2xl mx-auto">
       {/* 메인 표현 섹션 */}
-      <div className="text-center mb-8">
+      <div className="text-center mb-6">
         <h2 
-          className="text-2xl font-bold text-gray-900 mb-2 cursor-pointer hover:text-blue-600 transition-colors"
+          className="text-2xl font-bold text-gray-900 mb-1 cursor-pointer hover:text-blue-600 transition-colors"
           onClick={onTitleClick}
         >
           {flashcard.mainExpression}
@@ -45,14 +45,14 @@ export default function ExpressionFlashcardComponent({
       </div>
 
       {/* 응용표현 목록 */}
-      <div className="space-y-4 mb-8">
+      <div className="space-y-3 mb-6">
         {applications.map((app, index) => (
           <div 
             key={index} 
-            className="border-l-4 border-purple-300 pl-4 py-2 cursor-pointer hover:bg-gray-50 transition-colors rounded-r-lg"
+            className="border-l-4 border-purple-300 pl-4 py-1.5 cursor-pointer hover:bg-gray-50 transition-colors rounded-r-lg"
             onClick={() => speakText(app.japanese)}
           >
-            <div className="text-xl font-bold text-gray-900 mb-1">
+            <div className="text-xl font-bold text-gray-900 mb-0.5">
               {app.japanese}
             </div>
             <div className="text-sm text-gray-500">
