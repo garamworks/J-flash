@@ -297,6 +297,7 @@ export class MemStorage implements IStorage {
 export class NotionStorage implements IStorage {
   private flashcardsDatabaseId: string = "213fe404b3dc802e8b1bd26d77f8cc84"; // N2 database ID from user's link
   private grammarDatabaseId: string = "227fe404b3dc8040946ce0921f4d9550"; // N2 grammar database ID
+  private expressionDatabaseId: string = "228fe404b3dc803786b5fea02dcf9913"; // Expression database ID
   private databaseIds: Map<string, string> = new Map();
   private grammarDatabaseIds: Map<string, string> = new Map();
   private n1DatabaseId: string = "216fe404b3dc80e49e28d68b149ce1bd"; // N1 database ID
@@ -586,20 +587,79 @@ export class NotionStorage implements IStorage {
     }
   }
 
-  // Expression flashcard methods (using MemStorage for now)
-  private memStorage = new MemStorage();
+  // Expression flashcard methods using Notion database
+  async getAllExpressionFlashcards(sortDirection: "ascending" | "descending" = "ascending"): Promise<ExpressionFlashcard[]> {
+    try {
+      const { notion } = await import('./notion');
+      
+      let hasMore = true;
+      let startCursor: string | undefined = undefined;
+      const allResults: any[] = [];
 
-  async getAllExpressionFlashcards(sortDirection?: "ascending" | "descending"): Promise<ExpressionFlashcard[]> {
-    return this.memStorage.getAllExpressionFlashcards(sortDirection);
+      while (hasMore) {
+        const response = await notion.databases.query({
+          database_id: this.expressionDatabaseId,
+          start_cursor: startCursor,
+          sorts: [
+            {
+              property: "Random",
+              direction: sortDirection
+            }
+          ]
+        });
+
+        allResults.push(...response.results);
+        hasMore = response.has_more;
+        startCursor = response.next_cursor || undefined;
+      }
+
+      console.log(`Retrieved ${allResults.length} expression flashcards from Notion`);
+
+      return allResults.map((page: any, index: number) => {
+        const properties = page.properties;
+
+        return {
+          id: index + 1,
+          notionPageId: page.id,
+          mainExpression: properties.MainExpression?.title?.[0]?.plain_text || "",
+          mainMeaning: properties.MainMeaning?.rich_text?.[0]?.plain_text || "",
+          application1: properties.Application1?.rich_text?.[0]?.plain_text || "",
+          application1Korean: properties.Application1Korean?.rich_text?.[0]?.plain_text || "",
+          application2: properties.Application2?.rich_text?.[0]?.plain_text || "",
+          application2Korean: properties.Application2Korean?.rich_text?.[0]?.plain_text || "",
+          application3: properties.Application3?.rich_text?.[0]?.plain_text || "",
+          application3Korean: properties.Application3Korean?.rich_text?.[0]?.plain_text || "",
+          application4: properties.Application4?.rich_text?.[0]?.plain_text || "",
+          application4Korean: properties.Application4Korean?.rich_text?.[0]?.plain_text || "",
+          application5: properties.Application5?.rich_text?.[0]?.plain_text || "",
+          application5Korean: properties.Application5Korean?.rich_text?.[0]?.plain_text || "",
+        };
+      });
+    } catch (error) {
+      console.error("Error fetching expression flashcards from Notion:", error);
+      // Fallback to MemStorage if Notion access fails
+      console.log("Falling back to MemStorage for expression flashcards");
+      return this.memStorage.getAllExpressionFlashcards(sortDirection);
+    }
   }
 
   async getExpressionFlashcard(id: number): Promise<ExpressionFlashcard | undefined> {
-    return this.memStorage.getExpressionFlashcard(id);
+    const flashcards = await this.getAllExpressionFlashcards();
+    return flashcards.find(card => card.id === id);
   }
 
   async createExpressionFlashcard(flashcard: InsertExpressionFlashcard): Promise<ExpressionFlashcard> {
-    return this.memStorage.createExpressionFlashcard(flashcard);
+    // For now, return a mock implementation since we're reading from Notion
+    const id = Date.now();
+    return {
+      id,
+      notionPageId: null,
+      ...flashcard,
+    };
   }
+
+  // Expression progress methods (using in-memory for now since Notion doesn't have progress tracking)
+  private memStorage = new MemStorage();
 
   async getExpressionProgress(): Promise<ExpressionProgress[]> {
     return this.memStorage.getExpressionProgress();
