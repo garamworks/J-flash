@@ -52,7 +52,7 @@ export default function ExpressionFlashcardComponent({
             className="border-l-4 border-purple-300 pl-4 py-1.5 cursor-pointer hover:bg-gray-50 transition-colors rounded-r-lg"
             onClick={() => speakText(app.japanese)}
           >
-            <div className="text-lg font-bold text-gray-900 mb-0.5">
+            <div className="text-xl font-bold text-gray-900 mb-0.5">
               {app.japanese}
             </div>
             <div className="text-sm text-gray-500">
