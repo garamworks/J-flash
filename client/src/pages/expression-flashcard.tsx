@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { ExpressionFlashcard, InsertExpressionProgress } from '@/../../shared/schema';
 import ExpressionFlashcardComponent from '@/components/expression-flashcard';
 
@@ -46,54 +47,14 @@ export default function ExpressionFlashcardPage() {
     retry: 3,
   });
 
-  // Record progress mutation
-  const recordProgressMutation = useMutation({
-    mutationFn: async (progress: InsertExpressionProgress) => {
-      const response = await fetch('/api/expression-progress', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(progress),
-      });
-      if (!response.ok) {
-        throw new Error('Failed to record progress');
-      }
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/expression-progress/stats'] });
-    },
-  });
+
 
   const handleSortToggle = () => {
     setSortDirection(prev => prev === "ascending" ? "descending" : "ascending");
     setCurrentIndex(0);
   };
 
-  const handleMarkAsKnown = async () => {
-    const currentFlashcard = flashcards[currentIndex];
-    if (!currentFlashcard) return;
 
-    await recordProgressMutation.mutateAsync({
-      expressionFlashcardId: currentFlashcard.id,
-      notionPageId: currentFlashcard.notionPageId || undefined,
-      known: true,
-    });
-
-    handleNextCard();
-  };
-
-  const handleMarkAsUnknown = async () => {
-    const currentFlashcard = flashcards[currentIndex];
-    if (!currentFlashcard) return;
-
-    await recordProgressMutation.mutateAsync({
-      expressionFlashcardId: currentFlashcard.id,
-      notionPageId: currentFlashcard.notionPageId || undefined,
-      known: false,
-    });
-
-    handleNextCard();
-  };
 
   const handleNextCard = () => {
     if (currentIndex < flashcards.length - 1) {
@@ -118,10 +79,6 @@ export default function ExpressionFlashcardPage() {
         handlePrevCard();
       } else if (event.key === 'ArrowRight') {
         handleNextCard();
-      } else if (event.key === '1') {
-        handleMarkAsKnown();
-      } else if (event.key === '2') {
-        handleMarkAsUnknown();
       }
     };
 
@@ -191,7 +148,7 @@ export default function ExpressionFlashcardPage() {
                 onClick={handleSortToggle}
                 title="순서 바꾸기"
               >
-                응용표현
+                Expression
               </h1>
             </div>
             <div className="text-lg font-semibold text-black mr-4">
@@ -203,43 +160,30 @@ export default function ExpressionFlashcardPage() {
 
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* Card Counter */}
-        <div className="text-center mb-6">
-          <p className="text-gray-600">
-            {currentIndex + 1} / {flashcards.length}
-          </p>
-        </div>
 
         {/* Flashcard */}
         <div className="mb-8">
           <ExpressionFlashcardComponent
             flashcard={currentFlashcard}
-            onMarkAsKnown={handleMarkAsKnown}
-            onMarkAsUnknown={handleMarkAsUnknown}
           />
         </div>
 
         {/* Navigation */}
-        <div className="flex justify-center gap-4 mb-6">
+        <div className="flex justify-center gap-8 mb-6">
           <button
             onClick={handlePrevCard}
-            className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
+            className="p-4 bg-gray-200 hover:bg-gray-300 rounded-full transition-colors"
             disabled={flashcards.length <= 1}
           >
-            이전
+            <ChevronLeft className="w-8 h-8" />
           </button>
           <button
             onClick={handleNextCard}
-            className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
+            className="p-4 bg-gray-200 hover:bg-gray-300 rounded-full transition-colors"
             disabled={flashcards.length <= 1}
           >
-            다음
+            <ChevronRight className="w-8 h-8" />
           </button>
-        </div>
-
-        {/* Keyboard shortcuts */}
-        <div className="text-center text-sm text-gray-500">
-          <p>키보드 단축키: ← → (이전/다음), 1 (알고 있어요), 2 (모르겠어요)</p>
         </div>
       </div>
     </div>

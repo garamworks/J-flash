@@ -2,14 +2,10 @@ import { ExpressionFlashcard } from "@/../../shared/schema";
 
 interface ExpressionFlashcardProps {
   flashcard: ExpressionFlashcard;
-  onMarkAsKnown: () => void;
-  onMarkAsUnknown: () => void;
 }
 
 export default function ExpressionFlashcardComponent({ 
-  flashcard, 
-  onMarkAsKnown, 
-  onMarkAsUnknown 
+  flashcard
 }: ExpressionFlashcardProps) {
   // 응용표현 데이터 배열화
   const applications = [
@@ -46,21 +42,7 @@ export default function ExpressionFlashcardComponent({
         ))}
       </div>
 
-      {/* 버튼 섹션 */}
-      <div className="flex gap-3 justify-center">
-        <button
-          onClick={onMarkAsKnown}
-          className="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-2xl transition-colors duration-200 shadow-md"
-        >
-          알고 있어요
-        </button>
-        <button
-          onClick={onMarkAsUnknown}
-          className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-2xl transition-colors duration-200 shadow-md"
-        >
-          모르겠어요
-        </button>
-      </div>
+
     </div>
   );
 }
