@@ -25,7 +25,7 @@ export interface IStorage {
   // Grammar progress methods
   getGrammarProgress(): Promise<GrammarProgress[]>;
   recordGrammarProgress(progress: InsertGrammarProgress): Promise<GrammarProgress>;
-  getGrammarProgressStats(): Promise<{ known: number; unknown: number }>;
+  getGrammarProgressStats(level?: string): Promise<{ known: number; unknown: number }>;
 }
 
 export class MemStorage implements IStorage {
@@ -197,7 +197,7 @@ export class MemStorage implements IStorage {
     return progress;
   }
 
-  async getGrammarProgressStats(): Promise<{ known: number; unknown: number }> {
+  async getGrammarProgressStats(level?: string): Promise<{ known: number; unknown: number }> {
     const progressArray = Array.from(this.grammarProgress.values());
     const known = progressArray.filter(p => p.known).length;
     const unknown = progressArray.filter(p => !p.known).length;
@@ -451,8 +451,11 @@ export class NotionStorage implements IStorage {
     }
   }
 
-  async getGrammarProgressStats(): Promise<{ known: number; unknown: number }> {
+  async getGrammarProgressStats(level?: string): Promise<{ known: number; unknown: number }> {
     try {
+      // Determine which grammar database to use based on level
+      const grammarDatabaseId = this.grammarDatabaseIds.get(level || "N2") || this.grammarDatabaseId;
+      
       // Get all pages from the grammar database 
       const allResults: any[] = [];
       let hasMore = true;
@@ -460,7 +463,7 @@ export class NotionStorage implements IStorage {
 
       while (hasMore) {
         const response = await notion.databases.query({
-          database_id: this.grammarDatabaseId,
+          database_id: grammarDatabaseId,
           start_cursor: startCursor,
           page_size: 100
         });

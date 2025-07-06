@@ -45,7 +45,17 @@ export default function GrammarFlashcardPage() {
 
   // Fetch progress stats
   const { data: progressStats } = useQuery<{ known: number; unknown: number }>({
-    queryKey: ['/api/grammar-progress/stats'],
+    queryKey: ['/api/grammar-progress/stats', selectedLevel],
+    queryFn: async () => {
+      const params = new URLSearchParams({
+        level: selectedLevel
+      });
+      const response = await fetch(`/api/grammar-progress/stats?${params}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch grammar progress stats');
+      }
+      return response.json();
+    },
     retry: 3,
   });
 

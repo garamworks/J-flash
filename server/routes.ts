@@ -127,7 +127,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get grammar progress statistics
   app.get("/api/grammar-progress/stats", async (req, res) => {
     try {
-      const stats = await storage.getGrammarProgressStats();
+      const level = req.query.level as string | undefined;
+      const stats = await storage.getGrammarProgressStats(level);
       res.json(stats);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch grammar progress stats" });
