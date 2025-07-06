@@ -169,7 +169,7 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
           <div className="flashcard-face flashcard-front">
             <div className="bg-white rounded-2xl shadow-lg p-6 relative cursor-pointer">
               {level === "Hiragana/Katakana" ? (
-                // Hiragana/Katakana front layout
+                // Hiragana/Katakana layout
                 <>
                   {/* Square Image with Speaker Icon */}
                   <div className="relative mb-6">
@@ -211,7 +211,7 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
                   </div>
                 </>
               ) : (
-                // Regular flashcard front layout
+                // Regular flashcard layout
                 <>
                   {/* Square Image with Speaker Icon */}
                   <div className="relative mb-6">
@@ -386,15 +386,14 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
         >
           외움
         </button>
-        
         <button
           onClick={() => handleButtonAction(onMarkAsUnknown)}
           className="action-btn flex-1 text-white font-semibold py-4 px-6 rounded-3xl text-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
           style={{ 
-            backgroundColor: '#f44336'
+            backgroundColor: '#E53E3E'
           }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#da190b'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#f44336'}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#C53030'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#E53E3E'}
           disabled={isTransitioning}
         >
           모름

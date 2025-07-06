@@ -464,13 +464,13 @@ export async function getHiraganaKatakanaFlashcardsFromNotion(databaseId: string
       return {
         id: numericId,
         japanese: properties['문자']?.title?.[0]?.plain_text || "",
-        furigana: properties['발음']?.rich_text?.[0]?.plain_text || "",
+        furigana: properties['파일명_히라가나']?.rich_text?.[0]?.plain_text || "",
         korean: properties['단어뜻']?.rich_text?.[0]?.plain_text || "",
-        sentence: "", // Hiragana/Katakana doesn't have example sentences
-        sentenceKorean: "",
+        sentence: properties['단어']?.rich_text?.[0]?.plain_text || "", // Use 단어 field for word
+        sentenceKorean: properties['단어뜻']?.rich_text?.[0]?.plain_text || "",
         imageUrl: properties['img']?.files?.[0]?.file?.url || properties['img']?.files?.[0]?.external?.url || "",
-        audioUrl: null,
-        wordAudioUrl: null,
+        audioUrl: properties['단어발음']?.files?.[0]?.file?.url || properties['단어발음']?.files?.[0]?.external?.url || null, // Word audio
+        wordAudioUrl: properties['단어발음']?.files?.[0]?.file?.url || properties['단어발음']?.files?.[0]?.external?.url || null,
         pronunciationAudioUrl: null,
         notionPageId: page.id
       };

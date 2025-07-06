@@ -362,9 +362,9 @@ export default function FlashcardPage() {
                 
                 {/* 히라가나/가타가나 */}
                 <button
-                  onClick={() => handleLevelSelect("히라가나/가타가나")}
+                  onClick={() => handleLevelSelect("Hiragana/Katakana")}
                   className={`w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors ${
-                    selectedLevel === "히라가나/가타가나" ? 'bg-blue-100 text-blue-800 font-semibold' : 'hover:bg-gray-100 text-gray-700'
+                    selectedLevel === "Hiragana/Katakana" ? 'bg-blue-100 text-blue-800 font-semibold' : 'hover:bg-gray-100 text-gray-700'
                   }`}
                 >
                   히라가나/가타가나
@@ -407,7 +407,7 @@ export default function FlashcardPage() {
                 J-Flash
               </h1>
               <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-md text-sm font-medium mt-0.5">
-                {selectedLevel === "히라가나/가타가나" ? "문자" : selectedLevel}
+                {selectedLevel === "Hiragana/Katakana" ? "문자" : selectedLevel}
               </span>
             </div>
             <div className="text-lg font-semibold text-black mr-4">
@@ -516,9 +516,9 @@ export default function FlashcardPage() {
               
               {/* 히라가나/가타가나 */}
               <button
-                onClick={() => handleLevelSelect("히라가나/가타가나")}
+                onClick={() => handleLevelSelect("Hiragana/Katakana")}
                 className={`w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors ${
-                  selectedLevel === "히라가나/가타가나" ? 'bg-blue-100 text-blue-800 font-semibold' : 'hover:bg-gray-100 text-gray-700'
+                  selectedLevel === "Hiragana/Katakana" ? 'bg-blue-100 text-blue-800 font-semibold' : 'hover:bg-gray-100 text-gray-700'
                 }`}
               >
                 히라가나/가타가나
@@ -535,6 +535,7 @@ export default function FlashcardPage() {
             flashcard={currentCard}
             onMarkAsKnown={handleMarkAsKnown}
             onMarkAsUnknown={handleMarkAsUnknown}
+            level={selectedLevel}
           />
         ) : (
           <div className="flex items-center justify-center h-64">
