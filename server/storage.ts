@@ -603,7 +603,7 @@ export class NotionStorage implements IStorage {
           sorts: [
             {
               property: "Random",
-              direction: sortDirection
+              direction: Math.random() > 0.5 ? "ascending" : "descending"
             }
           ]
         });
@@ -615,7 +615,10 @@ export class NotionStorage implements IStorage {
 
       console.log(`Retrieved ${allResults.length} expression flashcards from Notion`);
 
-      return allResults.map((page: any, index: number) => {
+      // Shuffle the results for random order
+      const shuffledResults = allResults.sort(() => Math.random() - 0.5);
+
+      return shuffledResults.map((page: any, index: number) => {
         const properties = page.properties;
 
         return {
