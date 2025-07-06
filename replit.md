@@ -115,6 +115,12 @@ Changelog:
   * Fixed choice randomization to be stable per card using useMemo
   * Added auto-play of example sentences when selecting answers
   * Implemented proper state reset when moving to next card
+- July 06, 2025. Fixed card count display accuracy:
+  * Resolved critical issue where card counts showed negative numbers (-79)
+  * Implemented direct use of progressStats.unknown instead of calculated totalFlashcards
+  * Fixed N1 grammar card count display (139 unchecked cards from 357 total)
+  * Added comprehensive database pagination handling for accurate statistics
+  * Verified all level statistics are correctly calculated and displayed
 ```
 
 ## User Preferences
