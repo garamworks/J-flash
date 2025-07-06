@@ -218,7 +218,7 @@ export default function GrammarFlashcardPage() {
               </span>
             </div>
             <div className="text-lg font-semibold text-black mr-4">
-              {totalFlashcards - (progressStats?.known || 0)}
+              {progressStats?.unknown || 0}
             </div>
           </div>
         </div>
