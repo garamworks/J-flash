@@ -144,6 +144,20 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
     }
   };
 
+  const handleCharacterAudioClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    // Manual visual feedback for mobile
+    const button = e.currentTarget as HTMLElement;
+    button.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+      button.style.transform = 'scale(1)';
+    }, 100);
+    
+    // Play character audio - speak the character itself
+    speak(flashcard.japanese, 'ja-JP');
+  };
+
   const handleButtonAction = (action: () => void) => {
     if (isFlipped) {
       // If card is flipped, first flip back to front with animation
@@ -197,10 +211,20 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
                   </div>
 
                   {/* Hiragana/Katakana Character */}
-                  <div className="text-center mb-4">
-                    <p className="text-6xl font-bold text-gray-900 leading-tight">
-                      {flashcard.japanese}
-                    </p>
+                  <div className="text-center mb-4 relative">
+                    <div className="flex items-center justify-center gap-4">
+                      <p className="text-6xl font-bold text-gray-900 leading-tight">
+                        {flashcard.japanese}
+                      </p>
+                      <button
+                        className="speaker-btn bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full shadow-md flex items-center justify-center"
+                        onClick={handleCharacterAudioClick}
+                        title="문자 발음"
+                        style={{ touchAction: 'manipulation' }}
+                      >
+                        <Volume2 className="text-red-600" size={28} />
+                      </button>
+                    </div>
                   </div>
 
                   {/* Word below character */}
@@ -283,9 +307,19 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
 
                   {/* Character */}
                   <div className="text-center" style={{ marginBottom: '1.5rem' }}>
-                    <p className="text-6xl font-bold text-gray-900" style={{ lineHeight: '0.7' }}>
-                      {flashcard.japanese}
-                    </p>
+                    <div className="flex items-center justify-center gap-4">
+                      <p className="text-6xl font-bold text-gray-900" style={{ lineHeight: '0.7' }}>
+                        {flashcard.japanese}
+                      </p>
+                      <button
+                        className="speaker-btn bg-red-500 hover:bg-red-600 rounded-full shadow-md flex items-center justify-center"
+                        onClick={handleCharacterAudioClick}
+                        title="문자 발음"
+                        style={{ touchAction: 'manipulation' }}
+                      >
+                        <Volume2 className="text-white" size={28} />
+                      </button>
+                    </div>
                   </div>
 
                   {/* 파일명_히라가나 */}
