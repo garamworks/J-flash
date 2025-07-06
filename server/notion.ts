@@ -421,3 +421,62 @@ export async function updateProgressInNotion(databaseId: string, pageId: string,
         throw new Error("Failed to update progress in Notion");
     }
 }
+
+// Special function for Hiragana/Katakana database with different field structure
+export async function getHiraganaKatakanaFlashcardsFromNotion(databaseId: string, sortDirection: "ascending" | "descending" = "ascending") {
+  try {
+    const allPages = [];
+    let hasMore = true;
+    let startCursor: string | undefined = undefined;
+
+    while (hasMore) {
+      const response = await notion.databases.query({
+        database_id: databaseId,
+        filter: {
+          property: "암기",
+          checkbox: {
+            equals: false
+          }
+        },
+        sorts: [
+          {
+            property: "Random",
+            direction: sortDirection
+          }
+        ],
+        start_cursor: startCursor,
+        page_size: 100
+      });
+
+      allPages.push(...response.results);
+      hasMore = response.has_more;
+      startCursor = response.next_cursor || undefined;
+    }
+
+    console.log(`Loaded ${allPages.length} hiragana/katakana flashcards from Notion database`);
+
+    return allPages.map((page: any) => {
+      const properties = page.properties;
+      
+      // Generate a numeric ID from the page ID
+      const numericId = parseInt(page.id.replace(/-/g, '').substring(0, 10), 16);
+      
+      return {
+        id: numericId,
+        japanese: properties['문자']?.title?.[0]?.plain_text || properties['문자']?.rich_text?.[0]?.plain_text || "",
+        furigana: properties['발음']?.rich_text?.[0]?.plain_text || "",
+        korean: properties['단어뜻']?.rich_text?.[0]?.plain_text || "",
+        sentence: "", // Hiragana/Katakana doesn't have example sentences
+        sentenceKorean: "",
+        imageUrl: properties['img']?.files?.[0]?.file?.url || properties['img']?.files?.[0]?.external?.url || "",
+        audioUrl: null,
+        wordAudioUrl: null,
+        pronunciationAudioUrl: null,
+        notionPageId: page.id
+      };
+    });
+  } catch (error) {
+    console.error("Error fetching hiragana/katakana flashcards from Notion:", error);
+    throw new Error("Failed to fetch hiragana/katakana flashcards from Notion");
+  }
+}

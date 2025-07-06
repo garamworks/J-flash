@@ -304,7 +304,7 @@ export class NotionStorage implements IStorage {
   private n1GrammarDatabaseId: string = "228fe404b3dc80dc9694fbf032d6491f"; // N1 grammar database ID
   private n3DatabaseId: string = "216fe404b3dc804a9130f21b2b3a0e54"; // N3 database ID
   private n4DatabaseId: string = "215fe404b3dc8099b972e96296fc14af"; // N4 database ID - updated URL
-  private hiraganaKatakanaDatabaseId: string = "215fe404b3dc8040bac6f54c99a949a8"; // Hiragana/Katakana database ID
+  private hiraganaKatakanaDatabaseId: string = "215fe404b3dc8040bac6f54c99a949a8"; // Hiragana/Katakana database ID - updated URL
 
   constructor() {
     this.initializeDatabases();
@@ -346,6 +346,10 @@ export class NotionStorage implements IStorage {
       if (level === "N1") {
         const { getN1FlashcardsFromNotion } = await import('./notion');
         return await getN1FlashcardsFromNotion(databaseId, sortDirection);
+      } else if (level === "Hiragana/Katakana") {
+        // Use Hiragana/Katakana-specific function
+        const { getHiraganaKatakanaFlashcardsFromNotion } = await import('./notion');
+        return await getHiraganaKatakanaFlashcardsFromNotion(databaseId, sortDirection);
       } else {
         return await getFlashcardsFromNotion(databaseId, sortDirection);
       }
