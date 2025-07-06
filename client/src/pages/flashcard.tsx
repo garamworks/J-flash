@@ -285,19 +285,88 @@ export default function FlashcardPage() {
                 </div>
               </div>
               <nav className="p-4">
-                {['N2', 'N3', 'N4', 'N5'].map((level) => (
-                  <button
-                    key={level}
-                    onClick={() => handleLevelSelect(level)}
-                    className={`w-full text-left p-3 rounded-lg mb-2 transition-colors ${
-                      selectedLevel === level
-                        ? 'bg-blue-100 text-blue-800 font-semibold'
-                        : 'hover:bg-gray-100 text-gray-700'
-                    }`}
-                  >
-                    {level}
-                  </button>
-                ))}
+                <button
+                  onClick={() => {setSelectedLevel("Home"); window.location.href = '/';}}
+                  className="w-full text-left p-3 rounded-lg mb-4 bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold"
+                >
+                  Home
+                </button>
+                
+                {/* 응용표현 */}
+                <button
+                  onClick={() => {setSelectedLevel("응용표현"); window.location.href = '/expression-flashcard';}}
+                  className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors hover:bg-gray-100 text-gray-700"
+                >
+                  응용표현
+                </button>
+                
+                {/* N1 단어 및 문법 */}
+                <button
+                  onClick={() => handleLevelSelect("N1")}
+                  className={`w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors ${
+                    selectedLevel === "N1" ? 'bg-blue-100 text-blue-800 font-semibold' : 'hover:bg-gray-100 text-gray-700'
+                  }`}
+                >
+                  N1 단어
+                </button>
+                <button
+                  onClick={() => {setSelectedLevel("N1 문법"); window.location.href = '/grammar-flashcard?level=N1';}}
+                  className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors hover:bg-gray-100 text-gray-700"
+                >
+                  N1 문법
+                </button>
+                
+                {/* N2 단어 및 문법 */}
+                <button
+                  onClick={() => handleLevelSelect("N2")}
+                  className={`w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors ${
+                    selectedLevel === "N2" ? 'bg-blue-100 text-blue-800 font-semibold' : 'hover:bg-gray-100 text-gray-700'
+                  }`}
+                >
+                  N2 단어
+                </button>
+                <button
+                  onClick={() => {setSelectedLevel("N2 문법"); window.location.href = '/grammar-flashcard';}}
+                  className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors hover:bg-gray-100 text-gray-700"
+                >
+                  N2 문법
+                </button>
+                
+                {/* N3, N4, N5 단어 */}
+                <button
+                  onClick={() => handleLevelSelect("N3")}
+                  className={`w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors ${
+                    selectedLevel === "N3" ? 'bg-blue-100 text-blue-800 font-semibold' : 'hover:bg-gray-100 text-gray-700'
+                  }`}
+                >
+                  N3 단어
+                </button>
+                <button
+                  onClick={() => handleLevelSelect("N4")}
+                  className={`w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors ${
+                    selectedLevel === "N4" ? 'bg-blue-100 text-blue-800 font-semibold' : 'hover:bg-gray-100 text-gray-700'
+                  }`}
+                >
+                  N4 단어
+                </button>
+                <button
+                  onClick={() => handleLevelSelect("N5")}
+                  className={`w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors ${
+                    selectedLevel === "N5" ? 'bg-blue-100 text-blue-800 font-semibold' : 'hover:bg-gray-100 text-gray-700'
+                  }`}
+                >
+                  N5 단어
+                </button>
+                
+                {/* 히라가나/가타가나 */}
+                <button
+                  onClick={() => handleLevelSelect("히라가나/가타가나")}
+                  className={`w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors ${
+                    selectedLevel === "히라가나/가타가나" ? 'bg-blue-100 text-blue-800 font-semibold' : 'hover:bg-gray-100 text-gray-700'
+                  }`}
+                >
+                  히라가나/가타가나
+                </button>
               </nav>
             </div>
           </div>
@@ -376,27 +445,36 @@ export default function FlashcardPage() {
               >
                 Home
               </button>
-              {['N1', 'N3', 'N4', 'N5'].map((level) => (
-                <button
-                  key={level}
-                  onClick={() => handleLevelSelect(level)}
-                  className={`w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors ${
-                    selectedLevel === level
-                      ? 'bg-blue-100 text-blue-800 font-semibold'
-                      : 'hover:bg-gray-100 text-gray-700'
-                  }`}
-                >
-                  {level}
-                </button>
-              ))}
               
-              {/* N2 split into word and grammar */}
+              {/* 응용표현 */}
+              <button
+                onClick={() => window.location.href = '/expression-flashcard'}
+                className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors hover:bg-gray-100 text-gray-700"
+              >
+                응용표현
+              </button>
+              
+              {/* N1 단어 및 문법 */}
+              <button
+                onClick={() => handleLevelSelect("N1")}
+                className={`w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors ${
+                  selectedLevel === "N1" ? 'bg-blue-100 text-blue-800 font-semibold' : 'hover:bg-gray-100 text-gray-700'
+                }`}
+              >
+                N1 단어
+              </button>
+              <button
+                onClick={() => window.location.href = '/grammar-flashcard?level=N1'}
+                className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors hover:bg-gray-100 text-gray-700"
+              >
+                N1 문법
+              </button>
+              
+              {/* N2 단어 및 문법 */}
               <button
                 onClick={() => handleLevelSelect("N2")}
                 className={`w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors ${
-                  selectedLevel === "N2"
-                    ? 'bg-blue-100 text-blue-800 font-semibold'
-                    : 'hover:bg-gray-100 text-gray-700'
+                  selectedLevel === "N2" ? 'bg-blue-100 text-blue-800 font-semibold' : 'hover:bg-gray-100 text-gray-700'
                 }`}
               >
                 N2 단어
@@ -408,12 +486,37 @@ export default function FlashcardPage() {
                 N2 문법
               </button>
               
+              {/* N3, N4, N5 단어 */}
+              <button
+                onClick={() => handleLevelSelect("N3")}
+                className={`w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors ${
+                  selectedLevel === "N3" ? 'bg-blue-100 text-blue-800 font-semibold' : 'hover:bg-gray-100 text-gray-700'
+                }`}
+              >
+                N3 단어
+              </button>
+              <button
+                onClick={() => handleLevelSelect("N4")}
+                className={`w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors ${
+                  selectedLevel === "N4" ? 'bg-blue-100 text-blue-800 font-semibold' : 'hover:bg-gray-100 text-gray-700'
+                }`}
+              >
+                N4 단어
+              </button>
+              <button
+                onClick={() => handleLevelSelect("N5")}
+                className={`w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors ${
+                  selectedLevel === "N5" ? 'bg-blue-100 text-blue-800 font-semibold' : 'hover:bg-gray-100 text-gray-700'
+                }`}
+              >
+                N5 단어
+              </button>
+              
+              {/* 히라가나/가타가나 */}
               <button
                 onClick={() => handleLevelSelect("히라가나/가타가나")}
-                className={`w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors mt-2 ${
-                  selectedLevel === "히라가나/가타가나"
-                    ? 'bg-blue-100 text-blue-800 font-semibold'
-                    : 'hover:bg-gray-100 text-gray-700'
+                className={`w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors ${
+                  selectedLevel === "히라가나/가타가나" ? 'bg-blue-100 text-blue-800 font-semibold' : 'hover:bg-gray-100 text-gray-700'
                 }`}
               >
                 히라가나/가타가나

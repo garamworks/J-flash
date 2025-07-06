@@ -247,17 +247,30 @@ export default function ExpressionFlashcardPage() {
             >
               Home
             </button>
-            {['N1', 'N3', 'N4', 'N5'].map((level) => (
-              <button
-                key={level}
-                onClick={() => handleLevelSelect(level)}
-                className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors hover:bg-gray-100 text-gray-700"
-              >
-                {level}
-              </button>
-            ))}
             
-            {/* N2 split into word and grammar */}
+            {/* 응용표현 - 현재 페이지, 하이라이트 */}
+            <button
+              onClick={() => handleLevelSelect("응용표현")}
+              className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors bg-purple-100 text-purple-800 font-semibold"
+            >
+              응용표현
+            </button>
+            
+            {/* N1 단어 및 문법 */}
+            <button
+              onClick={() => handleLevelSelect("N1 단어")}
+              className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors hover:bg-gray-100 text-gray-700"
+            >
+              N1 단어
+            </button>
+            <button
+              onClick={() => handleLevelSelect("N1 문법")}
+              className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors hover:bg-gray-100 text-gray-700"
+            >
+              N1 문법
+            </button>
+            
+            {/* N2 단어 및 문법 */}
             <button
               onClick={() => handleLevelSelect("N2 단어")}
               className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors hover:bg-gray-100 text-gray-700"
@@ -270,11 +283,33 @@ export default function ExpressionFlashcardPage() {
             >
               N2 문법
             </button>
+            
+            {/* N3, N4, N5 단어 */}
             <button
-              onClick={() => handleLevelSelect("응용표현")}
-              className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors bg-purple-100 text-purple-800 font-semibold"
+              onClick={() => handleLevelSelect("N3")}
+              className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors hover:bg-gray-100 text-gray-700"
             >
-              응용표현
+              N3 단어
+            </button>
+            <button
+              onClick={() => handleLevelSelect("N4")}
+              className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors hover:bg-gray-100 text-gray-700"
+            >
+              N4 단어
+            </button>
+            <button
+              onClick={() => handleLevelSelect("N5")}
+              className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors hover:bg-gray-100 text-gray-700"
+            >
+              N5 단어
+            </button>
+            
+            {/* 히라가나/가타가나 */}
+            <button
+              onClick={() => handleLevelSelect("히라가나/가타가나")}
+              className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors hover:bg-gray-100 text-gray-700"
+            >
+              히라가나/가타가나
             </button>
           </nav>
         </div>

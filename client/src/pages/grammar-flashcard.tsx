@@ -254,17 +254,32 @@ export default function GrammarFlashcardPage() {
                   >
                     Home
                   </button>
-                  {['N1', 'N3', 'N4', 'N5'].map((level) => (
-                    <button
-                      key={level}
-                      onClick={() => handleLevelSelect(level)}
-                      className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors hover:bg-gray-100 text-gray-700"
-                    >
-                      {level}
-                    </button>
-                  ))}
                   
-                  {/* N2 split into word and grammar */}
+                  {/* 응용표현 */}
+                  <button
+                    onClick={() => handleLevelSelect("응용표현")}
+                    className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors hover:bg-gray-100 text-gray-700"
+                  >
+                    응용표현
+                  </button>
+                  
+                  {/* N1 단어 및 문법 */}
+                  <button
+                    onClick={() => handleLevelSelect("N1 단어")}
+                    className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors hover:bg-gray-100 text-gray-700"
+                  >
+                    N1 단어
+                  </button>
+                  <button
+                    onClick={() => handleLevelSelect("N1 문법")}
+                    className={`w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors ${
+                      selectedLevel === "N1" ? "bg-blue-100 text-blue-800 font-semibold" : "hover:bg-gray-100 text-gray-700"
+                    }`}
+                  >
+                    N1 문법
+                  </button>
+                  
+                  {/* N2 단어 및 문법 */}
                   <button
                     onClick={() => handleLevelSelect("N2 단어")}
                     className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors hover:bg-gray-100 text-gray-700"
@@ -273,14 +288,37 @@ export default function GrammarFlashcardPage() {
                   </button>
                   <button
                     onClick={() => window.location.href = '/grammar-flashcard'}
-                    className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors bg-blue-100 text-blue-800 font-semibold"
+                    className={`w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors ${
+                      selectedLevel === "N2" ? "bg-blue-100 text-blue-800 font-semibold" : "hover:bg-gray-100 text-gray-700"
+                    }`}
                   >
                     N2 문법
                   </button>
                   
+                  {/* N3, N4, N5 단어 */}
+                  <button
+                    onClick={() => handleLevelSelect("N3")}
+                    className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors hover:bg-gray-100 text-gray-700"
+                  >
+                    N3 단어
+                  </button>
+                  <button
+                    onClick={() => handleLevelSelect("N4")}
+                    className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors hover:bg-gray-100 text-gray-700"
+                  >
+                    N4 단어
+                  </button>
+                  <button
+                    onClick={() => handleLevelSelect("N5")}
+                    className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors hover:bg-gray-100 text-gray-700"
+                  >
+                    N5 단어
+                  </button>
+                  
+                  {/* 히라가나/가타가나 */}
                   <button
                     onClick={() => handleLevelSelect("히라가나/가타가나")}
-                    className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors mt-2 hover:bg-gray-100 text-gray-700"
+                    className="w-full text-left py-2 px-3 rounded-lg mb-1 transition-colors hover:bg-gray-100 text-gray-700"
                   >
                     히라가나/가타가나
                   </button>
