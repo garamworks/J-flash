@@ -210,7 +210,7 @@ export class NotionStorage implements IStorage {
   private grammarDatabaseId: string = "227fe404b3dc8040946ce0921f4d9550"; // N2 grammar database ID
   private databaseIds: Map<string, string> = new Map();
   private grammarDatabaseIds: Map<string, string> = new Map();
-  private n1DatabaseId: string = "228fe404b3dc80dc9694fbf032d6491f"; // N1 database ID
+  private n1DatabaseId: string = "216fe404b3dc80e49e28d68b149ce1bd"; // N1 database ID
   private n1GrammarDatabaseId: string = "228fe404b3dc80869f39ede14f6de995"; // N1 grammar database ID
   private n3DatabaseId: string = "216fe404b3dc804a9130f21b2b3a0e54"; // N3 database ID
   private n4DatabaseId: string = "215fe404b3dc8099b972e96296fc14af"; // N4 database ID
@@ -276,8 +276,22 @@ export class NotionStorage implements IStorage {
 
   async recordProgress(insertProgress: InsertUserProgress): Promise<UserProgress> {
     try {
-      // Update the progress in Notion using the updateProgressInNotion function
-      await updateProgressInNotion(this.flashcardsDatabaseId, insertProgress.flashcardId.toString(), insertProgress.known);
+      // First, get all flashcards to find the target one
+      const allFlashcards = await this.getAllFlashcards();
+      const targetFlashcard = allFlashcards.find(f => f.id === insertProgress.flashcardId);
+      
+      if (!targetFlashcard) {
+        throw new Error(`Flashcard with ID ${insertProgress.flashcardId} not found`);
+      }
+      
+      if (!targetFlashcard.notionPageId) {
+        throw new Error(`No Notion page ID found for flashcard ${insertProgress.flashcardId}`);
+      }
+      
+      console.log(`Recording progress for flashcard ${insertProgress.flashcardId}, Notion page ID: ${targetFlashcard.notionPageId}`);
+      
+      // Update the progress in Notion using the actual Notion page ID
+      await updateProgressInNotion(this.flashcardsDatabaseId, targetFlashcard.notionPageId, insertProgress.known);
       
       return {
         id: Date.now(), // Generate a temporary ID
