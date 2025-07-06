@@ -50,6 +50,25 @@ export default function HomePage() {
           <p className="text-lg text-gray-600">일본어 플래시카드 학습</p>
         </div>
 
+        {/* Special Categories */}
+        <div className="mb-6">
+          <button
+            onClick={() => setLocation('/expression-flashcard')}
+            className="w-full rounded-3xl p-4 text-white shadow-lg transition-all duration-200 hover:scale-105"
+            style={{ backgroundColor: '#6B46C1' }}
+          >
+            <div className="flex items-center justify-between">
+              <div className="text-left">
+                <h2 className="text-xl font-bold mb-1">응용표현</h2>
+                <p className="text-white/90 text-sm">실용적인 일본어 표현 학습</p>
+              </div>
+              <div className="text-3xl font-bold opacity-50">
+                応用
+              </div>
+            </div>
+          </button>
+        </div>
+
         {/* Level Selection Cards */}
         <div className="space-y-4">
           {levels.map((item) => (
