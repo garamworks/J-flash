@@ -45,7 +45,7 @@ export default function ExpressionFlashcardComponent({
       </div>
 
       {/* 응용표현 목록 */}
-      <div className="space-y-3 mb-3">
+      <div className="space-y-3 mb-1.5">
         {applications.map((app, index) => (
           <div 
             key={index} 
