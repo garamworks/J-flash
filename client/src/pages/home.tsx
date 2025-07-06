@@ -78,7 +78,6 @@ export default function HomePage() {
                     >
                       <div className="text-center">
                         <div className="text-lg font-semibold">단어</div>
-                        <div className="text-sm opacity-90">어휘 학습</div>
                       </div>
                     </button>
                     
@@ -88,7 +87,6 @@ export default function HomePage() {
                     >
                       <div className="text-center">
                         <div className="text-lg font-semibold">문법</div>
-                        <div className="text-sm opacity-90">문법 학습</div>
                       </div>
                     </button>
                   </div>
