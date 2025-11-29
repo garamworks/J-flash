@@ -388,14 +388,14 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
 
                   {/* Japanese Example Sentence (without furigana) */}
                   <div className="text-center" style={{ marginBottom: '0.64rem' }}>
-                    <p className="text-2xl text-gray-700 leading-relaxed" style={{ fontSize: '1.65em' }}>
+                    <p className="text-2xl text-gray-700" style={{ fontSize: '1.155em', lineHeight: '1.3' }}>
                       {flashcard.sentence}
                     </p>
                   </div>
 
                   {/* Korean Sentence Translation */}
                   <div className="text-center">
-                    <p className="text-2xl text-gray-700 leading-relaxed" style={{ fontSize: '1.46rem' }}>
+                    <p className="text-2xl text-gray-700" style={{ fontSize: '1.022rem', lineHeight: '1.3' }}>
                       {flashcard.sentenceKorean}
                     </p>
                   </div>
