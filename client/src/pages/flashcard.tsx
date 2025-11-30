@@ -48,12 +48,18 @@ export default function FlashcardPage() {
   const flashcards = allFlashcards || [];
 
   const recordProgressMutation = useMutation({
-    mutationFn: async ({ flashcardId, known }: { flashcardId: number; known: boolean }) => {
+    mutationFn: async ({ flashcardId, known, notionPageId, level }: { flashcardId: number; known: boolean; notionPageId?: string; level?: string }) => {
       try {
+        const payload: any = { flashcardId, known };
+        if (notionPageId) payload.notionPageId = notionPageId;
+        if (level) payload.level = level;
+        
+        console.log('Sending progress data:', payload);
+        
         const response = await fetch(`/api/progress`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ flashcardId, known })
+          body: JSON.stringify(payload)
         });
         
         if (!response.ok) {
