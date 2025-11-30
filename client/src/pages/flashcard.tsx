@@ -81,7 +81,9 @@ export default function FlashcardPage() {
     if (flashcards && flashcards[currentIndex]) {
       recordProgressMutation.mutate({
         flashcardId: flashcards[currentIndex].id,
-        known: true
+        known: true,
+        notionPageId: (flashcards[currentIndex] as any).notionPageId,
+        level: selectedLevel
       });
     }
     setKnownCount(prev => prev + 1);
@@ -92,7 +94,9 @@ export default function FlashcardPage() {
     if (flashcards && flashcards[currentIndex]) {
       recordProgressMutation.mutate({
         flashcardId: flashcards[currentIndex].id,
-        known: false
+        known: false,
+        notionPageId: (flashcards[currentIndex] as any).notionPageId,
+        level: selectedLevel
       });
     }
     setUnknownCount(prev => prev + 1);

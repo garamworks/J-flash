@@ -265,6 +265,7 @@ export async function getFlashcardsFromNotion(flashcardsDatabaseId: string, sort
                 // Regular vocabulary database mapping
                 return {
                     id: parseInt(page.id.replace(/-/g, '').slice(-8), 16),
+                    notionPageId: page.id,
                     japanese: properties['단어']?.title?.[0]?.plain_text || "",
                     furigana: properties['독음']?.rich_text?.[0]?.plain_text || "",
                     korean: properties['뜻']?.rich_text?.[0]?.plain_text || "",

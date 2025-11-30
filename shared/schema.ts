@@ -76,6 +76,9 @@ export const insertGrammarFlashcardSchema = createInsertSchema(grammarFlashcards
 
 export const insertUserProgressSchema = createInsertSchema(userProgress).omit({
   id: true,
+}).extend({
+  notionPageId: z.string().optional(),
+  level: z.string().optional(),
 });
 
 export const insertGrammarProgressSchema = createInsertSchema(grammarProgress).omit({

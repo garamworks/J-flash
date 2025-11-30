@@ -377,8 +377,26 @@ export class NotionStorage implements IStorage {
 
   async recordProgress(insertProgress: InsertUserProgress): Promise<UserProgress> {
     try {
-      // First, get all flashcards to find the target one
-      const allFlashcards = await this.getAllFlashcards();
+      // Check if notionPageId is provided directly (new method)
+      if ((insertProgress as any).notionPageId) {
+        const level = (insertProgress as any).level || "N2";
+        const databaseId = this.databaseIds.get(level) || this.flashcardsDatabaseId;
+        
+        console.log(`Recording progress for flashcard ${insertProgress.flashcardId}, Level: ${level}, Database: ${databaseId}`);
+        
+        // Update the progress in Notion using the provided Notion page ID
+        await updateProgressInNotion(databaseId, (insertProgress as any).notionPageId, insertProgress.known);
+        
+        return {
+          id: Date.now(),
+          flashcardId: insertProgress.flashcardId,
+          known: insertProgress.known
+        };
+      }
+      
+      // Fallback: Find flashcard by ID (for backward compatibility)
+      const level = (insertProgress as any).level || "N2";
+      const allFlashcards = await this.getAllFlashcards(undefined, level);
       const targetFlashcard = allFlashcards.find(f => f.id === insertProgress.flashcardId);
       
       if (!targetFlashcard) {
@@ -389,13 +407,14 @@ export class NotionStorage implements IStorage {
         throw new Error(`No Notion page ID found for flashcard ${insertProgress.flashcardId}`);
       }
       
-      console.log(`Recording progress for flashcard ${insertProgress.flashcardId}, Notion page ID: ${targetFlashcard.notionPageId}`);
+      const databaseId = this.databaseIds.get(level) || this.flashcardsDatabaseId;
+      console.log(`Recording progress for flashcard ${insertProgress.flashcardId}, Notion page ID: ${targetFlashcard.notionPageId}, Database: ${databaseId}`);
       
       // Update the progress in Notion using the actual Notion page ID
-      await updateProgressInNotion(this.flashcardsDatabaseId, targetFlashcard.notionPageId, insertProgress.known);
+      await updateProgressInNotion(databaseId, targetFlashcard.notionPageId, insertProgress.known);
       
       return {
-        id: Date.now(), // Generate a temporary ID
+        id: Date.now(),
         flashcardId: insertProgress.flashcardId,
         known: insertProgress.known
       };
