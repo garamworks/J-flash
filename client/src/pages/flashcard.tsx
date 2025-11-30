@@ -15,6 +15,7 @@ export default function FlashcardPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState("N2");
   const [location] = useLocation();
+  const [hiddenImages, setHiddenImages] = useState<{[key: number]: boolean}>({});
 
   // Extract level from URL parameters using window.location
   useEffect(() => {
@@ -570,13 +571,16 @@ export default function FlashcardPage() {
         {currentCard ? (
           <FlashcardComponent 
             key={currentIndex}
-            flashcard={currentCard}
+            flashcard={hiddenImages[currentCard.id] ? {...currentCard, imageUrl: ""} : currentCard}
             onMarkAsKnown={handleMarkAsKnown}
             onMarkAsUnknown={handleMarkAsUnknown}
             level={selectedLevel}
             onClearPrompt={() => {
               const notionPageId = (currentCard as any).notionPageId;
-              if (notionPageId) {
+              if (notionPageId && currentCard.id) {
+                // 즉시 이미지 숨기기
+                setHiddenImages(prev => ({...prev, [currentCard.id]: true}));
+                // 노션 업데이트
                 clearPromptMutation.mutate(notionPageId);
               }
             }}
