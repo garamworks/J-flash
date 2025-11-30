@@ -423,6 +423,27 @@ export async function updateProgressInNotion(databaseId: string, pageId: string,
     }
 }
 
+export async function clearPromptInNotion(pageId: string) {
+    try {
+        console.log('Clearing prompt field for page:', pageId);
+        
+        const updateResult = await notion.pages.update({
+            page_id: pageId,
+            properties: {
+                prompt: {
+                    rich_text: []
+                }
+            }
+        });
+        
+        console.log('Prompt cleared successfully:', updateResult.id);
+        return updateResult;
+    } catch (error) {
+        console.error("Error clearing prompt in Notion:", error);
+        throw new Error("Failed to clear prompt in Notion");
+    }
+}
+
 // Special function for Hiragana/Katakana database with different field structure
 export async function getHiraganaKatakanaFlashcardsFromNotion(databaseId: string, sortDirection: "ascending" | "descending" = "ascending") {
   try {

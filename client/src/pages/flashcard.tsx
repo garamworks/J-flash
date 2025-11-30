@@ -83,6 +83,34 @@ export default function FlashcardPage() {
     }
   });
 
+  const clearPromptMutation = useMutation({
+    mutationFn: async (notionPageId: string) => {
+      try {
+        const response = await fetch(`/api/flashcards/clear-prompt`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ notionPageId })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        return await response.json();
+      } catch (error) {
+        console.error('Error clearing prompt:', error);
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      console.log('Prompt cleared successfully');
+      queryClient.invalidateQueries({ queryKey: ["/api/flashcards", sortDirection, selectedLevel] });
+    },
+    onError: (error) => {
+      console.error('Mutation error:', error);
+    }
+  });
+
   const handleMarkAsKnown = () => {
     if (flashcards && flashcards[currentIndex]) {
       recordProgressMutation.mutate({
@@ -546,6 +574,12 @@ export default function FlashcardPage() {
             onMarkAsKnown={handleMarkAsKnown}
             onMarkAsUnknown={handleMarkAsUnknown}
             level={selectedLevel}
+            onClearPrompt={() => {
+              const notionPageId = (currentCard as any).notionPageId;
+              if (notionPageId) {
+                clearPromptMutation.mutate(notionPageId);
+              }
+            }}
           />
         ) : (
           <div className="flex items-center justify-center h-64">

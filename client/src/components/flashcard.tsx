@@ -70,12 +70,20 @@ interface FlashcardProps {
   onMarkAsKnown: () => void;
   onMarkAsUnknown: () => void;
   level?: string;
+  onClearPrompt?: () => void;
 }
 
-export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsUnknown, level }: FlashcardProps) {
+export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsUnknown, level, onClearPrompt }: FlashcardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const { speak } = useSpeech();
+
+  const handleClearPromptClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onClearPrompt) {
+      onClearPrompt();
+    }
+  };
 
   const handleCardClick = (e: React.MouseEvent) => {
     // Don't flip if speaker button was clicked
@@ -182,6 +190,16 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
           {/* Card Front */}
           <div className="flashcard-face flashcard-front">
             <div className="bg-white rounded-2xl shadow-lg p-6 relative cursor-pointer">
+              {/* Clear Prompt Button - Top Right (N1 only) */}
+              {level === "N1" && (
+                <button
+                  className="absolute top-4 right-4 bg-gray-100 hover:bg-gray-200 rounded-lg px-2 py-1 text-xs font-medium text-gray-700 transition-colors"
+                  onClick={handleClearPromptClick}
+                  title="prompt 필드 초기화"
+                >
+                  change
+                </button>
+              )}
               {level === "Hiragana/Katakana" ? (
                 // Hiragana/Katakana front layout
                 <>
