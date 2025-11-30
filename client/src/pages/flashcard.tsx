@@ -15,6 +15,7 @@ export default function FlashcardPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState("N2");
   const [location] = useLocation();
+  const [hiddenImages, setHiddenImages] = useState<{[key: number]: boolean}>({});
 
   // Extract level from URL parameters using window.location
   useEffect(() => {
@@ -77,6 +78,34 @@ export default function FlashcardPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/progress"] });
       // Don't invalidate flashcards to prevent automatic card switching
+    },
+    onError: (error) => {
+      console.error('Mutation error:', error);
+    }
+  });
+
+  const clearPromptMutation = useMutation({
+    mutationFn: async (notionPageId: string) => {
+      try {
+        const response = await fetch(`/api/flashcards/clear-prompt`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ notionPageId })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        return await response.json();
+      } catch (error) {
+        console.error('Error clearing prompt:', error);
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      console.log('Prompt cleared successfully');
+      queryClient.invalidateQueries({ queryKey: ["/api/flashcards", sortDirection, selectedLevel] });
     },
     onError: (error) => {
       console.error('Mutation error:', error);
@@ -542,10 +571,19 @@ export default function FlashcardPage() {
         {currentCard ? (
           <FlashcardComponent 
             key={currentIndex}
-            flashcard={currentCard}
+            flashcard={hiddenImages[currentCard.id] ? {...currentCard, imageUrl: ""} : currentCard}
             onMarkAsKnown={handleMarkAsKnown}
             onMarkAsUnknown={handleMarkAsUnknown}
             level={selectedLevel}
+            onClearPrompt={() => {
+              const notionPageId = (currentCard as any).notionPageId;
+              if (notionPageId && currentCard.id) {
+                // 즉시 이미지 숨기기
+                setHiddenImages(prev => ({...prev, [currentCard.id]: true}));
+                // 노션 업데이트
+                clearPromptMutation.mutate(notionPageId);
+              }
+            }}
           />
         ) : (
           <div className="flex items-center justify-center h-64">
