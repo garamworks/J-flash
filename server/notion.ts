@@ -425,10 +425,25 @@ export async function updateProgressInNotion(databaseId: string, pageId: string,
 
 export async function clearPromptInNotion(pageId: string) {
     try {
-        console.log('Clearing Prompt and img fields for page:', pageId);
+        console.log('Clearing Prompt and img fields and updating Status for page:', pageId);
         
-        const updateResult = await notion.pages.update({
-            page_id: pageId,
+        // First, retrieve page to check the exact Status field structure
+        const pageInfo = await notion.pages.retrieve({ page_id: pageId });
+        const props = (pageInfo as any).properties;
+        
+        let statusFieldName = null;
+        let statusField = null;
+        
+        for (const [key, value] of Object.entries(props)) {
+            if (key.toLowerCase().includes('status')) {
+                statusFieldName = key;
+                statusField = value;
+                console.log('Found status field:', key, 'Type:', (value as any).type);
+                break;
+            }
+        }
+        
+        const updatePayload: any = {
             properties: {
                 Prompt: {
                     rich_text: []
@@ -437,14 +452,30 @@ export async function clearPromptInNotion(pageId: string) {
                     files: []
                 }
             }
+        };
+        
+        // Add Status field update if found
+        if (statusFieldName && statusField) {
+            console.log('Adding Status to update payload with field name:', statusFieldName);
+            updatePayload.properties[statusFieldName] = {
+                select: {
+                    name: "Not Started"
+                }
+            };
+            console.log('Update payload properties:', JSON.stringify(updatePayload.properties, null, 2));
+        }
+        
+        const updateResult = await notion.pages.update({
+            page_id: pageId,
+            ...updatePayload
         });
         
-        console.log('Prompt and img fields cleared successfully:', updateResult.id);
+        console.log('All fields updated successfully:', updateResult.id);
         return updateResult;
     } catch (error) {
-        console.error("Error clearing fields in Notion:", error);
-        console.error("Error message:", (error as any).message);
-        throw new Error("Failed to clear fields in Notion");
+        console.error("Error updating fields in Notion:", error);
+        console.error("Error details:", JSON.stringify((error as any), null, 2));
+        throw new Error("Failed to update fields in Notion");
     }
 }
 
