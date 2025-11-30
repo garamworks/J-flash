@@ -425,7 +425,7 @@ export async function updateProgressInNotion(databaseId: string, pageId: string,
 
 export async function clearPromptInNotion(pageId: string) {
     try {
-        console.log('Clearing Prompt, img fields and updating Status for page:', pageId);
+        console.log('Clearing Prompt and img fields for page:', pageId);
         
         const updateResult = await notion.pages.update({
             page_id: pageId,
@@ -435,16 +435,44 @@ export async function clearPromptInNotion(pageId: string) {
                 },
                 img: {
                     files: []
-                },
-                Status: {
-                    select: {
-                        name: "Not Started"
-                    }
                 }
             }
         });
         
-        console.log('Fields cleared and Status updated successfully:', updateResult.id);
+        console.log('Fields cleared successfully:', updateResult.id);
+        
+        // Try to update Status separately
+        try {
+            const pageInfo = await notion.pages.retrieve({ page_id: pageId });
+            const props = (pageInfo as any).properties;
+            
+            // Find status property with any case variation
+            let statusField = null;
+            for (const key of Object.keys(props)) {
+                if (key.toLowerCase().includes('status')) {
+                    statusField = key;
+                    break;
+                }
+            }
+            
+            if (statusField) {
+                console.log('Found status field:', statusField);
+                await notion.pages.update({
+                    page_id: pageId,
+                    properties: {
+                        [statusField]: {
+                            select: {
+                                name: "Not Started"
+                            }
+                        }
+                    }
+                });
+                console.log('Status updated successfully');
+            }
+        } catch (statusError) {
+            console.warn('Could not update status field:', (statusError as any).message);
+        }
+        
         return updateResult;
     } catch (error) {
         console.error("Error clearing fields in Notion:", error);
