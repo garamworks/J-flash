@@ -427,6 +427,11 @@ export async function clearPromptInNotion(pageId: string) {
     try {
         console.log('Clearing Prompt and img fields for page:', pageId);
         
+        // First get the page to check available properties
+        const pageInfo = await notion.pages.retrieve({ page_id: pageId });
+        const availableProps = Object.keys((pageInfo as any).properties);
+        console.log('Available properties:', availableProps);
+        
         const updateResult = await notion.pages.update({
             page_id: pageId,
             properties: {
@@ -449,6 +454,7 @@ export async function clearPromptInNotion(pageId: string) {
     } catch (error) {
         console.error("Error clearing fields in Notion:", error);
         console.error("Error message:", (error as any).message);
+        console.error("Error code:", (error as any).code);
         throw new Error("Failed to clear fields in Notion");
     }
 }
