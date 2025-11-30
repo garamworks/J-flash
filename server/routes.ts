@@ -177,25 +177,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Clear prompt field for a flashcard
-  app.post("/api/flashcards/clear-prompt", async (req, res) => {
-    try {
-      const { notionPageId } = req.body;
-      
-      if (!notionPageId) {
-        return res.status(400).json({ message: "notionPageId is required" });
-      }
-      
-      const { clearPromptInNotion } = await import('./notion');
-      await clearPromptInNotion(notionPageId);
-      
-      res.json({ success: true, message: "Prompt cleared successfully" });
-    } catch (error) {
-      console.error('Error clearing prompt:', error);
-      res.status(500).json({ message: "Failed to clear prompt" });
-    }
-  });
-
   // Get all expression progress
   app.get("/api/expression-progress", async (req, res) => {
     try {

@@ -70,20 +70,12 @@ interface FlashcardProps {
   onMarkAsKnown: () => void;
   onMarkAsUnknown: () => void;
   level?: string;
-  onClearPrompt?: () => void;
 }
 
-export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsUnknown, level, onClearPrompt }: FlashcardProps) {
+export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsUnknown, level }: FlashcardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const { speak } = useSpeech();
-
-  const handleClearPromptClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (onClearPrompt) {
-      onClearPrompt();
-    }
-  };
 
   const handleCardClick = (e: React.MouseEvent) => {
     // Don't flip if speaker button was clicked
@@ -257,17 +249,6 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
                       <div className="w-full aspect-square bg-gray-100 rounded-xl flex items-center justify-center">
                         <span className="text-gray-400 text-lg">이미지 없음</span>
                       </div>
-                    )}
-                    
-                    {/* Clear Prompt Button - Top Right (N1 only) */}
-                    {level === "N1" && (
-                      <button
-                        className="absolute top-3 right-3 bg-gray-100 hover:bg-gray-200 rounded-lg px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors shadow-md z-10"
-                        onClick={handleClearPromptClick}
-                        title="prompt 필드 초기화"
-                      >
-                        change
-                      </button>
                     )}
                     
                     {/* Speaker Buttons - Left and Right */}
