@@ -178,7 +178,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Clear prompt field for a flashcard
-  app.post("/api/flashcards/:id/clear-prompt", async (req, res) => {
+  app.post("/api/flashcards/clear-prompt", async (req, res) => {
     try {
       const { notionPageId } = req.body;
       
