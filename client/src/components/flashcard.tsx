@@ -190,16 +190,6 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
           {/* Card Front */}
           <div className="flashcard-face flashcard-front">
             <div className="bg-white rounded-2xl shadow-lg p-6 relative cursor-pointer">
-              {/* Clear Prompt Button - Top Right (N1 only) */}
-              {level === "N1" && (
-                <button
-                  className="absolute top-4 right-4 bg-gray-100 hover:bg-gray-200 rounded-lg px-2 py-1 text-xs font-medium text-gray-700 transition-colors"
-                  onClick={handleClearPromptClick}
-                  title="prompt 필드 초기화"
-                >
-                  change
-                </button>
-              )}
               {level === "Hiragana/Katakana" ? (
                 // Hiragana/Katakana front layout
                 <>
@@ -267,6 +257,17 @@ export default function FlashcardComponent({ flashcard, onMarkAsKnown, onMarkAsU
                       <div className="w-full aspect-square bg-gray-100 rounded-xl flex items-center justify-center">
                         <span className="text-gray-400 text-lg">이미지 없음</span>
                       </div>
+                    )}
+                    
+                    {/* Clear Prompt Button - Top Right (N1 only) */}
+                    {level === "N1" && (
+                      <button
+                        className="absolute top-3 right-3 bg-gray-100 hover:bg-gray-200 rounded-lg px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors shadow-md z-10"
+                        onClick={handleClearPromptClick}
+                        title="prompt 필드 초기화"
+                      >
+                        change
+                      </button>
                     )}
                     
                     {/* Speaker Buttons - Left and Right */}
