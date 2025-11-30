@@ -425,15 +425,15 @@ export async function updateProgressInNotion(databaseId: string, pageId: string,
 
 export async function clearPromptInNotion(pageId: string) {
     try {
-        console.log('Clearing prompt field and updating Status and img fields for page:', pageId);
+        console.log('Clearing prompt field and updating status and img fields for page:', pageId);
         
         const updateResult = await notion.pages.update({
             page_id: pageId,
             properties: {
-                prompt: {
+                Prompt: {
                     rich_text: []
                 },
-                Status: {
+                status: {
                     select: {
                         name: "Not Started"
                     }
@@ -448,6 +448,7 @@ export async function clearPromptInNotion(pageId: string) {
         return updateResult;
     } catch (error) {
         console.error("Error clearing fields in Notion:", error);
+        console.error("Error details:", (error as any).message);
         throw new Error("Failed to clear fields in Notion");
     }
 }
