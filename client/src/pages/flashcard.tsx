@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { type Flashcard } from "@shared/schema";
 import FlashcardComponent from "@/components/flashcard";
@@ -49,8 +49,25 @@ export default function FlashcardPage() {
     queryKey: ["/api/progress"],
   });
 
-  // Now using server-side filtering for unchecked '암기' cards only
-  const flashcards = allFlashcards || [];
+  // Store previous flashcards to prevent re-ordering when Notion's Random field changes
+  const previousFlashcardsRef = useRef<Flashcard[]>([]);
+  
+  const flashcards = useMemo(() => {
+    if (!allFlashcards) return [];
+    
+    // Create ID sequence strings to compare
+    const newIdSequence = allFlashcards.map(f => f.id).join(',');
+    const prevIdSequence = previousFlashcardsRef.current.map(f => f.id).join(',');
+    
+    // If ID sequence is the same, keep the previous array to avoid re-rendering
+    if (newIdSequence === prevIdSequence && previousFlashcardsRef.current.length > 0) {
+      return previousFlashcardsRef.current;
+    }
+    
+    // Otherwise, update with new array
+    previousFlashcardsRef.current = allFlashcards;
+    return allFlashcards;
+  }, [allFlashcards]);
 
   const recordProgressMutation = useMutation({
     mutationFn: async ({ flashcardId, known, notionPageId, level }: { flashcardId: number; known: boolean; notionPageId?: string; level?: string }) => {
