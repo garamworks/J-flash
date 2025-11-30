@@ -109,7 +109,6 @@ export default function FlashcardPage() {
     },
     onSuccess: () => {
       console.log('Prompt cleared successfully');
-      queryClient.invalidateQueries({ queryKey: ["/api/flashcards", sortDirection, selectedLevel] });
     },
     onError: (error) => {
       console.error('Mutation error:', error);
