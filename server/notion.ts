@@ -188,9 +188,18 @@ export async function getFlashcardsFromNotion(flashcardsDatabaseId: string, sort
             }
         }
 
-        console.log(`Loaded ${allResults.length} flashcards from Notion database`);
+        // Remove duplicates by page ID (can happen when Random field changes during pagination)
+        const uniqueResultsMap = new Map();
+        for (const page of allResults) {
+            if (!uniqueResultsMap.has(page.id)) {
+                uniqueResultsMap.set(page.id, page);
+            }
+        }
+        const uniqueResults = Array.from(uniqueResultsMap.values());
+        
+        console.log(`Loaded ${uniqueResults.length} flashcards from Notion database (${allResults.length - uniqueResults.length} duplicates removed)`);
 
-        return allResults.map((page: any) => {
+        return uniqueResults.map((page: any) => {
             const properties = page.properties;
 
             // Extract image URL from files field
@@ -334,9 +343,18 @@ export async function getN1FlashcardsFromNotion(flashcardsDatabaseId: string, so
             }
         }
 
-        console.log(`Loaded ${allResults.length} N1 flashcards from Notion database`);
+        // Remove duplicates by page ID (can happen when Random field changes during pagination)
+        const uniqueResultsMap = new Map();
+        for (const page of allResults) {
+            if (!uniqueResultsMap.has(page.id)) {
+                uniqueResultsMap.set(page.id, page);
+            }
+        }
+        const uniqueResults = Array.from(uniqueResultsMap.values());
+        
+        console.log(`Loaded ${uniqueResults.length} N1 flashcards from Notion database (${allResults.length - uniqueResults.length} duplicates removed)`);
 
-        return allResults.map((page: any, index: number) => {
+        return uniqueResults.map((page: any, index: number) => {
             const properties = page.properties;
 
             // Generate a numeric ID based on the hash of the Notion page ID
