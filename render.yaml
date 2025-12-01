@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: j-flash
+    runtime: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: N2_NOTION_INTEGRATION_SECRET
+        sync: false
+      - key: N2_NOTION_PAGE_URL
+        sync: false
