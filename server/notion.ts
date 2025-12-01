@@ -292,8 +292,17 @@ export async function getFlashcardsFromNotion(flashcardsDatabaseId: string, sort
 }
 
 // Update progress in existing Notion database using the "암기" checkbox field
+// Seeded random number generator for consistent shuffling
+function seededRandom(seed: number) {
+    let state = seed;
+    return function() {
+        state = (state * 1664525 + 1013904223) % 4294967296;
+        return state / 4294967296;
+    };
+}
+
 // Get all N1 flashcards from the existing Notion database with Korean field names
-export async function getN1FlashcardsFromNotion(flashcardsDatabaseId: string, sortDirection: "ascending" | "descending" = "ascending", limit?: number, offset?: number) {
+export async function getN1FlashcardsFromNotion(flashcardsDatabaseId: string, sortDirection: "ascending" | "descending" = "ascending", limit?: number, offset?: number, seed?: number) {
     try {
         const allResults: any[] = [];
         let hasMore = true;
@@ -337,10 +346,18 @@ export async function getN1FlashcardsFromNotion(flashcardsDatabaseId: string, so
         }
         let uniqueResults = Array.from(uniqueResultsMap.values());
 
-        // NO SHUFFLING - maintain consistent order across requests
-        // Client will shuffle once on initial load to ensure order consistency
+        // Shuffle using seed if provided (for consistent random order per session)
+        if (seed !== undefined) {
+            const random = seededRandom(seed);
+            // Fisher-Yates shuffle with seeded random
+            for (let i = uniqueResults.length - 1; i > 0; i--) {
+                const j = Math.floor(random() * (i + 1));
+                [uniqueResults[i], uniqueResults[j]] = [uniqueResults[j], uniqueResults[i]];
+            }
+            console.log(`Shuffled ${uniqueResults.length} cards with seed ${seed}`);
+        }
 
-        // Apply offset and limit
+        // Apply offset and limit after shuffling
         const start = offset || 0;
         const end = limit !== undefined ? start + limit : undefined;
         uniqueResults = uniqueResults.slice(start, end);

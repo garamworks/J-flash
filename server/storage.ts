@@ -8,7 +8,7 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   
   // Flashcard methods
-  getAllFlashcards(sortDirection?: "ascending" | "descending", level?: string, limit?: number, offset?: number): Promise<Flashcard[]>;
+  getAllFlashcards(sortDirection?: "ascending" | "descending", level?: string, limit?: number, offset?: number, seed?: number): Promise<Flashcard[]>;
   getFlashcard(id: number): Promise<Flashcard | undefined>;
   createFlashcard(flashcard: InsertFlashcard): Promise<Flashcard>;
   
@@ -162,7 +162,7 @@ export class MemStorage implements IStorage {
     return user;
   }
 
-  async getAllFlashcards(sortDirection?: "ascending" | "descending", level?: string, limit?: number, offset?: number): Promise<Flashcard[]> {
+  async getAllFlashcards(sortDirection?: "ascending" | "descending", level?: string, limit?: number, offset?: number, seed?: number): Promise<Flashcard[]> {
     const allFlashcards = Array.from(this.flashcards.values());
 
     let result = allFlashcards;
@@ -343,14 +343,14 @@ export class NotionStorage implements IStorage {
     throw new Error("User creation not implemented for Notion storage");
   }
 
-  async getAllFlashcards(sortDirection: "ascending" | "descending" = "ascending", level: string = "N2", limit?: number, offset?: number): Promise<Flashcard[]> {
+  async getAllFlashcards(sortDirection: "ascending" | "descending" = "ascending", level: string = "N2", limit?: number, offset?: number, seed?: number): Promise<Flashcard[]> {
     try {
       const databaseId = this.databaseIds.get(level) || this.flashcardsDatabaseId;
 
       // Use N1-specific function for N1 database
       if (level === "N1") {
         const { getN1FlashcardsFromNotion } = await import('./notion');
-        return await getN1FlashcardsFromNotion(databaseId, sortDirection, limit, offset);
+        return await getN1FlashcardsFromNotion(databaseId, sortDirection, limit, offset, seed);
       } else if (level === "Hiragana/Katakana") {
         // Use Hiragana/Katakana-specific function
         const { getHiraganaKatakanaFlashcardsFromNotion } = await import('./notion');

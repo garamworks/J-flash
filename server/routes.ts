@@ -11,7 +11,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const level = req.query.level as string | undefined;
       const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
       const offset = req.query.offset ? parseInt(req.query.offset as string) : undefined;
-      const flashcards = await storage.getAllFlashcards(sortDirection, level, limit, offset);
+      const seed = req.query.seed ? parseInt(req.query.seed as string) : undefined;
+      const flashcards = await storage.getAllFlashcards(sortDirection, level, limit, offset, seed);
       res.json(flashcards);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch flashcards" });

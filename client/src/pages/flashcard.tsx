@@ -18,9 +18,11 @@ export default function FlashcardPage() {
   const [hiddenImages, setHiddenImages] = useState<{[key: number]: boolean}>({});
   const [batchLimit, setBatchLimit] = useState(110); // Start background loading at 110
 
+  // Generate unique session ID on mount to force fresh data on page refresh
+  const [sessionId] = useState(() => Date.now());
+
   // Store cards in a stable reference to prevent order changes
   const stableFlashcardsRef = useRef<Flashcard[]>([]);
-  const hasShuffledRef = useRef(false);
 
   // Extract level from URL parameters using window.location
   useEffect(() => {
@@ -36,22 +38,21 @@ export default function FlashcardPage() {
       setUnknownCount(0);
       setBatchLimit(110); // Reset to initial background load size
       stableFlashcardsRef.current = []; // Clear stored cards
-      hasShuffledRef.current = false; // Reset shuffle flag
     }
   }, [location]);
   const queryClient = useQueryClient();
 
   // Step 1: Load initial 10 cards immediately for fast display
   const { data: initialFlashcards, isLoading: isLoadingInitial, error: initialError } = useQuery<Flashcard[]>({
-    queryKey: ["/api/flashcards", sortDirection, selectedLevel, "initial"],
+    queryKey: ["/api/flashcards", sortDirection, selectedLevel, "initial", sessionId],
     queryFn: async () => {
-      const response = await fetch(`/api/flashcards?sort=${sortDirection}&level=${selectedLevel}&limit=10`);
+      const response = await fetch(`/api/flashcards?sort=${sortDirection}&level=${selectedLevel}&limit=10&seed=${sessionId}`);
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || '데이터를 불러오는 중 오류가 발생했습니다.');
       }
       const data = await response.json();
-      console.log(`[DEBUG] Initial load: received ${data.length} flashcards`);
+      console.log(`[DEBUG] Initial load: received ${data.length} flashcards (session: ${sessionId})`);
       return data;
     },
     staleTime: Infinity,
@@ -59,45 +60,33 @@ export default function FlashcardPage() {
 
   // Step 2: Load more cards in background (110, then 210, 310, etc.)
   const { data: backgroundFlashcards, error: backgroundError } = useQuery<Flashcard[]>({
-    queryKey: ["/api/flashcards", sortDirection, selectedLevel, batchLimit],
+    queryKey: ["/api/flashcards", sortDirection, selectedLevel, batchLimit, sessionId],
     queryFn: async () => {
-      const response = await fetch(`/api/flashcards?sort=${sortDirection}&level=${selectedLevel}&limit=${batchLimit}`);
+      const response = await fetch(`/api/flashcards?sort=${sortDirection}&level=${selectedLevel}&limit=${batchLimit}&seed=${sessionId}`);
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || '데이터를 불러오는 중 오류가 발생했습니다.');
       }
       const data = await response.json();
-      console.log(`[DEBUG] Background load: received ${data.length} flashcards (limit: ${batchLimit})`);
+      console.log(`[DEBUG] Background load: received ${data.length} flashcards (limit: ${batchLimit}, session: ${sessionId})`);
       return data;
     },
     enabled: !!initialFlashcards, // Only start after initial cards are loaded
     staleTime: Infinity,
   });
 
-  // Fisher-Yates shuffle algorithm
-  const shuffleArray = <T,>(array: T[]): T[] => {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-  };
-
-  // Merge cards while preserving order of existing cards
+  // Merge cards while preserving order (server already shuffled with seed)
   const flashcards = useMemo(() => {
     const newCards = backgroundFlashcards || initialFlashcards;
     if (!newCards || newCards.length === 0) {
       return stableFlashcardsRef.current;
     }
 
-    // If we have no existing cards, shuffle once and use them
+    // If we have no existing cards, just use the new ones (already shuffled by server)
     if (stableFlashcardsRef.current.length === 0) {
-      const shuffled = shuffleArray(newCards);
-      hasShuffledRef.current = true;
-      stableFlashcardsRef.current = shuffled;
-      console.log(`[DEBUG] Initial shuffle: ${shuffled.length} cards`);
-      return shuffled;
+      stableFlashcardsRef.current = newCards;
+      console.log(`[DEBUG] Loaded ${newCards.length} cards (server-shuffled with seed ${sessionId})`);
+      return newCards;
     }
 
     // If new data has more cards, add new ones while preserving existing order
@@ -116,7 +105,7 @@ export default function FlashcardPage() {
 
     // Otherwise keep existing cards
     return stableFlashcardsRef.current;
-  }, [backgroundFlashcards, initialFlashcards]);
+  }, [backgroundFlashcards, initialFlashcards, sessionId]);
 
   const isLoading = isLoadingInitial; // Only show loading for initial cards
   const error = initialError || backgroundError;
