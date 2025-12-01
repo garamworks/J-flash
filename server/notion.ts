@@ -293,16 +293,19 @@ export async function getFlashcardsFromNotion(flashcardsDatabaseId: string, sort
 
 // Update progress in existing Notion database using the "암기" checkbox field
 // Get all N1 flashcards from the existing Notion database with Korean field names
-export async function getN1FlashcardsFromNotion(flashcardsDatabaseId: string, sortDirection: "ascending" | "descending" = "ascending", limit?: number) {
+export async function getN1FlashcardsFromNotion(flashcardsDatabaseId: string, sortDirection: "ascending" | "descending" = "ascending", limit?: number, offset?: number) {
     try {
         const allResults: any[] = [];
         let hasMore = true;
         let startCursor: string | undefined = undefined;
 
+        // Calculate how many cards we need to fetch (offset + limit)
+        const totalNeeded = (offset || 0) + (limit || Infinity);
+
         // Fetch all pages using pagination WITHOUT Random sorting
         // Random sorting with now() causes cards to be skipped during pagination
         // If limit is specified, only fetch the first batch for faster initial load
-        while (hasMore && (!limit || allResults.length < limit)) {
+        while (hasMore && allResults.length < totalNeeded) {
             const response = await notion.databases.query({
                 database_id: flashcardsDatabaseId,
                 filter: {
@@ -312,15 +315,15 @@ export async function getN1FlashcardsFromNotion(flashcardsDatabaseId: string, so
                     }
                 },
                 start_cursor: startCursor,
-                page_size: limit && limit < 100 ? limit : 100
+                page_size: 100
             });
 
             allResults.push(...response.results);
             hasMore = response.has_more;
             startCursor = response.next_cursor || undefined;
 
-            // Early exit if we have enough cards and a limit is set
-            if (limit && allResults.length >= limit) {
+            // Early exit if we have enough cards
+            if (allResults.length >= totalNeeded) {
                 break;
             }
         }
@@ -334,16 +337,13 @@ export async function getN1FlashcardsFromNotion(flashcardsDatabaseId: string, so
         }
         let uniqueResults = Array.from(uniqueResultsMap.values());
 
-        // Shuffle results using Fisher-Yates algorithm
-        for (let i = uniqueResults.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [uniqueResults[i], uniqueResults[j]] = [uniqueResults[j], uniqueResults[i]];
-        }
+        // NO SHUFFLING - maintain consistent order across requests
+        // Client will shuffle once on initial load to ensure order consistency
 
-        // Apply limit after shuffling
-        if (limit) {
-            uniqueResults = uniqueResults.slice(0, limit);
-        }
+        // Apply offset and limit
+        const start = offset || 0;
+        const end = limit !== undefined ? start + limit : undefined;
+        uniqueResults = uniqueResults.slice(start, end);
 
         // Reverse if descending order requested
         if (sortDirection === "descending") {

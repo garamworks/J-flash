@@ -10,7 +10,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const sortDirection = req.query.sort as "ascending" | "descending" | undefined;
       const level = req.query.level as string | undefined;
       const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
-      const flashcards = await storage.getAllFlashcards(sortDirection, level, limit);
+      const offset = req.query.offset ? parseInt(req.query.offset as string) : undefined;
+      const flashcards = await storage.getAllFlashcards(sortDirection, level, limit, offset);
       res.json(flashcards);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch flashcards" });
