@@ -33,8 +33,25 @@ export default function FlashcardPage() {
   }, [location]);
   const queryClient = useQueryClient();
 
-  const { data: allFlashcards, isLoading, error } = useQuery<Flashcard[]>({
-    queryKey: ["/api/flashcards", sortDirection, selectedLevel],
+  // First, fetch initial 10 cards for fast loading
+  const { data: initialFlashcards, isLoading: isLoadingInitial, error: initialError } = useQuery<Flashcard[]>({
+    queryKey: ["/api/flashcards", sortDirection, selectedLevel, "initial"],
+    queryFn: async () => {
+      const response = await fetch(`/api/flashcards?sort=${sortDirection}&level=${selectedLevel}&limit=10`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || '데이터를 불러오는 중 오류가 발생했습니다.');
+      }
+      const data = await response.json();
+      console.log(`[DEBUG] ${selectedLevel}: received ${data.length} initial flashcards from API`);
+      return data;
+    },
+    staleTime: Infinity, // Keep initial data fresh
+  });
+
+  // Then, fetch all cards in the background
+  const { data: allFlashcards, error: allError } = useQuery<Flashcard[]>({
+    queryKey: ["/api/flashcards", sortDirection, selectedLevel, "all"],
     queryFn: async () => {
       const response = await fetch(`/api/flashcards?sort=${sortDirection}&level=${selectedLevel}`);
       if (!response.ok) {
@@ -42,10 +59,15 @@ export default function FlashcardPage() {
         throw new Error(errorData.message || '데이터를 불러오는 중 오류가 발생했습니다.');
       }
       const data = await response.json();
-      console.log(`[DEBUG] ${selectedLevel}: received ${data.length} flashcards from API`);
+      console.log(`[DEBUG] ${selectedLevel}: received ${data.length} total flashcards from API`);
       return data;
     },
+    enabled: !!initialFlashcards, // Only fetch all after initial load
   });
+
+  // Use initial loading state and combine errors
+  const isLoading = isLoadingInitial;
+  const error = initialError || allError;
 
   const { data: progressData } = useQuery<Array<{id: number, flashcardId: number, known: boolean}>>({
     queryKey: ["/api/progress"],
@@ -53,23 +75,25 @@ export default function FlashcardPage() {
 
   // Store previous flashcards to prevent re-ordering when Notion's Random field changes
   const previousFlashcardsRef = useRef<Flashcard[]>([]);
-  
+
   const flashcards = useMemo(() => {
-    if (!allFlashcards) return [];
-    
+    // Use all flashcards if available, otherwise use initial flashcards
+    const currentFlashcards = allFlashcards || initialFlashcards;
+    if (!currentFlashcards) return [];
+
     // Create ID sequence strings to compare
-    const newIdSequence = allFlashcards.map(f => f.id).join(',');
+    const newIdSequence = currentFlashcards.map(f => f.id).join(',');
     const prevIdSequence = previousFlashcardsRef.current.map(f => f.id).join(',');
-    
+
     // If ID sequence is the same, keep the previous array to avoid re-rendering
     if (newIdSequence === prevIdSequence && previousFlashcardsRef.current.length > 0) {
       return previousFlashcardsRef.current;
     }
-    
+
     // Otherwise, update with new array
-    previousFlashcardsRef.current = allFlashcards;
-    return allFlashcards;
-  }, [allFlashcards]);
+    previousFlashcardsRef.current = currentFlashcards;
+    return currentFlashcards;
+  }, [allFlashcards, initialFlashcards]);
 
   const recordProgressMutation = useMutation({
     mutationFn: async ({ flashcardId, known, notionPageId, level }: { flashcardId: number; known: boolean; notionPageId?: string; level?: string }) => {

@@ -1,9 +1,8 @@
 import { Client } from "@notionhq/client";
 
-// Initialize Notion client with N2-specific secrets
-export const notion = new Client({
-    auth: process.env.N2_NOTION_INTEGRATION_SECRET || process.env.NOTION_INTEGRATION_SECRET!,
-});
+// Initialize Notion client with N2-specific secrets (only if env vars are present)
+const notionAuth = process.env.N2_NOTION_INTEGRATION_SECRET || process.env.NOTION_INTEGRATION_SECRET;
+export const notion = notionAuth ? new Client({ auth: notionAuth }) : null as any;
 
 // Extract the page ID from the Notion page URL
 function extractPageIdFromUrl(pageUrl: string): string {
@@ -15,9 +14,8 @@ function extractPageIdFromUrl(pageUrl: string): string {
     throw Error("Failed to extract page ID");
 }
 
-export const NOTION_PAGE_ID = extractPageIdFromUrl(
-    process.env.N2_NOTION_PAGE_URL || process.env.NOTION_PAGE_URL!
-);
+const notionPageUrl = process.env.N2_NOTION_PAGE_URL || process.env.NOTION_PAGE_URL;
+export const NOTION_PAGE_ID = notionPageUrl ? extractPageIdFromUrl(notionPageUrl) : "";
 
 /**
  * Lists all child databases contained within NOTION_PAGE_ID
@@ -295,7 +293,7 @@ export async function getFlashcardsFromNotion(flashcardsDatabaseId: string, sort
 
 // Update progress in existing Notion database using the "암기" checkbox field
 // Get all N1 flashcards from the existing Notion database with Korean field names
-export async function getN1FlashcardsFromNotion(flashcardsDatabaseId: string, sortDirection: "ascending" | "descending" = "ascending") {
+export async function getN1FlashcardsFromNotion(flashcardsDatabaseId: string, sortDirection: "ascending" | "descending" = "ascending", limit?: number) {
     try {
         const allResults: any[] = [];
         let hasMore = true;
@@ -303,7 +301,8 @@ export async function getN1FlashcardsFromNotion(flashcardsDatabaseId: string, so
 
         // Fetch all pages using pagination WITHOUT Random sorting
         // Random sorting with now() causes cards to be skipped during pagination
-        while (hasMore) {
+        // If limit is specified, only fetch the first batch for faster initial load
+        while (hasMore && (!limit || allResults.length < limit)) {
             const response = await notion.databases.query({
                 database_id: flashcardsDatabaseId,
                 filter: {
@@ -313,12 +312,17 @@ export async function getN1FlashcardsFromNotion(flashcardsDatabaseId: string, so
                     }
                 },
                 start_cursor: startCursor,
-                page_size: 100
+                page_size: limit && limit < 100 ? limit : 100
             });
 
             allResults.push(...response.results);
             hasMore = response.has_more;
             startCursor = response.next_cursor || undefined;
+
+            // Early exit if we have enough cards and a limit is set
+            if (limit && allResults.length >= limit) {
+                break;
+            }
         }
 
         // Remove duplicates by page ID (safety check)
@@ -328,20 +332,25 @@ export async function getN1FlashcardsFromNotion(flashcardsDatabaseId: string, so
                 uniqueResultsMap.set(page.id, page);
             }
         }
-        const uniqueResults = Array.from(uniqueResultsMap.values());
-        
+        let uniqueResults = Array.from(uniqueResultsMap.values());
+
         // Shuffle results using Fisher-Yates algorithm
         for (let i = uniqueResults.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [uniqueResults[i], uniqueResults[j]] = [uniqueResults[j], uniqueResults[i]];
         }
-        
+
+        // Apply limit after shuffling
+        if (limit) {
+            uniqueResults = uniqueResults.slice(0, limit);
+        }
+
         // Reverse if descending order requested
         if (sortDirection === "descending") {
             uniqueResults.reverse();
         }
-        
-        console.log(`Loaded ${uniqueResults.length} N1 flashcards from Notion database (shuffled, ${allResults.length - uniqueResults.length} duplicates removed)`);
+
+        console.log(`Loaded ${uniqueResults.length} N1 flashcards from Notion database${limit ? ` (limited to ${limit})` : ' (shuffled)'}, ${allResults.length - uniqueResults.length} duplicates removed`);
 
         return uniqueResults.map((page: any, index: number) => {
             const properties = page.properties;
