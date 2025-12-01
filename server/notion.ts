@@ -308,13 +308,14 @@ export async function getN1FlashcardsFromNotion(flashcardsDatabaseId: string, so
         let hasMore = true;
         let startCursor: string | undefined = undefined;
 
-        // Calculate how many cards we need to fetch (offset + limit)
-        const totalNeeded = (offset || 0) + (limit || Infinity);
+        // When seed is provided, we need to fetch ALL cards to shuffle properly
+        // Otherwise, we'd only shuffle the limited subset, not get diverse cards from the full collection
+        const shouldFetchAll = seed !== undefined;
+        const totalNeeded = shouldFetchAll ? Infinity : ((offset || 0) + (limit || Infinity));
 
         // Fetch all pages using pagination WITHOUT Random sorting
         // Random sorting with now() causes cards to be skipped during pagination
-        // If limit is specified, only fetch the first batch for faster initial load
-        while (hasMore && allResults.length < totalNeeded) {
+        while (hasMore) {
             const response = await notion.databases.query({
                 database_id: flashcardsDatabaseId,
                 filter: {
@@ -331,8 +332,8 @@ export async function getN1FlashcardsFromNotion(flashcardsDatabaseId: string, so
             hasMore = response.has_more;
             startCursor = response.next_cursor || undefined;
 
-            // Early exit if we have enough cards
-            if (allResults.length >= totalNeeded) {
+            // Early exit only if we're NOT fetching all cards for shuffling
+            if (!shouldFetchAll && allResults.length >= totalNeeded) {
                 break;
             }
         }
@@ -354,7 +355,6 @@ export async function getN1FlashcardsFromNotion(flashcardsDatabaseId: string, so
                 const j = Math.floor(random() * (i + 1));
                 [uniqueResults[i], uniqueResults[j]] = [uniqueResults[j], uniqueResults[i]];
             }
-            console.log(`Shuffled ${uniqueResults.length} cards with seed ${seed}`);
         }
 
         // Apply offset and limit after shuffling
@@ -367,7 +367,10 @@ export async function getN1FlashcardsFromNotion(flashcardsDatabaseId: string, so
             uniqueResults.reverse();
         }
 
-        console.log(`Loaded ${uniqueResults.length} N1 flashcards from Notion database${limit ? ` (limited to ${limit})` : ' (shuffled)'}, ${allResults.length - uniqueResults.length} duplicates removed`);
+        const logMessage = seed !== undefined
+            ? `Fetched ${allResults.length} cards, shuffled with seed ${seed}, returning ${uniqueResults.length} cards (offset: ${offset || 0}, limit: ${limit})`
+            : `Loaded ${uniqueResults.length} N1 flashcards from Notion database${limit ? ` (limited to ${limit})` : ''}`;
+        console.log(logMessage);
 
         return uniqueResults.map((page: any, index: number) => {
             const properties = page.properties;
