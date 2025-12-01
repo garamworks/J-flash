@@ -46,13 +46,13 @@ export default function FlashcardPage() {
   const { data: initialFlashcards, isLoading: isLoadingInitial, error: initialError } = useQuery<Flashcard[]>({
     queryKey: ["/api/flashcards", sortDirection, selectedLevel, "initial", sessionId],
     queryFn: async () => {
-      const response = await fetch(`/api/flashcards?sort=${sortDirection}&level=${selectedLevel}&limit=10&seed=${sessionId}`);
+      const response = await fetch(`/api/flashcards?sort=${sortDirection}&level=${selectedLevel}&limit=10`);
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || '데이터를 불러오는 중 오류가 발생했습니다.');
       }
       const data = await response.json();
-      console.log(`[DEBUG] Initial load: received ${data.length} flashcards (session: ${sessionId})`);
+      console.log(`[DEBUG] Initial load: received ${data.length} flashcards (shuffled by Random field)`);
       return data;
     },
     staleTime: Infinity,
@@ -62,20 +62,20 @@ export default function FlashcardPage() {
   const { data: backgroundFlashcards, error: backgroundError } = useQuery<Flashcard[]>({
     queryKey: ["/api/flashcards", sortDirection, selectedLevel, batchLimit, sessionId],
     queryFn: async () => {
-      const response = await fetch(`/api/flashcards?sort=${sortDirection}&level=${selectedLevel}&limit=${batchLimit}&seed=${sessionId}`);
+      const response = await fetch(`/api/flashcards?sort=${sortDirection}&level=${selectedLevel}&limit=${batchLimit}`);
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || '데이터를 불러오는 중 오류가 발생했습니다.');
       }
       const data = await response.json();
-      console.log(`[DEBUG] Background load: received ${data.length} flashcards (limit: ${batchLimit}, session: ${sessionId})`);
+      console.log(`[DEBUG] Background load: received ${data.length} flashcards (limit: ${batchLimit})`);
       return data;
     },
     enabled: !!initialFlashcards, // Only start after initial cards are loaded
     staleTime: Infinity,
   });
 
-  // Merge cards while preserving order (server already shuffled with seed)
+  // Merge cards while preserving order (server shuffled with Random field)
   const flashcards = useMemo(() => {
     const newCards = backgroundFlashcards || initialFlashcards;
     if (!newCards || newCards.length === 0) {
@@ -85,7 +85,7 @@ export default function FlashcardPage() {
     // If we have no existing cards, just use the new ones (already shuffled by server)
     if (stableFlashcardsRef.current.length === 0) {
       stableFlashcardsRef.current = newCards;
-      console.log(`[DEBUG] Loaded ${newCards.length} cards (server-shuffled with seed ${sessionId})`);
+      console.log(`[DEBUG] Loaded ${newCards.length} cards (shuffled by Random field)`);
       return newCards;
     }
 

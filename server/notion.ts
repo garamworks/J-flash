@@ -292,53 +292,77 @@ export async function getFlashcardsFromNotion(flashcardsDatabaseId: string, sort
 }
 
 // Update progress in existing Notion database using the "암기" checkbox field
-// Seeded random number generator for consistent shuffling
-function seededRandom(seed: number) {
-    let state = seed;
-    return function() {
-        state = (state * 1664525 + 1013904223) % 4294967296;
-        return state / 4294967296;
-    };
-}
-
 // Get all N1 flashcards from the existing Notion database with Korean field names
-export async function getN1FlashcardsFromNotion(flashcardsDatabaseId: string, sortDirection: "ascending" | "descending" = "ascending", limit?: number, offset?: number, seed?: number) {
+export async function getN1FlashcardsFromNotion(flashcardsDatabaseId: string, sortDirection: "ascending" | "descending" = "ascending", limit?: number, offset?: number) {
     try {
         const allResults: any[] = [];
         let hasMore = true;
         let startCursor: string | undefined = undefined;
 
-        // When seed is provided, we need to fetch ALL cards to shuffle properly
-        // Otherwise, we'd only shuffle the limited subset, not get diverse cards from the full collection
-        const shouldFetchAll = seed !== undefined;
-        const totalNeeded = shouldFetchAll ? Infinity : ((offset || 0) + (limit || Infinity));
+        // Calculate how many cards we need to fetch
+        const totalNeeded = (offset || 0) + (limit || Infinity);
 
-        // Fetch all pages using pagination WITHOUT Random sorting
-        // Random sorting with now() causes cards to be skipped during pagination
-        while (hasMore) {
-            const response = await notion.databases.query({
-                database_id: flashcardsDatabaseId,
-                filter: {
-                    property: "암기",
-                    checkbox: {
-                        equals: false
+        // Fetch pages using pagination WITH Random sorting for diverse results
+        // Using Random field (with now()) to get different cards on each request
+        while (hasMore && allResults.length < totalNeeded) {
+            try {
+                // Try with Random sorting first
+                const response = await notion.databases.query({
+                    database_id: flashcardsDatabaseId,
+                    filter: {
+                        property: "암기",
+                        checkbox: {
+                            equals: false
+                        }
+                    },
+                    sorts: [
+                        {
+                            property: "Random",
+                            direction: sortDirection
+                        }
+                    ],
+                    start_cursor: startCursor,
+                    page_size: 100
+                });
+
+                allResults.push(...response.results);
+                hasMore = response.has_more;
+                startCursor = response.next_cursor || undefined;
+
+                // Early exit if we have enough cards
+                if (allResults.length >= totalNeeded) {
+                    break;
+                }
+            } catch (error: any) {
+                // If Random property doesn't exist, fall back to no sorting
+                if (error.code === 'validation_error' && error.message?.includes('Random')) {
+                    console.log('Random property not found, fetching without sorting');
+                    const response = await notion.databases.query({
+                        database_id: flashcardsDatabaseId,
+                        filter: {
+                            property: "암기",
+                            checkbox: {
+                                equals: false
+                            }
+                        },
+                        start_cursor: startCursor,
+                        page_size: 100
+                    });
+
+                    allResults.push(...response.results);
+                    hasMore = response.has_more;
+                    startCursor = response.next_cursor || undefined;
+
+                    if (allResults.length >= totalNeeded) {
+                        break;
                     }
-                },
-                start_cursor: startCursor,
-                page_size: 100
-            });
-
-            allResults.push(...response.results);
-            hasMore = response.has_more;
-            startCursor = response.next_cursor || undefined;
-
-            // Early exit only if we're NOT fetching all cards for shuffling
-            if (!shouldFetchAll && allResults.length >= totalNeeded) {
-                break;
+                } else {
+                    throw error;
+                }
             }
         }
 
-        // Remove duplicates by page ID (safety check)
+        // Remove duplicates by page ID (can happen with Random sorting using now())
         const uniqueResultsMap = new Map();
         for (const page of allResults) {
             if (!uniqueResultsMap.has(page.id)) {
@@ -347,30 +371,12 @@ export async function getN1FlashcardsFromNotion(flashcardsDatabaseId: string, so
         }
         let uniqueResults = Array.from(uniqueResultsMap.values());
 
-        // Shuffle using seed if provided (for consistent random order per session)
-        if (seed !== undefined) {
-            const random = seededRandom(seed);
-            // Fisher-Yates shuffle with seeded random
-            for (let i = uniqueResults.length - 1; i > 0; i--) {
-                const j = Math.floor(random() * (i + 1));
-                [uniqueResults[i], uniqueResults[j]] = [uniqueResults[j], uniqueResults[i]];
-            }
-        }
-
-        // Apply offset and limit after shuffling
+        // Apply offset and limit
         const start = offset || 0;
         const end = limit !== undefined ? start + limit : undefined;
         uniqueResults = uniqueResults.slice(start, end);
 
-        // Reverse if descending order requested
-        if (sortDirection === "descending") {
-            uniqueResults.reverse();
-        }
-
-        const logMessage = seed !== undefined
-            ? `Fetched ${allResults.length} cards, shuffled with seed ${seed}, returning ${uniqueResults.length} cards (offset: ${offset || 0}, limit: ${limit})`
-            : `Loaded ${uniqueResults.length} N1 flashcards from Notion database${limit ? ` (limited to ${limit})` : ''}`;
-        console.log(logMessage);
+        console.log(`Loaded ${uniqueResults.length} N1 flashcards from Notion database with Random sorting${limit ? ` (limited to ${limit})` : ''}, ${allResults.length - uniqueResults.length} duplicates removed`);
 
         return uniqueResults.map((page: any, index: number) => {
             const properties = page.properties;
