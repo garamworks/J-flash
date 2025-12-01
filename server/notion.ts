@@ -301,49 +301,27 @@ export async function getN1FlashcardsFromNotion(flashcardsDatabaseId: string, so
         let hasMore = true;
         let startCursor: string | undefined = undefined;
 
-        // Fetch all pages using pagination
+        // Fetch all pages using pagination WITHOUT Random sorting
+        // Random sorting with now() causes cards to be skipped during pagination
         while (hasMore) {
-            try {
-                const response = await notion.databases.query({
-                    database_id: flashcardsDatabaseId,
-                    filter: {
-                        property: "암기",
-                        checkbox: {
-                            equals: false
-                        }
-                    },
-                    sorts: [
-                        {
-                            property: "Random",
-                            direction: sortDirection
-                        }
-                    ],
-                    start_cursor: startCursor,
-                });
+            const response = await notion.databases.query({
+                database_id: flashcardsDatabaseId,
+                filter: {
+                    property: "암기",
+                    checkbox: {
+                        equals: false
+                    }
+                },
+                start_cursor: startCursor,
+                page_size: 100
+            });
 
-                allResults.push(...response.results);
-                hasMore = response.has_more;
-                startCursor = response.next_cursor || undefined;
-            } catch (sortError) {
-                console.warn("Random sort failed, trying without sorting:", sortError);
-                const response = await notion.databases.query({
-                    database_id: flashcardsDatabaseId,
-                    filter: {
-                        property: "암기",
-                        checkbox: {
-                            equals: false
-                        }
-                    },
-                    start_cursor: startCursor,
-                });
-
-                allResults.push(...response.results);
-                hasMore = response.has_more;
-                startCursor = response.next_cursor || undefined;
-            }
+            allResults.push(...response.results);
+            hasMore = response.has_more;
+            startCursor = response.next_cursor || undefined;
         }
 
-        // Remove duplicates by page ID (can happen when Random field changes during pagination)
+        // Remove duplicates by page ID (safety check)
         const uniqueResultsMap = new Map();
         for (const page of allResults) {
             if (!uniqueResultsMap.has(page.id)) {
@@ -352,7 +330,18 @@ export async function getN1FlashcardsFromNotion(flashcardsDatabaseId: string, so
         }
         const uniqueResults = Array.from(uniqueResultsMap.values());
         
-        console.log(`Loaded ${uniqueResults.length} N1 flashcards from Notion database (${allResults.length - uniqueResults.length} duplicates removed)`);
+        // Shuffle results using Fisher-Yates algorithm
+        for (let i = uniqueResults.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [uniqueResults[i], uniqueResults[j]] = [uniqueResults[j], uniqueResults[i]];
+        }
+        
+        // Reverse if descending order requested
+        if (sortDirection === "descending") {
+            uniqueResults.reverse();
+        }
+        
+        console.log(`Loaded ${uniqueResults.length} N1 flashcards from Notion database (shuffled, ${allResults.length - uniqueResults.length} duplicates removed)`);
 
         return uniqueResults.map((page: any, index: number) => {
             const properties = page.properties;
